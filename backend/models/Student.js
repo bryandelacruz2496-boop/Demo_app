@@ -44,7 +44,7 @@ const studentSchema = new mongoose.Schema({
     gender: String,
     profileImage: { type: String, default: null },
     totalTuition: { type: Number, default: 0 },
-    paymentOption: { type: String, enum: ['monthly', 'quarterly', 'full'], default: 'monthly' },
+    paymentOption: { type: String, enum: ['monthly', 'quarterly', 'full', 'two_payments'], default: 'monthly' },
     payments: [paymentSchema],
     activities: [activitySchema],
     projects: [projectSchema],

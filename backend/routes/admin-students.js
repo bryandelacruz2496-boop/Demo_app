@@ -69,7 +69,7 @@ router.get('/students-next-number', authMiddleware, async (req, res) => {
 // POST /api/admin/students - Create new student
 router.post('/students', authMiddleware, upload.single('profileImage'), async (req, res) => {
     try {
-        const { fullName, grade, guardian, guardianContact, address, birthDate, gender, paymentOption } = req.body;
+        const { fullName, grade, guardian, guardianContact, address, birthDate, gender, paymentOption, enrolleeType } = req.body;
 
         // Generate student number
         const currentYear = new Date().getFullYear();
@@ -87,9 +87,10 @@ router.post('/students', authMiddleware, upload.single('profileImage'), async (r
 
         // Generate payments based on grade and payment option
         const option = paymentOption || 'monthly';
-        const { payments, totalTuition: computedTotal } = generatePayments(grade, option);
+        const { payments, totalTuition: computedTotal } = generatePayments(grade, option, enrolleeType || 'old');
 
-        const gradeData = TUITION_TABLE[grade];
+        const table = TUITION_TABLE[enrolleeType || 'old'];
+        const gradeData = table ? table[grade] : null;
         const finalTotal = computedTotal || (gradeData ? gradeData.grandTotal : 0);
 
         const student = new Student({

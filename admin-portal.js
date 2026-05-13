@@ -647,27 +647,68 @@ function showAddStudentForm() {
 
 // Tuition Display
 const TUITION_DATA = {
-    'Palaruan': { tuition: 13000, misc: 6000, total: 19000 },
-    'Kindergarten': { tuition: 13000, misc: 7000, total: 20000 },
-    'Grade 1': { tuition: 16500, misc: 6000, total: 22500 },
-    'Grade 2': { tuition: 16500, misc: 6000, total: 22500 },
-    'Grade 3': { tuition: 16500, misc: 6000, total: 22500 },
-    'Grade 4': { tuition: 16500, misc: 6000, total: 22500 },
-    'Grade 5': { tuition: 16500, misc: 6000, total: 22500 },
-    'Grade 6': { tuition: 16000, misc: 7500, total: 23500 }
+    old: {
+        'Palaruan 1': { tuition: 13000, misc: 6000, total: 19000 },
+        'Palaruan 2': { tuition: 13000, misc: 6000, total: 19000 },
+        'Kindergarten': { tuition: 13000, misc: 7000, total: 20000 },
+        'Grade 1': { tuition: 16500, misc: 6000, total: 22500 },
+        'Grade 2': { tuition: 16500, misc: 6000, total: 22500 },
+        'Grade 3': { tuition: 16500, misc: 6000, total: 22500 },
+        'Grade 4': { tuition: 16500, misc: 6000, total: 22500 },
+        'Grade 5': { tuition: 16500, misc: 6000, total: 22500 },
+        'Grade 6': { tuition: 16000, misc: 7500, total: 23500 }
+    },
+    new: {
+        'Palaruan 1': { tuition: 15000, misc: 6000, total: 21000 },
+        'Palaruan 2': { tuition: 15000, misc: 6000, total: 21000 },
+        'Kindergarten': { tuition: 16000, misc: 7000, total: 23000 },
+        'Grade 1': { tuition: 18000, misc: 6500, total: 24500 },
+        'Grade 2': { tuition: 18000, misc: 6500, total: 24500 },
+        'Grade 3': { tuition: 18000, misc: 6500, total: 24500 },
+        'Grade 4': { tuition: 18000, misc: 6500, total: 24500 },
+        'Grade 5': { tuition: 18000, misc: 6500, total: 24500 },
+        'Grade 6': { tuition: 20000, misc: 7500, total: 27500 }
+    }
+};
+
+const MONTHLY_AMOUNTS = {
+    old: {
+        'Palaruan 1': [3000, 2818, 2818, 2818, 2818, 2818, 2818],
+        'Palaruan 2': [3000, 2818, 2818, 2818, 2818, 2818, 2818],
+        'Kindergarten': [3000, 2985, 2985, 2985, 2985, 2985, 2985],
+        'Grade 1': [3000, 3442, 3442, 3442, 3442, 3442, 3442],
+        'Grade 2': [3000, 3442, 3442, 3442, 3442, 3442, 3442],
+        'Grade 3': [3000, 3442, 3442, 3442, 3442, 3442, 3442],
+        'Grade 4': [3000, 3442, 3442, 3442, 3442, 3442, 3442],
+        'Grade 5': [3000, 3442, 3442, 3442, 3442, 3442, 3442],
+        'Grade 6': [3000, 3603, 3603, 3603, 3603, 3603, 3603]
+    },
+    new: {
+        'Palaruan 1': [3000, 3175, 3175, 3175, 3175, 3175, 3175],
+        'Palaruan 2': [3000, 3175, 3175, 3175, 3175, 3175, 3175],
+        'Kindergarten': [3000, 3520, 3520, 3520, 3520, 3520, 3520],
+        'Grade 1': [3000, 3793, 3793, 3793, 3793, 3793, 3793],
+        'Grade 2': [3000, 3793, 3793, 3793, 3793, 3793, 3793],
+        'Grade 3': [3000, 3793, 3793, 3793, 3793, 3793, 3793],
+        'Grade 4': [3000, 3793, 3793, 3793, 3793, 3793, 3793],
+        'Grade 5': [3000, 3793, 3793, 3793, 3793, 3793, 3793],
+        'Grade 6': [3000, 4316, 4316, 4316, 4316, 4316, 4316]
+    }
 };
 
 function updateTuitionDisplay() {
+    const enrolleeType = document.getElementById('newStudentEnrolleeType').value;
     const grade = document.getElementById('newStudentGrade').value;
     const option = document.getElementById('newStudentPayOption').value;
     const breakdown = document.getElementById('tuitionBreakdown');
 
-    if (!grade || !TUITION_DATA[grade]) {
+    const table = TUITION_DATA[enrolleeType];
+    if (!grade || !table || !table[grade]) {
         breakdown.style.display = 'none';
         return;
     }
 
-    const data = TUITION_DATA[grade];
+    const data = table[grade];
     let adjustLabel, adjustAmount, totalPayment, schedule;
 
     if (option === 'full') {
@@ -684,28 +725,16 @@ function updateTuitionDisplay() {
         const half = Math.round(totalPayment / 2);
         schedule = `₱${half.toLocaleString()} x 2 (June & December)`;
     } else {
-        const interest = Math.round(data.tuition * 0.07);
-        adjustAmount = interest;
+        const amounts = MONTHLY_AMOUNTS[enrolleeType][grade];
+        adjustAmount = Math.round(data.tuition * 0.07);
         adjustLabel = '7% interest';
-        totalPayment = Math.round(data.tuition * 1.07) + data.misc;
-        const monthlyAmounts = {
-            'Palaruan': [3000, 2818, 2818, 2818, 2818, 2818, 2818],
-            'Kindergarten': [3000, 2985, 2985, 2985, 2985, 2985, 2985],
-            'Grade 1': [3000, 3442, 3442, 3442, 3442, 3442, 3442],
-            'Grade 2': [3000, 3442, 3442, 3442, 3442, 3442, 3442],
-            'Grade 3': [3000, 3442, 3442, 3442, 3442, 3442, 3442],
-            'Grade 4': [3000, 3442, 3442, 3442, 3442, 3442, 3442],
-            'Grade 5': [3000, 3442, 3442, 3442, 3442, 3442, 3442],
-            'Grade 6': [3000, 3603, 3603, 3603, 3603, 3603, 3603]
-        };
-        const amounts = monthlyAmounts[grade];
         totalPayment = amounts.reduce((a, b) => a + b, 0);
         schedule = `₱${amounts[0].toLocaleString()} (June) + ₱${amounts[1].toLocaleString()} x 6 months (July-December)`;
     }
 
     document.getElementById('bdTuition').textContent = '₱' + data.tuition.toLocaleString();
     document.getElementById('bdMisc').textContent = '₱' + data.misc.toLocaleString();
-    document.getElementById('bdAdjust').textContent = (adjustAmount >= 0 ? '+' : '') + '₱' + Math.abs(adjustAmount).toLocaleString() + ` (${adjustLabel})`;
+    document.getElementById('bdAdjust').textContent = (adjustAmount >= 0 ? '+' : '-') + '₱' + Math.abs(adjustAmount).toLocaleString() + ` (${adjustLabel})`;
     document.getElementById('bdTotal').textContent = '₱' + totalPayment.toLocaleString();
     document.getElementById('bdSchedule').textContent = schedule;
     breakdown.style.display = 'block';
@@ -751,6 +780,9 @@ function previewNewStudentPhoto(input) {
 }
 
 async function createStudent() {
+    const btn = document.querySelector('#addStudentForm .btn-save');
+    const originalText = btn.textContent;
+
     const fullName = document.getElementById('newStudentName').value;
     const grade = document.getElementById('newStudentGrade').value;
     const guardian = document.getElementById('newStudentGuardian').value;
@@ -760,55 +792,69 @@ async function createStudent() {
         return;
     }
 
-    const formData = new FormData();
-    formData.append('fullName', fullName);
-    formData.append('grade', grade);
-    formData.append('guardian', guardian);
-    formData.append('guardianContact', document.getElementById('newStudentContact').value);
-    formData.append('address', document.getElementById('newStudentAddress').value);
-    formData.append('birthDate', document.getElementById('newStudentBirth').value);
-    formData.append('gender', document.getElementById('newStudentGender').value);
-    formData.append('paymentOption', document.getElementById('newStudentPayOption').value);
+    // Disable button and show loading state
+    btn.disabled = true;
+    btn.textContent = '⏳ Registering...';
 
-    const photoFile = document.getElementById('newStudentPhoto').files[0];
-    if (photoFile) formData.append('profileImage', photoFile);
+    try {
+        const formData = new FormData();
+        formData.append('fullName', fullName);
+        formData.append('grade', grade);
+        formData.append('guardian', guardian);
+        formData.append('guardianContact', document.getElementById('newStudentContact').value);
+        formData.append('address', document.getElementById('newStudentAddress').value);
+        formData.append('birthDate', document.getElementById('newStudentBirth').value);
+        formData.append('gender', document.getElementById('newStudentGender').value);
+        formData.append('paymentOption', document.getElementById('newStudentPayOption').value);
+        formData.append('enrolleeType', document.getElementById('newStudentEnrolleeType').value);
 
-    const res = await fetch(`${API_URL}/admin/students`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${adminToken}` },
-        body: formData
-    });
+        const photoFile = document.getElementById('newStudentPhoto').files[0];
+        if (photoFile) formData.append('profileImage', photoFile);
 
-    if (res.ok) {
-        const data = await res.json();
-        const resultEl = document.getElementById('newStudentResult');
-        resultEl.style.display = 'block';
-        resultEl.innerHTML = `
-            <div class="success-card">
-                <h4>✅ Student Registered Successfully!</h4>
-                <p><strong>Student Number:</strong> ${data.credentials.studentNo}</p>
-                <p><strong>Default Password:</strong> ${data.credentials.password}</p>
-                <p class="note">Share these credentials with the student/guardian for portal access.</p>
-            </div>
-        `;
+        const res = await fetch(`${API_URL}/admin/students`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${adminToken}` },
+            body: formData
+        });
 
-        // Clear form
-        document.getElementById('newStudentName').value = '';
-        document.getElementById('newStudentGrade').value = '';
-        document.getElementById('newStudentGuardian').value = '';
-        document.getElementById('newStudentContact').value = '';
-        document.getElementById('newStudentAddress').value = '';
-        document.getElementById('newStudentBirth').value = '';
-        document.getElementById('newStudentGender').value = '';
-        document.getElementById('newStudentTuition').value = '';
-        document.getElementById('newStudentPhoto').value = '';
-        document.getElementById('newStudentPhotoPreview').style.display = 'none';
+        if (res.ok) {
+            const data = await res.json();
+            const resultEl = document.getElementById('newStudentResult');
+            resultEl.style.display = 'block';
+            resultEl.innerHTML = `
+                <div class="success-card">
+                    <h4>✅ Student Registered Successfully!</h4>
+                    <p><strong>Student Number:</strong> ${data.credentials.studentNo}</p>
+                    <p><strong>Default Password:</strong> ${data.credentials.password}</p>
+                    <p class="note">Share these credentials with the student/guardian for portal access.</p>
+                </div>
+            `;
 
-        showToast('Student registered!');
-        loadStudents();
-    } else {
-        const data = await res.json();
-        showToast(data.message || 'Error creating student');
+            // Clear form
+            document.getElementById('newStudentName').value = '';
+            document.getElementById('newStudentGrade').value = '';
+            document.getElementById('newStudentGuardian').value = '';
+            document.getElementById('newStudentContact').value = '';
+            document.getElementById('newStudentAddress').value = '';
+            document.getElementById('newStudentBirth').value = '';
+            document.getElementById('newStudentGender').value = '';
+            document.getElementById('newStudentPhoto').value = '';
+            document.getElementById('newStudentPhotoPreview').style.display = 'none';
+            const tuitionBreakdown = document.getElementById('tuitionBreakdown');
+            if (tuitionBreakdown) tuitionBreakdown.style.display = 'none';
+
+            showToast('Student registered!');
+            loadStudents();
+        } else {
+            const data = await res.json();
+            showToast(data.message || 'Error creating student');
+        }
+    } catch (err) {
+        console.error('Create student error:', err);
+        showToast('Cannot connect to server. Please check if the backend is running.');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
     }
 }
 

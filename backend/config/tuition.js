@@ -1,118 +1,67 @@
-// Tuition and Payment Schemes for Old Enrollees
+// Tuition and Payment Schemes
 
 const TUITION_TABLE = {
-    'Palaruan': {
-        tuition: 13000,
-        miscellaneous: {
-            admission: 300,
-            developmentalFees: 500,
-            facilities: 3000,
-            utilities: 2000,
-            upeiq: 200
-        },
-        miscTotal: 6000,
-        grandTotal: 19000
+    old: {
+        'Palaruan 1': { tuition: 13000, miscTotal: 6000, grandTotal: 19000 },
+        'Palaruan 2': { tuition: 13000, miscTotal: 6000, grandTotal: 19000 },
+        'Kindergarten': { tuition: 13000, miscTotal: 7000, grandTotal: 20000 },
+        'Grade 1': { tuition: 16500, miscTotal: 6000, grandTotal: 22500 },
+        'Grade 2': { tuition: 16500, miscTotal: 6000, grandTotal: 22500 },
+        'Grade 3': { tuition: 16500, miscTotal: 6000, grandTotal: 22500 },
+        'Grade 4': { tuition: 16500, miscTotal: 6000, grandTotal: 22500 },
+        'Grade 5': { tuition: 16500, miscTotal: 6000, grandTotal: 22500 },
+        'Grade 6': { tuition: 16000, miscTotal: 7500, grandTotal: 23500 }
     },
-    'Kindergarten': {
-        tuition: 13000,
-        miscellaneous: {
-            admission: 300,
-            developmentalFees: 500,
-            facilities: 3000,
-            utilities: 2000,
-            upeiq: 200,
-            crossingOver: 1000
-        },
-        miscTotal: 7000,
-        grandTotal: 20000
-    },
-    'Grade 1': {
-        tuition: 16500,
-        miscellaneous: {
-            admission: 300,
-            developmentalFees: 500,
-            facilities: 3000,
-            utilities: 2000,
-            upeiq: 200
-        },
-        miscTotal: 6000,
-        grandTotal: 22500
-    },
-    'Grade 2': {
-        tuition: 16500,
-        miscellaneous: {
-            admission: 300,
-            developmentalFees: 500,
-            facilities: 3000,
-            utilities: 2000,
-            upeiq: 200
-        },
-        miscTotal: 6000,
-        grandTotal: 22500
-    },
-    'Grade 3': {
-        tuition: 16500,
-        miscellaneous: {
-            admission: 300,
-            developmentalFees: 500,
-            facilities: 3000,
-            utilities: 2000,
-            upeiq: 200
-        },
-        miscTotal: 6000,
-        grandTotal: 22500
-    },
-    'Grade 4': {
-        tuition: 16500,
-        miscellaneous: {
-            admission: 300,
-            developmentalFees: 500,
-            facilities: 3000,
-            utilities: 2000,
-            upeiq: 200
-        },
-        miscTotal: 6000,
-        grandTotal: 22500
-    },
-    'Grade 5': {
-        tuition: 16500,
-        miscellaneous: {
-            admission: 300,
-            developmentalFees: 500,
-            facilities: 3000,
-            utilities: 2000,
-            upeiq: 200
-        },
-        miscTotal: 6000,
-        grandTotal: 22500
-    },
-    'Grade 6': {
-        tuition: 16000,
-        miscellaneous: {
-            admission: 300,
-            developmentalFees: 500,
-            facilities: 3000,
-            utilities: 2500,
-            upeiq: 200,
-            crossingOver: 1000
-        },
-        miscTotal: 7500,
-        grandTotal: 23500
+    new: {
+        'Palaruan 1': { tuition: 15000, miscTotal: 6000, grandTotal: 21000 },
+        'Palaruan 2': { tuition: 15000, miscTotal: 6000, grandTotal: 21000 },
+        'Kindergarten': { tuition: 16000, miscTotal: 7000, grandTotal: 23000 },
+        'Grade 1': { tuition: 18000, miscTotal: 6500, grandTotal: 24500 },
+        'Grade 2': { tuition: 18000, miscTotal: 6500, grandTotal: 24500 },
+        'Grade 3': { tuition: 18000, miscTotal: 6500, grandTotal: 24500 },
+        'Grade 4': { tuition: 18000, miscTotal: 6500, grandTotal: 24500 },
+        'Grade 5': { tuition: 18000, miscTotal: 6500, grandTotal: 24500 },
+        'Grade 6': { tuition: 20000, miscTotal: 7500, grandTotal: 27500 }
     }
 };
 
-// Payment Schemes
-function generatePayments(grade, paymentOption) {
-    const gradeData = TUITION_TABLE[grade];
+// Monthly schedules (7 months: June-December)
+const MONTHLY_SCHEDULES = {
+    old: {
+        'Palaruan 1': [3000, 2818, 2818, 2818, 2818, 2818, 2818],
+        'Palaruan 2': [3000, 2818, 2818, 2818, 2818, 2818, 2818],
+        'Kindergarten': [3000, 2985, 2985, 2985, 2985, 2985, 2985],
+        'Grade 1': [3000, 3442, 3442, 3442, 3442, 3442, 3442],
+        'Grade 2': [3000, 3442, 3442, 3442, 3442, 3442, 3442],
+        'Grade 3': [3000, 3442, 3442, 3442, 3442, 3442, 3442],
+        'Grade 4': [3000, 3442, 3442, 3442, 3442, 3442, 3442],
+        'Grade 5': [3000, 3442, 3442, 3442, 3442, 3442, 3442],
+        'Grade 6': [3000, 3603, 3603, 3603, 3603, 3603, 3603]
+    },
+    new: {
+        'Palaruan 1': [3000, 3175, 3175, 3175, 3175, 3175, 3175],
+        'Palaruan 2': [3000, 3175, 3175, 3175, 3175, 3175, 3175],
+        'Kindergarten': [3000, 3520, 3520, 3520, 3520, 3520, 3520],
+        'Grade 1': [3000, 3793, 3793, 3793, 3793, 3793, 3793],
+        'Grade 2': [3000, 3793, 3793, 3793, 3793, 3793, 3793],
+        'Grade 3': [3000, 3793, 3793, 3793, 3793, 3793, 3793],
+        'Grade 4': [3000, 3793, 3793, 3793, 3793, 3793, 3793],
+        'Grade 5': [3000, 3793, 3793, 3793, 3793, 3793, 3793],
+        'Grade 6': [3000, 4316, 4316, 4316, 4316, 4316, 4316]
+    }
+};
+
+function generatePayments(grade, paymentOption, enrolleeType) {
+    const type = enrolleeType || 'old';
+    const table = TUITION_TABLE[type];
+    const gradeData = table ? table[grade] : null;
     if (!gradeData) return { payments: [], totalTuition: 0 };
 
     const tuition = gradeData.tuition;
     const miscTotal = gradeData.miscTotal;
-    const grandTotal = gradeData.grandTotal;
     let payments = [];
 
     if (paymentOption === 'full') {
-        // Option 1: Full Payment - 3% discount on tuition
         const discountedTuition = Math.round(tuition * 0.97);
         const totalPayment = discountedTuition + miscTotal;
 
@@ -126,10 +75,9 @@ function generatePayments(grade, paymentOption) {
         return { payments, totalTuition: totalPayment };
 
     } else if (paymentOption === 'two_payments') {
-        // Option 2: Two Equal Payments - 5% interest on tuition
         const withInterest = Math.round(tuition * 1.05);
         const totalPayment = withInterest + miscTotal;
-        const halfPayment = Math.round(totalPayment / 2 * 100) / 100;
+        const halfPayment = Math.round(totalPayment / 2);
 
         payments.push({
             date: '2026-06-01',
@@ -147,14 +95,9 @@ function generatePayments(grade, paymentOption) {
         return { payments, totalTuition: totalPayment };
 
     } else {
-        // Option 3: Monthly (6 months) - 7% interest on tuition
-        const withInterest = Math.round(tuition * 1.07);
-        const totalPayment = withInterest + miscTotal;
-
-        // First month includes miscellaneous
-        const firstPayment = miscTotal;
-        const remainingTotal = withInterest;
-        const monthlyAmount = Math.round(remainingTotal / 6);
+        // Monthly (7 months: June-December)
+        const schedules = MONTHLY_SCHEDULES[type];
+        const monthlySchedule = schedules ? schedules[grade] : [0, 0, 0, 0, 0, 0, 0];
 
         const months = [
             { month: '06', name: 'June 2026' },
@@ -165,9 +108,6 @@ function generatePayments(grade, paymentOption) {
             { month: '11', name: 'November 2026' },
             { month: '12', name: 'December 2026' }
         ];
-
-        // Use the exact amounts from the table
-        const monthlySchedule = getMonthlySchedule(grade);
 
         for (let i = 0; i < 7; i++) {
             payments.push({
@@ -182,19 +122,4 @@ function generatePayments(grade, paymentOption) {
     }
 }
 
-// Exact monthly amounts from the table
-function getMonthlySchedule(grade) {
-    const schedules = {
-        'Palaruan': [3000, 2818, 2818, 2818, 2818, 2818, 2818],
-        'Kindergarten': [3000, 2985, 2985, 2985, 2985, 2985, 2985],
-        'Grade 1': [3000, 3442, 3442, 3442, 3442, 3442, 3442],
-        'Grade 2': [3000, 3442, 3442, 3442, 3442, 3442, 3442],
-        'Grade 3': [3000, 3442, 3442, 3442, 3442, 3442, 3442],
-        'Grade 4': [3000, 3442, 3442, 3442, 3442, 3442, 3442],
-        'Grade 5': [3000, 3442, 3442, 3442, 3442, 3442, 3442],
-        'Grade 6': [3000, 3603, 3603, 3603, 3603, 3603, 3603]
-    };
-    return schedules[grade] || [0, 0, 0, 0, 0, 0, 0];
-}
-
-module.exports = { TUITION_TABLE, generatePayments };
+module.exports = { TUITION_TABLE, MONTHLY_SCHEDULES, generatePayments };

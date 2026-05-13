@@ -7,6 +7,16 @@ services:
       - "8080:80"
     depends_on:
       - backend
+    volumes:
+      - ./index.html:/usr/share/nginx/html/index.html
+      - ./admin.html:/usr/share/nginx/html/admin.html
+      - ./student-login.html:/usr/share/nginx/html/student-login.html
+      - ./style.css:/usr/share/nginx/html/style.css
+      - ./script.js:/usr/share/nginx/html/script.js
+      - ./student-portal.css:/usr/share/nginx/html/student-portal.css
+      - ./student-portal.js:/usr/share/nginx/html/student-portal.js
+      - ./admin-portal.css:/usr/share/nginx/html/admin-portal.css
+      - ./admin-portal.js:/usr/share/nginx/html/admin-portal.js
 
   backend:
     build:

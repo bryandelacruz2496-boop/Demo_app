@@ -85,11 +85,13 @@ const students = [
 async function seed() {
     await mongoose.connect(process.env.MONGO_URI);
 
-    // Clear existing students
-    await Student.deleteMany({});
-
-    // Insert students (password will be hashed by the pre-save hook)
+    // Only add students if they don't already exist
     for (const studentData of students) {
+        const existing = await Student.findOne({ studentNo: studentData.studentNo });
+        if (existing) {
+            console.log(`Student ${studentData.studentNo} already exists, skipping.`);
+            continue;
+        }
         const student = new Student(studentData);
         await student.save();
         console.log(`Created student: ${student.studentNo} - ${student.fullName}`);

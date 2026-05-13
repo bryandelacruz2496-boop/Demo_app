@@ -54,23 +54,67 @@
             <div class="panel student-list-panel" id="studentListPanel">
                 <h2>📋 Student List</h2>
 
+                <!-- Monthly Collection Summary -->
+                <div class="collection-summary">
+                    <h3>💰 Monthly Collection</h3>
+                    <div class="month-selector">
+                        <select id="collectionMonth" onchange="calculateCollection()">
+                            <option value="01">January</option>
+                            <option value="02">February</option>
+                            <option value="03">March</option>
+                            <option value="04">April</option>
+                            <option value="05">May</option>
+                            <option value="06">June</option>
+                            <option value="07">July</option>
+                            <option value="08">August</option>
+                            <option value="09">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                        <select id="collectionYear" onchange="calculateCollection()">
+                            <option value="2026">2026</option>
+                            <option value="2027">2027</option>
+                        </select>
+                    </div>
+                    <div class="collection-cards">
+                        <div class="collection-card">
+                            <span class="collection-label">Total Collected</span>
+                            <span class="collection-value collected" id="monthCollected">₱0</span>
+                        </div>
+                        <div class="collection-card">
+                            <span class="collection-label">Pending</span>
+                            <span class="collection-value pending" id="monthPending">₱0</span>
+                        </div>
+                        <div class="collection-card">
+                            <span class="collection-label">Total Expected</span>
+                            <span class="collection-value" id="monthTotal">₱0</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="top-actions">
                     <button class="btn-add-student" onclick="showAddStudentForm()">+ Add New Student</button>
+                    <button class="btn-add-student" onclick="showAnnouncementForm()">📢 Add Announcement</button>
                 </div>
 
                 <!-- Add Student Form (hidden by default) -->
-                <div class="add-student-form" id="addStudentForm" style="display:none;">
+                <div class="add-student-form" id="addStudentForm" style="display:none;margin-top:1.5rem;">
                     <h3>📝 Register New Student</h3>
                     <div class="form-grid">
                         <div class="form-group">
-                            <label>Full Name *</label>
-                            <input type="text" id="newStudentName" placeholder="e.g. Juan Dela Cruz" required>
+                            <label>Enrollee Type *</label>
+                            <select id="newStudentEnrolleeType" onchange="updateTuitionDisplay()">
+                                <option value="old">Old Student</option>
+                                <option value="new">New Student</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label>Grade *</label>
                             <select id="newStudentGrade" required onchange="updateTuitionDisplay()">
                                 <option value="">Select Grade</option>
-                                <option value="Palaruan">Palaruan</option>
+                                <option value="Palaruan 1">Palaruan 1</option>
+                                <option value="Palaruan 2">Palaruan 2</option>
                                 <option value="Kindergarten">Kindergarten</option>
                                 <option value="Grade 1">Grade 1</option>
                                 <option value="Grade 2">Grade 2</option>
@@ -79,6 +123,10 @@
                                 <option value="Grade 5">Grade 5</option>
                                 <option value="Grade 6">Grade 6</option>
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Full Name *</label>
+                            <input type="text" id="newStudentName" placeholder="e.g. Juan Dela Cruz" required>
                         </div>
                         <div class="form-group">
                             <label>Guardian Name *</label>
@@ -143,49 +191,13 @@
                     <div class="new-student-result" id="newStudentResult" style="display:none;"></div>
                 </div>
 
-                <!-- Monthly Collection Summary -->
-                <div class="collection-summary">
-                    <h3>💰 Monthly Collection</h3>
-                    <div class="month-selector">
-                        <select id="collectionMonth" onchange="calculateCollection()">
-                            <option value="01">January</option>
-                            <option value="02">February</option>
-                            <option value="03">March</option>
-                            <option value="04">April</option>
-                            <option value="05">May</option>
-                            <option value="06">June</option>
-                            <option value="07">July</option>
-                            <option value="08">August</option>
-                            <option value="09">September</option>
-                            <option value="10">October</option>
-                            <option value="11">November</option>
-                            <option value="12">December</option>
-                        </select>
-                        <select id="collectionYear" onchange="calculateCollection()">
-                            <option value="2026">2026</option>
-                            <option value="2027">2027</option>
-                        </select>
-                    </div>
-                    <div class="collection-cards">
-                        <div class="collection-card">
-                            <span class="collection-label">Total Collected</span>
-                            <span class="collection-value collected" id="monthCollected">₱0</span>
-                        </div>
-                        <div class="collection-card">
-                            <span class="collection-label">Pending</span>
-                            <span class="collection-value pending" id="monthPending">₱0</span>
-                        </div>
-                        <div class="collection-card">
-                            <span class="collection-label">Total Expected</span>
-                            <span class="collection-value" id="monthTotal">₱0</span>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="sort-row" style="margin-top: 1.5rem;">
                     <label>Filter by Grade:</label>
                     <select id="filterGrade" onchange="renderStudentList()">
                         <option value="all">All Grades</option>
+                        <option value="Palaruan 1">Palaruan 1</option>
+                        <option value="Palaruan 2">Palaruan 2</option>
+                        <option value="Kindergarten">Kindergarten</option>
                         <option value="Grade 1">Grade 1</option>
                         <option value="Grade 2">Grade 2</option>
                         <option value="Grade 3">Grade 3</option>
@@ -193,8 +205,6 @@
                         <option value="Grade 5">Grade 5</option>
                         <option value="Grade 6">Grade 6</option>
                     </select>
-                    <button class="btn-add-student" onclick="showAnnouncementForm()" style="margin-left:auto;">📢 Add
-                        Announcement</button>
                 </div>
 
                 <!-- Announcement Form (hidden by default) -->
@@ -209,6 +219,9 @@
                             <label>Target Grade</label>
                             <select id="annGrade">
                                 <option value="all">All Grades</option>
+                                <option value="Palaruan 1">Palaruan 1</option>
+                                <option value="Palaruan 2">Palaruan 2</option>
+                                <option value="Kindergarten">Kindergarten</option>
                                 <option value="Grade 1">Grade 1</option>
                                 <option value="Grade 2">Grade 2</option>
                                 <option value="Grade 3">Grade 3</option>
@@ -314,7 +327,8 @@
                             <button class="btn-edit" id="btnEditProfile" onclick="enableProfileEdit()">✏️ Edit
                                 Profile</button>
                             <button class="btn-save" id="btnSaveProfile" onclick="saveProfile()"
-                                style="display:none;">💾 Save Profile</button>
+                                style="display:none;">💾
+                                Save Profile</button>
                             <button class="btn-cancel" id="btnCancelProfile" onclick="cancelProfileEdit()"
                                 style="display:none;">Cancel</button>
                         </div>

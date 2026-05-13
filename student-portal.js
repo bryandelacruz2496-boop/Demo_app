@@ -1,31 +1,38 @@
 const API_URL = 'http://localhost:5000/api';
 let currentStudent = null;
 
-// Check if already logged in - fetch fresh data
+// Check if already logged in - show cached data immediately
 window.addEventListener('DOMContentLoaded', async () => {
-  const token = localStorage.getItem('studentToken');
-  const savedStudent = localStorage.getItem('studentData');
-  if (token && savedStudent) {
-    const studentNo = JSON.parse(savedStudent).studentNo;
-    // Re-login to get fresh data
-    try {
-      const res = await fetch(`${API_URL}/student/refresh`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
+  try {
+    const token = localStorage.getItem('studentToken');
+    const savedStudent = localStorage.getItem('studentData');
+
+    if (!token || !savedStudent) return;
+
+    const parsed = JSON.parse(savedStudent);
+    if (!parsed || !parsed.fullName) return;
+
+    // Show dashboard immediately with cached data
+    currentStudent = parsed;
+    document.getElementById('loginWrapper').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    populateDashboard();
+
+    // Then try to refresh in background
+    fetch(`${API_URL}/student/refresh`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    }).then(res => {
+      if (res.ok) return res.json();
+      return null;
+    }).then(data => {
+      if (data && data.student) {
         currentStudent = data.student;
         localStorage.setItem('studentData', JSON.stringify(data.student));
-        showDashboard();
-      } else {
-        // Token expired, use cached
-        currentStudent = JSON.parse(savedStudent);
-        showDashboard();
+        populateDashboard();
       }
-    } catch (err) {
-      currentStudent = JSON.parse(savedStudent);
-      showDashboard();
-    }
+    }).catch(() => { });
+  } catch (e) {
+    // If anything fails, stay on login
   }
 });
 
@@ -59,15 +66,21 @@ async function handleStudentLogin(event) {
 }
 
 function showDashboard() {
+  if (!currentStudent) return;
   document.getElementById('loginWrapper').style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
+  populateDashboard();
+}
+
+function populateDashboard() {
+  if (!currentStudent) return;
 
   // Populate info
-  document.getElementById('dashStudentName').textContent = currentStudent.fullName;
-  document.getElementById('infoFullName').textContent = currentStudent.fullName;
-  document.getElementById('infoStudentNo').textContent = currentStudent.studentNo;
-  document.getElementById('infoGrade').textContent = currentStudent.grade;
-  document.getElementById('infoGuardian').textContent = currentStudent.guardian;
+  document.getElementById('dashStudentName').textContent = currentStudent.fullName || '';
+  document.getElementById('infoFullName').textContent = currentStudent.fullName || '';
+  document.getElementById('infoStudentNo').textContent = currentStudent.studentNo || '';
+  document.getElementById('infoGrade').textContent = currentStudent.grade || '';
+  document.getElementById('infoGuardian').textContent = currentStudent.guardian || '';
 
   // Set profile image
   const avatarEl = document.querySelector('.info-avatar');
@@ -76,13 +89,15 @@ function showDashboard() {
   }
 
   // Payments
-  document.getElementById('totalTuition').textContent = '₱' + currentStudent.totalTuition.toLocaleString();
-  document.getElementById('totalPaid').textContent = '₱' + currentStudent.totalPaid.toLocaleString();
-  const balance = currentStudent.totalTuition - currentStudent.totalPaid;
+  const totalTuition = currentStudent.totalTuition || 0;
+  const totalPaid = currentStudent.totalPaid || 0;
+  document.getElementById('totalTuition').textContent = '₱' + totalTuition.toLocaleString();
+  document.getElementById('totalPaid').textContent = '₱' + totalPaid.toLocaleString();
+  const balance = totalTuition - totalPaid;
   document.getElementById('totalBalance').textContent = '₱' + balance.toLocaleString();
 
   renderStudentPayments();
-  loadStudentAnnouncements();
+  try { loadStudentAnnouncements(); } catch (e) { }
 
   // Activities
   const activityList = document.getElementById('activityList');
