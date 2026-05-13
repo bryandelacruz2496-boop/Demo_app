@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal - Beata Sai Integrated School</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="student-portal.css">
+</head>
+
+<body>
+    <div class="portal-container">
+        <!-- Login Form -->
+        <div class="login-wrapper" id="loginWrapper">
+            <div class="login-card">
+                <div class="login-header">
+                    <img src="logo.png" alt="Logo" class="login-logo" onerror="this.style.display='none'">
+                    <h1>Student Portal</h1>
+                    <p>Beata Sai Integrated School</p>
+                </div>
+                <form onsubmit="handleStudentLogin(event)">
+                    <div class="form-group">
+                        <label>Student Number</label>
+                        <input type="text" id="studentId" placeholder="e.g. 2026-0001" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="studentPassword" placeholder="Enter password" required>
+                    </div>
+                    <button type="submit" class="btn-login">Login</button>
+                    <p class="error-msg" id="loginError"></p>
+                </form>
+                <a href="index.html" class="back-link">← Back to Homepage</a>
+            </div>
+        </div>
+
+        <!-- Student Dashboard -->
+        <div class="dashboard" id="dashboard" style="display:none;">
+            <header class="dash-header">
+                <div class="dash-logo">
+                    <img src="logo.png" alt="Logo" class="dash-logo-img" onerror="this.style.display='none'">
+                    <span>Student Portal</span>
+                </div>
+                <div class="dash-user">
+                    <span id="dashStudentName"></span>
+                    <button onclick="logout()" class="btn-logout">Logout</button>
+                </div>
+            </header>
+
+            <div class="dash-content">
+                <!-- Student Info Card -->
+                <div class="info-card">
+                    <div class="info-avatar">👦</div>
+                    <div class="info-details">
+                        <h2 id="infoFullName"></h2>
+                        <p><strong>Student No:</strong> <span id="infoStudentNo"></span></p>
+                        <p><strong>Grade & Section:</strong> <span id="infoGrade"></span></p>
+                        <p><strong>Guardian:</strong> <span id="infoGuardian"></span></p>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <div class="dash-tabs">
+                    <button class="dash-tab" onclick="switchDashTab(event, 'announcements')">📢 Announcements</button>
+                    <button class="dash-tab active" onclick="switchDashTab(event, 'payments')">💰 Payments</button>
+                    <button class="dash-tab" onclick="switchDashTab(event, 'activities')">📋 Activities</button>
+                    <button class="dash-tab" onclick="switchDashTab(event, 'projects')">📁 Projects</button>
+                    <button class="dash-tab" onclick="switchDashTab(event, 'assessments')">📝 Assessments</button>
+                </div>
+
+                <!-- Announcements Tab -->
+                <div class="dash-panel" id="announcements">
+                    <h3>📢 Announcements</h3>
+                    <div id="studentAnnouncementsList"></div>
+                </div>
+
+                <!-- Payments Tab -->
+                <div class="dash-panel active" id="payments">
+                    <h3>Payment Records</h3>
+                    <div class="payment-summary">
+                        <div class="summary-item">
+                            <span class="summary-label">Total Tuition</span>
+                            <span class="summary-value" id="totalTuition"></span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Total Paid</span>
+                            <span class="summary-value paid" id="totalPaid"></span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Balance</span>
+                            <span class="summary-value balance" id="totalBalance"></span>
+                        </div>
+                    </div>
+                    <div class="sort-row">
+                        <label>Month:</label>
+                        <select id="studentPayMonth" onchange="renderStudentPayments()">
+                            <option value="all">All</option>
+                            <option value="01">January</option>
+                            <option value="02">February</option>
+                            <option value="03">March</option>
+                            <option value="04">April</option>
+                            <option value="05">May</option>
+                            <option value="06">June</option>
+                            <option value="07">July</option>
+                            <option value="08">August</option>
+                            <option value="09">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                        <label>Year:</label>
+                        <select id="studentPayYear" onchange="renderStudentPayments()">
+                            <option value="all">All</option>
+                            <option value="2026">2026</option>
+                            <option value="2027">2027</option>
+                        </select>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentTableBody"></tbody>
+                    </table>
+                </div>
+
+                <!-- Activities Tab -->
+                <div class="dash-panel" id="activities">
+                    <h3>Activities</h3>
+                    <div class="activity-list" id="activityList"></div>
+                </div>
+
+                <!-- Projects Tab -->
+                <div class="dash-panel" id="projects">
+                    <h3>Projects</h3>
+                    <div class="project-list" id="projectList"></div>
+                </div>
+
+                <!-- Assessments Tab -->
+                <div class="dash-panel" id="assessments">
+                    <h3>Assessments & Grades</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>1st Quarter</th>
+                                <th>2nd Quarter</th>
+                                <th>3rd Quarter</th>
+                                <th>4th Quarter</th>
+                                <th>Final</th>
+                            </tr>
+                        </thead>
+                        <tbody id="assessmentTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="student-portal.js"></script>
+</body>
+
+</html>

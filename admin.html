@@ -4,200 +4,440 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Beata Sai Integrated School</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #b71c1c, #d32f2f);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .login-container {
-            background: #fff;
-            padding: 3rem;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .login-container h1 {
-            color: #b71c1c;
-            text-align: center;
-            margin-bottom: 0.5rem;
-            font-size: 1.5rem;
-        }
-
-        .login-container p {
-            text-align: center;
-            color: #666;
-            margin-bottom: 2rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #333;
-            font-weight: 500;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #b71c1c;
-        }
-
-        .btn-login {
-            width: 100%;
-            padding: 0.8rem;
-            background: #b71c1c;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .btn-login:hover {
-            background: #d32f2f;
-        }
-
-        .error-msg {
-            color: #b71c1c;
-            text-align: center;
-            margin-top: 1rem;
-            display: none;
-        }
-
-        .dashboard {
-            display: none;
-            text-align: center;
-        }
-
-        .dashboard h2 {
-            color: #b71c1c;
-            margin-bottom: 1rem;
-        }
-
-        .dashboard p {
-            color: #555;
-            margin-bottom: 2rem;
-        }
-
-        .btn-logout {
-            padding: 0.6rem 2rem;
-            background: #b71c1c;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-        .btn-logout:hover {
-            background: #d32f2f;
-        }
-    </style>
+    <title>Admin Portal - Beata Sai Integrated School</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="admin-portal.css">
 </head>
 
 <body>
-    <div class="login-container" id="loginForm">
-        <h1>Admin Portal</h1>
-        <p>Beata Sai Integrated School</p>
-        <form onsubmit="handleLogin(event)">
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" placeholder="Enter username" required>
+    <!-- Login -->
+    <div class="login-wrapper" id="loginWrapper">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="logo.png" alt="Logo" class="login-logo" onerror="this.style.display='none'">
+                <h1>Admin Portal</h1>
+                <p>Beata Sai Integrated School</p>
             </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Enter password" required>
-            </div>
-            <button type="submit" class="btn-login">Login</button>
-        </form>
-        <p class="error-msg" id="errorMsg">Invalid username or password</p>
+            <form onsubmit="handleAdminLogin(event)">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="adminUsername" placeholder="Enter username" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="adminPassword" placeholder="Enter password" required>
+                </div>
+                <button type="submit" class="btn-login">Login</button>
+                <p class="error-msg" id="loginError"></p>
+            </form>
+            <a href="index.html" class="back-link">← Back to Homepage</a>
+        </div>
     </div>
 
-    <div class="login-container dashboard" id="dashboard">
-        <h2>Welcome, <span id="adminName"></span></h2>
-        <p>You are logged in as administrator.</p>
-        <button class="btn-logout" onclick="handleLogout()">Logout</button>
+    <!-- Admin Dashboard -->
+    <div class="admin-dashboard" id="adminDashboard" style="display:none;">
+        <header class="admin-header">
+            <div class="admin-logo">
+                <img src="logo.png" alt="Logo" class="header-logo" onerror="this.style.display='none'">
+                <span>Admin Portal</span>
+            </div>
+            <div class="admin-user">
+                <span id="adminName"></span>
+                <button onclick="adminLogout()" class="btn-logout">Logout</button>
+            </div>
+        </header>
+
+        <div class="admin-content">
+            <!-- Student List -->
+            <div class="panel student-list-panel" id="studentListPanel">
+                <h2>📋 Student List</h2>
+
+                <div class="top-actions">
+                    <button class="btn-add-student" onclick="showAddStudentForm()">+ Add New Student</button>
+                </div>
+
+                <!-- Add Student Form (hidden by default) -->
+                <div class="add-student-form" id="addStudentForm" style="display:none;">
+                    <h3>📝 Register New Student</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Full Name *</label>
+                            <input type="text" id="newStudentName" placeholder="e.g. Juan Dela Cruz" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Grade *</label>
+                            <select id="newStudentGrade" required onchange="updateTuitionDisplay()">
+                                <option value="">Select Grade</option>
+                                <option value="Palaruan">Palaruan</option>
+                                <option value="Kindergarten">Kindergarten</option>
+                                <option value="Grade 1">Grade 1</option>
+                                <option value="Grade 2">Grade 2</option>
+                                <option value="Grade 3">Grade 3</option>
+                                <option value="Grade 4">Grade 4</option>
+                                <option value="Grade 5">Grade 5</option>
+                                <option value="Grade 6">Grade 6</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Guardian Name *</label>
+                            <input type="text" id="newStudentGuardian" placeholder="e.g. Maria Dela Cruz" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Guardian Contact</label>
+                            <input type="tel" id="newStudentContact" placeholder="e.g. 09171234567" pattern="[0-9]*"
+                                inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        </div>
+                        <div class="form-group">
+                            <label>Address</label>
+                            <input type="text" id="newStudentAddress" placeholder="e.g. 123 Main St, Quezon City">
+                        </div>
+                        <div class="form-group">
+                            <label>Birth Date</label>
+                            <input type="date" id="newStudentBirth">
+                        </div>
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <select id="newStudentGender">
+                                <option value="">Select</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Scheme *</label>
+                            <select id="newStudentPayOption" onchange="updateTuitionDisplay()">
+                                <option value="full">Option 1: Full Payment (Less 3%)</option>
+                                <option value="two_payments">Option 2: Two Equal Payments (5% interest)</option>
+                                <option value="monthly">Option 3: Monthly - 7 months (7% interest)</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width" id="tuitionBreakdown" style="display:none;">
+                            <div class="tuition-breakdown">
+                                <div class="breakdown-row"><span>Tuition:</span><strong id="bdTuition">₱0</strong></div>
+                                <div class="breakdown-row"><span>Miscellaneous:</span><strong id="bdMisc">₱0</strong>
+                                </div>
+                                <div class="breakdown-row"><span>Discount/Interest:</span><strong
+                                        id="bdAdjust">₱0</strong></div>
+                                <div class="breakdown-row total"><span>Total Payment:</span><strong
+                                        id="bdTotal">₱0</strong></div>
+                                <div class="breakdown-row"><span>Payment Schedule:</span><strong
+                                        id="bdSchedule"></strong></div>
+                            </div>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Student Photo</label>
+                            <label class="file-upload-label">
+                                📷 Upload Photo
+                                <input type="file" id="newStudentPhoto" accept="image/*"
+                                    onchange="previewNewStudentPhoto(this)">
+                            </label>
+                            <img id="newStudentPhotoPreview" class="image-preview" style="display:none;">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn-save" onclick="createStudent()">✅ Register Student</button>
+                        <button class="btn-cancel" onclick="hideAddStudentForm()">Cancel</button>
+                    </div>
+                    <div class="new-student-result" id="newStudentResult" style="display:none;"></div>
+                </div>
+
+                <!-- Monthly Collection Summary -->
+                <div class="collection-summary">
+                    <h3>💰 Monthly Collection</h3>
+                    <div class="month-selector">
+                        <select id="collectionMonth" onchange="calculateCollection()">
+                            <option value="01">January</option>
+                            <option value="02">February</option>
+                            <option value="03">March</option>
+                            <option value="04">April</option>
+                            <option value="05">May</option>
+                            <option value="06">June</option>
+                            <option value="07">July</option>
+                            <option value="08">August</option>
+                            <option value="09">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                        <select id="collectionYear" onchange="calculateCollection()">
+                            <option value="2026">2026</option>
+                            <option value="2027">2027</option>
+                        </select>
+                    </div>
+                    <div class="collection-cards">
+                        <div class="collection-card">
+                            <span class="collection-label">Total Collected</span>
+                            <span class="collection-value collected" id="monthCollected">₱0</span>
+                        </div>
+                        <div class="collection-card">
+                            <span class="collection-label">Pending</span>
+                            <span class="collection-value pending" id="monthPending">₱0</span>
+                        </div>
+                        <div class="collection-card">
+                            <span class="collection-label">Total Expected</span>
+                            <span class="collection-value" id="monthTotal">₱0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sort-row" style="margin-top: 1.5rem;">
+                    <label>Filter by Grade:</label>
+                    <select id="filterGrade" onchange="renderStudentList()">
+                        <option value="all">All Grades</option>
+                        <option value="Grade 1">Grade 1</option>
+                        <option value="Grade 2">Grade 2</option>
+                        <option value="Grade 3">Grade 3</option>
+                        <option value="Grade 4">Grade 4</option>
+                        <option value="Grade 5">Grade 5</option>
+                        <option value="Grade 6">Grade 6</option>
+                    </select>
+                    <button class="btn-add-student" onclick="showAnnouncementForm()" style="margin-left:auto;">📢 Add
+                        Announcement</button>
+                </div>
+
+                <!-- Announcement Form (hidden by default) -->
+                <div class="add-student-form" id="announcementForm" style="display:none;margin-top:1.5rem;">
+                    <h3>📢 Create Announcement</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Subject *</label>
+                            <input type="text" id="annSubject" placeholder="e.g. School Event Notice" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Target Grade</label>
+                            <select id="annGrade">
+                                <option value="all">All Grades</option>
+                                <option value="Grade 1">Grade 1</option>
+                                <option value="Grade 2">Grade 2</option>
+                                <option value="Grade 3">Grade 3</option>
+                                <option value="Grade 4">Grade 4</option>
+                                <option value="Grade 5">Grade 5</option>
+                                <option value="Grade 6">Grade 6</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Body *</label>
+                            <textarea id="annBody" rows="4" placeholder="Write your announcement here..."
+                                style="width:100%;padding:0.7rem 1rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.95rem;resize:vertical;"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn-save" onclick="createAnnouncement()">📢 Post Announcement</button>
+                        <button class="btn-cancel" onclick="hideAnnouncementForm()">Cancel</button>
+                    </div>
+                </div>
+
+                <!-- Announcements List -->
+                <div id="announcementsList" style="margin-bottom:1.5rem;"></div>
+
+                <div class="student-list" id="studentList"></div>
+            </div>
+
+            <!-- Student Detail -->
+            <div class="panel student-detail-panel" id="studentDetailPanel" style="display:none;">
+                <button class="btn-back" onclick="backToList()">← Back to List</button>
+                <div class="student-header" id="studentHeader"></div>
+
+                <div class="admin-tabs">
+                    <button class="admin-tab active" onclick="switchAdminTab(event, 'profilePanel')">👤 Profile</button>
+                    <button class="admin-tab" onclick="switchAdminTab(event, 'gradesPanel')">📝 Grades</button>
+                    <button class="admin-tab" onclick="switchAdminTab(event, 'paymentsPanel')">💰 Payments</button>
+                    <button class="admin-tab" onclick="switchAdminTab(event, 'activitiesPanel')">📋 Activities</button>
+                    <button class="admin-tab" onclick="switchAdminTab(event, 'projectsPanel')">📁 Projects</button>
+                </div>
+
+                <!-- Profile Panel -->
+                <div class="admin-panel active" id="profilePanel">
+                    <h3>Student Profile</h3>
+                    <div class="profile-edit">
+                        <div class="profile-top">
+                            <div class="profile-photo-section">
+                                <div class="profile-photo-wrapper" id="profilePhotoWrapper">
+                                    <span class="no-photo">No Photo</span>
+                                </div>
+                                <label class="file-upload-label" id="editProfilePhotoLabel" style="display:none;">
+                                    📷 Change Photo
+                                    <input type="file" id="editProfilePhoto" accept="image/*"
+                                        onchange="uploadProfilePhoto(this)">
+                                </label>
+                            </div>
+                            <div class="profile-form-grid">
+                                <div class="form-group">
+                                    <label>Full Name</label>
+                                    <input type="text" id="editFullName">
+                                </div>
+                                <div class="form-group">
+                                    <label>Grade & Section</label>
+                                    <input type="text" id="editGrade">
+                                </div>
+                                <div class="form-group">
+                                    <label>Guardian Name</label>
+                                    <input type="text" id="editGuardian">
+                                </div>
+                                <div class="form-group">
+                                    <label>Guardian Contact</label>
+                                    <input type="text" id="editGuardianContact">
+                                </div>
+                                <div class="form-group">
+                                    <label>Address</label>
+                                    <input type="text" id="editAddress">
+                                </div>
+                                <div class="form-group">
+                                    <label>Birth Date</label>
+                                    <input type="date" id="editBirthDate">
+                                </div>
+                                <div class="form-group">
+                                    <label>Gender</label>
+                                    <select id="editGender">
+                                        <option value="">Select</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Total Tuition (₱)</label>
+                                    <input type="number" id="editTuition">
+                                </div>
+                                <div class="form-group">
+                                    <label>Payment Option</label>
+                                    <select id="editPayOption">
+                                        <option value="monthly">Monthly (10 installments)</option>
+                                        <option value="quarterly">Quarterly (4 installments)</option>
+                                        <option value="full">Fully Paid (1 payment)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="profile-actions">
+                            <button class="btn-edit" id="btnEditProfile" onclick="enableProfileEdit()">✏️ Edit
+                                Profile</button>
+                            <button class="btn-save" id="btnSaveProfile" onclick="saveProfile()"
+                                style="display:none;">💾 Save Profile</button>
+                            <button class="btn-cancel" id="btnCancelProfile" onclick="cancelProfileEdit()"
+                                style="display:none;">Cancel</button>
+                        </div>
+                        <div class="change-password-section">
+                            <h4>🔒 Change Password</h4>
+                            <div class="password-row">
+                                <input type="password" id="newStudentPassword" placeholder="Enter new password"
+                                    minlength="6">
+                                <button class="btn-add" onclick="changeStudentPassword()">Update Password</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grades Panel -->
+                <div class="admin-panel" id="gradesPanel">
+                    <h3>Update Grades</h3>
+                    <div id="gradesForm"></div>
+                    <button class="btn-save" onclick="saveGrades()">💾 Save Grades</button>
+                </div>
+
+                <!-- Payments Panel -->
+                <div class="admin-panel" id="paymentsPanel">
+                    <h3>Payment Records</h3>
+                    <div class="sort-row">
+                        <label>Month:</label>
+                        <select id="adminPayMonth" onchange="renderPayments()">
+                            <option value="all">All</option>
+                            <option value="01">January</option>
+                            <option value="02">February</option>
+                            <option value="03">March</option>
+                            <option value="04">April</option>
+                            <option value="05">May</option>
+                            <option value="06">June</option>
+                            <option value="07">July</option>
+                            <option value="08">August</option>
+                            <option value="09">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                        <label>Year:</label>
+                        <select id="adminPayYear" onchange="renderPayments()">
+                            <option value="all">All</option>
+                            <option value="2026">2026</option>
+                            <option value="2027">2027</option>
+                        </select>
+                    </div>
+                    <div class="add-form">
+                        <h4>Add Payment</h4>
+                        <div class="form-row">
+                            <input type="date" id="payDate" required>
+                            <input type="text" id="payDesc" placeholder="Description" required>
+                            <input type="number" id="payAmount" placeholder="Amount" required>
+                            <select id="payStatus">
+                                <option value="paid">Paid</option>
+                                <option value="pending">Pending</option>
+                            </select>
+                            <button class="btn-add" onclick="addPayment()">+ Add</button>
+                        </div>
+                    </div>
+                    <table class="admin-table" id="paymentsTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentsBody"></tbody>
+                    </table>
+                </div>
+
+                <!-- Activities Panel -->
+                <div class="admin-panel" id="activitiesPanel">
+                    <h3>Activities</h3>
+                    <div class="add-form">
+                        <h4>Add Activity</h4>
+                        <div class="form-row">
+                            <input type="text" id="actTitle" placeholder="Title" required>
+                            <input type="text" id="actSubject" placeholder="Subject" required>
+                            <input type="text" id="actDate" placeholder="Date (e.g. Oct 15, 2026)" required>
+                        </div>
+                        <div class="form-row">
+                            <input type="text" id="actDesc" placeholder="Description" style="flex:3" required>
+                        </div>
+                        <div class="form-row">
+                            <label class="file-upload-label">
+                                📷 Upload Photo
+                                <input type="file" id="actImage" accept="image/*" onchange="previewImage(this)">
+                            </label>
+                            <img id="actImagePreview" class="image-preview" style="display:none;">
+                            <button class="btn-add" onclick="addActivity()">+ Add Activity</button>
+                        </div>
+                    </div>
+                    <div id="activitiesList"></div>
+                </div>
+
+                <!-- Projects Panel -->
+                <div class="admin-panel" id="projectsPanel">
+                    <h3>Projects</h3>
+                    <div class="add-form">
+                        <h4>Add Project</h4>
+                        <div class="form-row">
+                            <input type="text" id="projTitle" placeholder="Title" required>
+                            <input type="text" id="projSubject" placeholder="Subject" required>
+                            <input type="date" id="projDue" required>
+                        </div>
+                        <div class="form-row">
+                            <input type="text" id="projDesc" placeholder="Description" style="flex:2" required>
+                            <input type="text" id="projGrade" placeholder="Grade (optional)">
+                            <button class="btn-add" onclick="addProject()">+ Add</button>
+                        </div>
+                    </div>
+                    <div id="projectsList"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script>
-        const API_URL = 'http://localhost:5000/api';
-
-        async function handleLogin(e) {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const errorMsg = document.getElementById('errorMsg');
-
-            try {
-                const res = await fetch(`${API_URL}/auth/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-
-                const data = await res.json();
-
-                if (res.ok) {
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('adminName', data.admin.name);
-                    showDashboard(data.admin.name);
-                } else {
-                    errorMsg.style.display = 'block';
-                    errorMsg.textContent = data.message;
-                }
-            } catch (err) {
-                errorMsg.style.display = 'block';
-                errorMsg.textContent = 'Cannot connect to server';
-            }
-        }
-
-        function showDashboard(name) {
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'block';
-            document.getElementById('adminName').textContent = name;
-        }
-
-        function handleLogout() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('adminName');
-            document.getElementById('loginForm').style.display = 'block';
-            document.getElementById('dashboard').style.display = 'none';
-        }
-
-        // Check if already logged in
-        const token = localStorage.getItem('token');
-        const adminName = localStorage.getItem('adminName');
-        if (token && adminName) {
-            showDashboard(adminName);
-        }
-    </script>
+    <script src="admin-portal.js"></script>
 </body>
 
 </html>

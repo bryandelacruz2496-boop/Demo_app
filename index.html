@@ -6,12 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beata Sai Integrated School</title>
     <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap"
+        rel="stylesheet">
 </head>
 
 <body>
     <header>
         <nav>
-            <div class="logo">Beata Sai Integrated School</div>
+            <div class="logo"><img src="logo.png" alt="Beata Sai Logo" class="logo-img"> Beata Sai</div>
             <ul>
                 <li><a href="#home">Home</a></li>
                 <li><a href="#about">About</a></li>
@@ -19,46 +22,100 @@
                 <li><a href="#gallery">Gallery</a></li>
                 <li><a href="#announcements">News</a></li>
                 <li><a href="#contact">Contact</a></li>
+                <li><a href="student-login.html" class="portal-link">🎓 Student Portal</a></li>
             </ul>
-            <div class="hamburger" onclick="toggleMenu()">&#9776;</div>
+            <div class="hamburger" onclick="toggleMenu()">☰</div>
         </nav>
     </header>
 
     <section id="home" class="hero">
-        <div class="hero-content">
-            <h1>Beata Sai Integrated School</h1>
-            <p>Nurturing Minds, Building Futures</p>
-            <a href="#admissions" class="btn">Enroll Now</a>
+        <div class="hero-slider">
+            <div class="slide active"
+                style="background-image: url('https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1600&h=900&fit=crop')">
+                <div class="slide-overlay"></div>
+            </div>
+            <div class="slide"
+                style="background-image: url('https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=1600&h=900&fit=crop')">
+                <div class="slide-overlay"></div>
+            </div>
+            <div class="slide"
+                style="background-image: url('https://images.unsplash.com/photo-1588072432836-e10032774350?w=1600&h=900&fit=crop')">
+                <div class="slide-overlay"></div>
+            </div>
+            <div class="slide"
+                style="background-image: url('https://images.unsplash.com/photo-1576495199011-eb94736d05d6?w=1600&h=900&fit=crop')">
+                <div class="slide-overlay"></div>
+            </div>
         </div>
-        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Welcome to <span class="highlight">Beata Sai</span> Integrated School</h1>
+            <p>Where Learning is Fun and Every Child Shines! ✨</p>
+            <a href="#admissions" class="btn btn-primary">🎉 Enroll Now</a>
+            <a href="#programs" class="btn btn-secondary">Explore Programs</a>
+        </div>
+        <div class="slider-dots">
+            <span class="slider-dot active" onclick="goToSlide(0)"></span>
+            <span class="slider-dot" onclick="goToSlide(1)"></span>
+            <span class="slider-dot" onclick="goToSlide(2)"></span>
+            <span class="slider-dot" onclick="goToSlide(3)"></span>
+        </div>
+        <button class="slider-arrow left" onclick="prevSlide()">&#10094;</button>
+        <button class="slider-arrow right" onclick="nextSlide()">&#10095;</button>
     </section>
 
     <section id="about" class="about">
         <div class="container">
-            <h2>About Our School</h2>
+            <div class="section-header">
+                <span class="emoji-badge">🏫</span>
+                <h2>About Our School</h2>
+                <p class="subtitle">A happy place where kids grow, learn, and dream big!</p>
+            </div>
             <div class="about-grid">
                 <div class="about-text">
-                    <p>Beata Sai Integrated School is committed to providing quality education that develops the whole
-                        child — academically, socially, and spiritually. We foster a nurturing environment where every
-                        student can reach their full potential.</p>
-                    <div class="stats">
-                        <div class="stat" data-target="500">
-                            <span class="stat-number">0</span>+
-                            <p>Students</p>
+                    <p>At Beata Sai Integrated School, we believe every child is unique and special. Our caring teachers
+                        create a fun and safe environment where students discover their talents, make lifelong friends,
+                        and build confidence for the future.</p>
+                    <div class="values">
+                        <div class="value-item">
+                            <span>💡</span>
+                            <h4>Creative Learning</h4>
                         </div>
-                        <div class="stat" data-target="50">
-                            <span class="stat-number">0</span>+
-                            <p>Teachers</p>
+                        <div class="value-item">
+                            <span>❤️</span>
+                            <h4>Caring Community</h4>
                         </div>
-                        <div class="stat" data-target="15">
-                            <span class="stat-number">0</span>+
-                            <p>Years</p>
+                        <div class="value-item">
+                            <span>🌱</span>
+                            <h4>Growth Mindset</h4>
                         </div>
                     </div>
                 </div>
                 <div class="about-image">
-                    <img src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&h=400&fit=crop"
-                        alt="Students in classroom">
+                    <img src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=600&h=450&fit=crop"
+                        alt="Happy students">
+                    <div class="image-badge">15+ Years of Excellence 🏆</div>
+                </div>
+            </div>
+            <div class="stats-bar">
+                <div class="stat" data-target="500">
+                    <span class="stat-icon">👦👧</span>
+                    <span class="stat-number">0</span>+
+                    <p>Happy Students</p>
+                </div>
+                <div class="stat" data-target="50">
+                    <span class="stat-icon">👩‍🏫</span>
+                    <span class="stat-number">0</span>+
+                    <p>Loving Teachers</p>
+                </div>
+                <div class="stat" data-target="95">
+                    <span class="stat-icon">⭐</span>
+                    <span class="stat-number">0</span>%
+                    <p>Parent Satisfaction</p>
+                </div>
+                <div class="stat" data-target="20">
+                    <span class="stat-icon">🏅</span>
+                    <span class="stat-number">0</span>+
+                    <p>Awards Won</p>
                 </div>
             </div>
         </div>
@@ -66,76 +123,77 @@
 
     <section id="programs" class="programs">
         <div class="container">
-            <h2>Our Programs</h2>
-            <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab(event, 'preschool')">Pre-School</button>
-                <button class="tab-btn" onclick="switchTab(event, 'elementary')">Elementary</button>
-                <button class="tab-btn" onclick="switchTab(event, 'junior')">Junior High</button>
-                <button class="tab-btn" onclick="switchTab(event, 'senior')">Senior High</button>
+            <div class="section-header">
+                <span class="emoji-badge">📖</span>
+                <h2>Our Programs</h2>
+                <p class="subtitle">Choose the perfect learning path for your child</p>
             </div>
-            <div class="tab-content active" id="preschool">
-                <div class="program-card">
-                    <img src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=500&h=300&fit=crop"
-                        alt="Preschool">
-                    <div class="program-info">
-                        <h3>Pre-School Program</h3>
-                        <p>Nursery and Kindergarten programs that build a strong foundation for young learners through
-                            play-based and structured activities.</p>
+            <div class="program-cards">
+                <div class="program-card" onclick="this.classList.toggle('flipped')">
+                    <div class="card-front">
+                        <div class="card-icon">🧒</div>
+                        <h3>Pre-School</h3>
+                        <p>Ages 3-6</p>
+                        <span class="tap-hint">Tap to learn more</span>
+                    </div>
+                    <div class="card-back">
+                        <h3>Pre-School</h3>
                         <ul>
-                            <li>Ages 3-6 years old</li>
-                            <li>Small class sizes (max 20 students)</li>
-                            <li>Experienced early childhood educators</li>
-                            <li>Safe and stimulating environment</li>
+                            <li>Play-based learning</li>
+                            <li>Small class sizes</li>
+                            <li>Creative arts & music</li>
+                            <li>Social skills development</li>
                         </ul>
                     </div>
                 </div>
-            </div>
-            <div class="tab-content" id="elementary">
-                <div class="program-card">
-                    <img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=500&h=300&fit=crop"
-                        alt="Elementary">
-                    <div class="program-info">
-                        <h3>Elementary Program</h3>
-                        <p>Grades 1-6 with a comprehensive K-12 curriculum focused on academic excellence and character
-                            development.</p>
+                <div class="program-card" onclick="this.classList.toggle('flipped')">
+                    <div class="card-front">
+                        <div class="card-icon">📝</div>
+                        <h3>Elementary</h3>
+                        <p>Grades 1-6</p>
+                        <span class="tap-hint">Tap to learn more</span>
+                    </div>
+                    <div class="card-back">
+                        <h3>Elementary</h3>
                         <ul>
-                            <li>DepEd-aligned curriculum</li>
-                            <li>Science and Math enrichment</li>
-                            <li>Reading and literacy programs</li>
-                            <li>Values education integration</li>
+                            <li>K-12 aligned curriculum</li>
+                            <li>Science & Math enrichment</li>
+                            <li>Reading programs</li>
+                            <li>Character education</li>
                         </ul>
                     </div>
                 </div>
-            </div>
-            <div class="tab-content" id="junior">
-                <div class="program-card">
-                    <img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?w=500&h=300&fit=crop"
-                        alt="Junior High">
-                    <div class="program-info">
-                        <h3>Junior High School</h3>
-                        <p>Grades 7-10 preparing students for senior high school and developing critical thinking
-                            skills.</p>
+                <div class="program-card" onclick="this.classList.toggle('flipped')">
+                    <div class="card-front">
+                        <div class="card-icon">🔬</div>
+                        <h3>Junior High</h3>
+                        <p>Grades 7-10</p>
+                        <span class="tap-hint">Tap to learn more</span>
+                    </div>
+                    <div class="card-back">
+                        <h3>Junior High</h3>
                         <ul>
-                            <li>Core academic subjects</li>
-                            <li>Technology and livelihood education</li>
-                            <li>Sports and arts programs</li>
-                            <li>Career guidance counseling</li>
+                            <li>Advanced academics</li>
+                            <li>Technology education</li>
+                            <li>Sports & clubs</li>
+                            <li>Career exploration</li>
                         </ul>
                     </div>
                 </div>
-            </div>
-            <div class="tab-content" id="senior">
-                <div class="program-card">
-                    <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=500&h=300&fit=crop"
-                        alt="Senior High">
-                    <div class="program-info">
-                        <h3>Senior High School</h3>
-                        <p>Grades 11-12 with academic and TVL tracks for college and career readiness.</p>
+                <div class="program-card" onclick="this.classList.toggle('flipped')">
+                    <div class="card-front">
+                        <div class="card-icon">🎓</div>
+                        <h3>Senior High</h3>
+                        <p>Grades 11-12</p>
+                        <span class="tap-hint">Tap to learn more</span>
+                    </div>
+                    <div class="card-back">
+                        <h3>Senior High</h3>
                         <ul>
                             <li>STEM strand</li>
                             <li>ABM strand</li>
                             <li>HUMSS strand</li>
-                            <li>TVL track options</li>
+                            <li>TVL track</li>
                         </ul>
                     </div>
                 </div>
@@ -145,43 +203,46 @@
 
     <section id="gallery" class="gallery">
         <div class="container">
-            <h2>School Gallery</h2>
+            <div class="section-header">
+                <span class="emoji-badge">📸</span>
+                <h2>School Life</h2>
+                <p class="subtitle">See what makes our school special</p>
+            </div>
             <div class="gallery-grid">
                 <div class="gallery-item" onclick="openLightbox(this)">
                     <img src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=400&h=300&fit=crop"
                         alt="Classroom">
-                    <div class="gallery-overlay"><span>Classroom</span></div>
+                    <div class="gallery-label">📖 Classroom</div>
                 </div>
                 <div class="gallery-item" onclick="openLightbox(this)">
                     <img src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=400&h=300&fit=crop"
                         alt="Library">
-                    <div class="gallery-overlay"><span>Library</span></div>
+                    <div class="gallery-label">📚 Library</div>
                 </div>
                 <div class="gallery-item" onclick="openLightbox(this)">
                     <img src="https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=400&h=300&fit=crop"
                         alt="Science Lab">
-                    <div class="gallery-overlay"><span>Science Lab</span></div>
+                    <div class="gallery-label">🔬 Science Lab</div>
                 </div>
                 <div class="gallery-item" onclick="openLightbox(this)">
                     <img src="https://images.unsplash.com/photo-1576495199011-eb94736d05d6?w=400&h=300&fit=crop"
                         alt="Sports">
-                    <div class="gallery-overlay"><span>Sports</span></div>
+                    <div class="gallery-label">⚽ Sports</div>
                 </div>
                 <div class="gallery-item" onclick="openLightbox(this)">
                     <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?w=400&h=300&fit=crop"
                         alt="Events">
-                    <div class="gallery-overlay"><span>Events</span></div>
+                    <div class="gallery-label">🎉 Events</div>
                 </div>
                 <div class="gallery-item" onclick="openLightbox(this)">
                     <img src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=400&h=300&fit=crop"
                         alt="Campus">
-                    <div class="gallery-overlay"><span>Campus</span></div>
+                    <div class="gallery-label">🏫 Campus</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Lightbox -->
     <div class="lightbox" id="lightbox" onclick="closeLightbox()">
         <span class="lightbox-close">&times;</span>
         <img id="lightbox-img" src="" alt="">
@@ -189,62 +250,73 @@
 
     <section id="announcements" class="announcements">
         <div class="container">
-            <h2>Announcements</h2>
-            <div class="news-ticker">
-                <div class="news-item active">
-                    <span class="news-date">May 2026</span>
-                    <h3>Enrollment for SY 2026-2027 Now Open!</h3>
-                    <p>Secure your slot early. Limited slots available for all grade levels.</p>
-                </div>
-                <div class="news-item">
-                    <span class="news-date">April 2026</span>
-                    <h3>Recognition Day Ceremony</h3>
-                    <p>Congratulations to all our honor students and awardees!</p>
-                </div>
-                <div class="news-item">
-                    <span class="news-date">March 2026</span>
-                    <h3>Science Fair Winners</h3>
-                    <p>Our students won 1st place in the Regional Science Fair competition.</p>
-                </div>
+            <div class="section-header">
+                <span class="emoji-badge">📢</span>
+                <h2>School News</h2>
+                <p class="subtitle">Stay updated with what's happening</p>
             </div>
-            <div class="news-dots">
-                <span class="dot active" onclick="showNews(0)"></span>
-                <span class="dot" onclick="showNews(1)"></span>
-                <span class="dot" onclick="showNews(2)"></span>
+            <div class="news-cards">
+                <div class="news-card">
+                    <div class="news-badge new">New!</div>
+                    <span class="news-date">May 2026</span>
+                    <h3>🎉 Enrollment Open for SY 2026-2027!</h3>
+                    <p>Secure your slot early. Limited slots available for all grade levels. Early bird discount
+                        available!</p>
+                </div>
+                <div class="news-card">
+                    <span class="news-date">April 2026</span>
+                    <h3>🏆 Recognition Day Ceremony</h3>
+                    <p>Congratulations to all our honor students and awardees! We're so proud of you!</p>
+                </div>
+                <div class="news-card">
+                    <span class="news-date">March 2026</span>
+                    <h3>🥇 Science Fair Champions!</h3>
+                    <p>Our students won 1st place in the Regional Science Fair. Way to go, future scientists!</p>
+                </div>
             </div>
         </div>
     </section>
 
     <section id="admissions" class="admissions">
         <div class="container">
-            <h2>Admissions</h2>
-            <p class="section-subtitle">Now accepting enrollees for School Year 2026-2027</p>
+            <div class="section-header">
+                <span class="emoji-badge">✍️</span>
+                <h2>Join Our Family</h2>
+                <p class="subtitle">Enrollment for SY 2026-2027 is now open!</p>
+            </div>
             <div class="admissions-grid">
-                <div class="requirements">
-                    <h3>Requirements</h3>
+                <div class="requirements-card">
+                    <h3>📋 Requirements</h3>
                     <ul>
-                        <li>Report Card (Form 138)</li>
-                        <li>Birth Certificate (PSA)</li>
-                        <li>Good Moral Certificate</li>
-                        <li>2x2 ID Photos (4 pcs)</li>
+                        <li><span>📄</span> Report Card (Form 138)</li>
+                        <li><span>📜</span> Birth Certificate (PSA)</li>
+                        <li><span>✅</span> Good Moral Certificate</li>
+                        <li><span>📷</span> 2x2 ID Photos (4 pcs)</li>
                     </ul>
+                    <div class="steps">
+                        <h4>Steps to Enroll:</h4>
+                        <div class="step"><span class="step-num">1</span> Submit requirements</div>
+                        <div class="step"><span class="step-num">2</span> Take entrance assessment</div>
+                        <div class="step"><span class="step-num">3</span> Attend orientation</div>
+                        <div class="step"><span class="step-num">4</span> Welcome to the family! 🎊</div>
+                    </div>
                 </div>
                 <div class="inquiry-form">
-                    <h3>Send an Inquiry</h3>
+                    <h3>💌 Send an Inquiry</h3>
                     <form onsubmit="handleInquiry(event)">
-                        <input type="text" placeholder="Full Name" required>
-                        <input type="email" placeholder="Email Address" required>
+                        <input type="text" placeholder="👤 Child's Full Name" required>
+                        <input type="email" placeholder="📧 Parent's Email" required>
                         <select required>
-                            <option value="">Select Grade Level</option>
-                            <option>Pre-School</option>
+                            <option value="">📚 Select Grade Level</option>
+                            <option>Pre-School (Nursery/Kinder)</option>
                             <option>Elementary (Grade 1-6)</option>
                             <option>Junior High (Grade 7-10)</option>
                             <option>Senior High (Grade 11-12)</option>
                         </select>
-                        <textarea placeholder="Message" rows="3"></textarea>
-                        <button type="submit" class="btn">Submit Inquiry</button>
+                        <textarea placeholder="💬 Any questions for us?" rows="3"></textarea>
+                        <button type="submit" class="btn btn-primary">Send Inquiry 🚀</button>
                     </form>
-                    <p class="form-success" id="formSuccess">Thank you! We'll get back to you soon.</p>
+                    <p class="form-success" id="formSuccess">✅ Thank you! We'll get back to you soon!</p>
                 </div>
             </div>
         </div>
@@ -252,30 +324,38 @@
 
     <section id="contact" class="contact">
         <div class="container">
-            <h2>Contact Us</h2>
+            <div class="section-header">
+                <span class="emoji-badge">📍</span>
+                <h2>Find Us</h2>
+                <p class="subtitle">We'd love to hear from you!</p>
+            </div>
             <div class="contact-grid">
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <span class="icon">📍</span>
+                <div class="contact-cards">
+                    <div class="contact-card">
+                        <span class="contact-icon">📍</span>
+                        <h4>Visit Us</h4>
                         <p>123 Education St., Quezon City, Philippines</p>
                     </div>
-                    <div class="contact-item">
-                        <span class="icon">📧</span>
+                    <div class="contact-card">
+                        <span class="contact-icon">📧</span>
+                        <h4>Email Us</h4>
                         <p>info@beatasai.edu.ph</p>
                     </div>
-                    <div class="contact-item">
-                        <span class="icon">📞</span>
+                    <div class="contact-card">
+                        <span class="contact-icon">📞</span>
+                        <h4>Call Us</h4>
                         <p>(02) 8123-4567</p>
                     </div>
-                    <div class="contact-item">
-                        <span class="icon">🕐</span>
+                    <div class="contact-card">
+                        <span class="contact-icon">🕐</span>
+                        <h4>Office Hours</h4>
                         <p>Mon-Fri: 7:00 AM - 5:00 PM</p>
                     </div>
                 </div>
                 <div class="map">
                     <iframe
                         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3860.0!2d121.0!3d14.6!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTTCsDM2JzAwLjAiTiAxMjHCsDAwJzAwLjAiRQ!5e0!3m2!1sen!2sph!4v1"
-                        width="100%" height="300" style="border:0; border-radius:10px;" allowfullscreen=""
+                        width="100%" height="350" style="border:0; border-radius:15px;" allowfullscreen=""
                         loading="lazy"></iframe>
                 </div>
             </div>
@@ -283,34 +363,41 @@
     </section>
 
     <footer>
+        <div class="footer-wave">
+            <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
+                <path d="M0,50 C360,100 720,0 1080,50 C1260,75 1380,50 1440,50 L1440,100 L0,100 Z" fill="#b71c1c" />
+            </svg>
+        </div>
         <div class="footer-content">
             <div class="footer-section">
-                <h3>Beata Sai Integrated School</h3>
+                <h3>🎓 Beata Sai Integrated School</h3>
                 <p>Nurturing Minds, Building Futures since 2011.</p>
+                <div class="social-links">
+                    <a href="#">📘 Facebook</a>
+                    <a href="#">📷 Instagram</a>
+                    <a href="#">▶️ YouTube</a>
+                </div>
             </div>
             <div class="footer-section">
                 <h3>Quick Links</h3>
-                <a href="#about">About</a>
+                <a href="#about">About Us</a>
                 <a href="#programs">Programs</a>
                 <a href="#admissions">Admissions</a>
                 <a href="#contact">Contact</a>
             </div>
             <div class="footer-section">
-                <h3>Follow Us</h3>
-                <div class="social-links">
-                    <a href="#">Facebook</a>
-                    <a href="#">Instagram</a>
-                    <a href="#">YouTube</a>
-                </div>
+                <h3>School Hours</h3>
+                <p>Monday - Friday</p>
+                <p>7:00 AM - 5:00 PM</p>
+                <p class="footer-note">🌟 Where every day is a new adventure!</p>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 Beata Sai Integrated School. All rights reserved.</p>
+            <p>© 2026 Beata Sai Integrated School. Made with ❤️ for our students.</p>
         </div>
     </footer>
 
-    <!-- Back to top button -->
-    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">↑</button>
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">⬆️</button>
 
     <script src="script.js"></script>
 </body>

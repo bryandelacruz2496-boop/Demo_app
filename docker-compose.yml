@@ -20,6 +20,8 @@ services:
       - PORT=5000
     depends_on:
       - mongo
+    volumes:
+      - uploads_data:/app/uploads
 
   mongo:
     image: mongo:7
@@ -30,3 +32,4 @@ services:
 
 volumes:
   mongo_data:
+  uploads_data:

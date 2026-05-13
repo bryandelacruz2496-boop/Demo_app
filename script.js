@@ -3,14 +3,29 @@ function toggleMenu() {
     document.querySelector('nav ul').classList.toggle('active');
 }
 
-// Tab switching for programs
-function switchTab(event, tabId) {
-    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    event.target.classList.add('active');
+// Hero Image Slider
+let currentSlide = 0;
+const slides = document.querySelectorAll('.slide');
+const sliderDots = document.querySelectorAll('.slider-dot');
+
+function goToSlide(index) {
+    slides[currentSlide].classList.remove('active');
+    sliderDots[currentSlide].classList.remove('active');
+    currentSlide = index;
+    slides[currentSlide].classList.add('active');
+    sliderDots[currentSlide].classList.add('active');
 }
 
+function nextSlide() {
+    goToSlide((currentSlide + 1) % slides.length);
+}
+
+function prevSlide() {
+    goToSlide((currentSlide - 1 + slides.length) % slides.length);
+}
+
+// Auto-advance slider every 4 seconds
+setInterval(nextSlide, 4000);
 // Gallery lightbox
 function openLightbox(element) {
     const img = element.querySelector('img');
@@ -24,32 +39,15 @@ function closeLightbox() {
     document.getElementById('lightbox').classList.remove('active');
 }
 
-// News ticker auto-rotate
-let currentNews = 0;
-const newsItems = document.querySelectorAll('.news-item');
-const dots = document.querySelectorAll('.dot');
-
-function showNews(index) {
-    newsItems.forEach(item => item.classList.remove('active'));
-    dots.forEach(dot => dot.classList.remove('active'));
-    newsItems[index].classList.add('active');
-    dots[index].classList.add('active');
-    currentNews = index;
-}
-
-setInterval(() => {
-    currentNews = (currentNews + 1) % newsItems.length;
-    showNews(currentNews);
-}, 5000);
-
 // Counter animation
 function animateCounters() {
     const stats = document.querySelectorAll('.stat');
     stats.forEach(stat => {
         const target = parseInt(stat.dataset.target);
         const numberEl = stat.querySelector('.stat-number');
+        if (!numberEl) return;
         let current = 0;
-        const increment = target / 50;
+        const increment = target / 60;
         const timer = setInterval(() => {
             current += increment;
             if (current >= target) {
@@ -57,22 +55,23 @@ function animateCounters() {
                 clearInterval(timer);
             }
             numberEl.textContent = Math.floor(current);
-        }, 30);
+        }, 25);
     });
 }
 
 // Intersection Observer for counter animation
 const aboutSection = document.querySelector('.about');
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            animateCounters();
-            observer.unobserve(entry.target);
-        }
-    });
-}, { threshold: 0.5 });
-
-observer.observe(aboutSection);
+if (aboutSection) {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateCounters();
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.3 });
+    observer.observe(aboutSection);
+}
 
 // Back to top button
 const backToTop = document.getElementById('backToTop');
@@ -95,7 +94,7 @@ function handleInquiry(event) {
     event.target.reset();
     setTimeout(() => {
         document.getElementById('formSuccess').style.display = 'none';
-    }, 3000);
+    }, 4000);
 }
 
 // Smooth scroll for nav links
@@ -114,8 +113,26 @@ document.querySelectorAll('nav a[href^="#"]').forEach(link => {
 window.addEventListener('scroll', () => {
     const header = document.querySelector('header');
     if (window.scrollY > 50) {
-        header.style.background = 'rgba(183, 28, 28, 0.95)';
+        header.style.boxShadow = '0 4px 30px rgba(183, 28, 28, 0.4)';
     } else {
-        header.style.background = '#b71c1c';
+        header.style.boxShadow = '0 4px 20px rgba(183, 28, 28, 0.3)';
     }
+});
+
+// Scroll reveal animation
+const revealElements = document.querySelectorAll('.program-card, .gallery-item, .news-card, .contact-card');
+const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+        }
+    });
+}, { threshold: 0.1 });
+
+revealElements.forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    revealObserver.observe(el);
 });

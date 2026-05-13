@@ -1,0 +1,224 @@
+const API_URL = 'http://localhost:5000/api';
+let currentStudent = null;
+
+// Check if already logged in - fetch fresh data
+window.addEventListener('DOMContentLoaded', async () => {
+  const token = localStorage.getItem('studentToken');
+  const savedStudent = localStorage.getItem('studentData');
+  if (token && savedStudent) {
+    const studentNo = JSON.parse(savedStudent).studentNo;
+    // Re-login to get fresh data
+    try {
+      const res = await fetch(`${API_URL}/student/refresh`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        currentStudent = data.student;
+        localStorage.setItem('studentData', JSON.stringify(data.student));
+        showDashboard();
+      } else {
+        // Token expired, use cached
+        currentStudent = JSON.parse(savedStudent);
+        showDashboard();
+      }
+    } catch (err) {
+      currentStudent = JSON.parse(savedStudent);
+      showDashboard();
+    }
+  }
+});
+
+async function handleStudentLogin(event) {
+  event.preventDefault();
+  const studentNo = document.getElementById('studentId').value.trim();
+  const password = document.getElementById('studentPassword').value;
+  const errorEl = document.getElementById('loginError');
+
+  try {
+    const res = await fetch(`${API_URL}/student/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ studentNo, password })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      currentStudent = data.student;
+      localStorage.setItem('studentToken', data.token);
+      localStorage.setItem('studentData', JSON.stringify(data.student));
+      errorEl.textContent = '';
+      showDashboard();
+    } else {
+      errorEl.textContent = data.message;
+    }
+  } catch (err) {
+    errorEl.textContent = 'Cannot connect to server. Please try again.';
+  }
+}
+
+function showDashboard() {
+  document.getElementById('loginWrapper').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+
+  // Populate info
+  document.getElementById('dashStudentName').textContent = currentStudent.fullName;
+  document.getElementById('infoFullName').textContent = currentStudent.fullName;
+  document.getElementById('infoStudentNo').textContent = currentStudent.studentNo;
+  document.getElementById('infoGrade').textContent = currentStudent.grade;
+  document.getElementById('infoGuardian').textContent = currentStudent.guardian;
+
+  // Set profile image
+  const avatarEl = document.querySelector('.info-avatar');
+  if (currentStudent.profileImage) {
+    avatarEl.innerHTML = `<img src="http://localhost:5000${currentStudent.profileImage}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">`;
+  }
+
+  // Payments
+  document.getElementById('totalTuition').textContent = '₱' + currentStudent.totalTuition.toLocaleString();
+  document.getElementById('totalPaid').textContent = '₱' + currentStudent.totalPaid.toLocaleString();
+  const balance = currentStudent.totalTuition - currentStudent.totalPaid;
+  document.getElementById('totalBalance').textContent = '₱' + balance.toLocaleString();
+
+  renderStudentPayments();
+  loadStudentAnnouncements();
+
+  // Activities
+  const activityList = document.getElementById('activityList');
+  activityList.innerHTML = currentStudent.activities.map(a => `
+    <div class="activity-card" onclick="toggleActivityDetail(this)">
+      <h4>${a.title}</h4>
+      <div class="meta">${a.subject} • ${a.date}</div>
+      <p>${a.description}</p>
+      ${a.imageUrl ? `<div class="activity-photo-wrapper" style="display:none;"><img src="http://localhost:5000${a.imageUrl}" class="activity-photo" onclick="event.stopPropagation(); openActivityImage('http://localhost:5000${a.imageUrl}')"><p class="photo-hint">Click image to enlarge</p></div>` : ''}
+    </div>
+  `).join('');
+
+  // Projects
+  const projectList = document.getElementById('projectList');
+  projectList.innerHTML = currentStudent.projects.map(p => `
+    <div class="project-card">
+      <h4>${p.title} ${p.grade ? '<span class="grade-badge">' + p.grade + '</span>' : '<span class="grade-badge" style="background:#ff9800">Pending</span>'}</h4>
+      <div class="meta">${p.subject} • Due: ${p.dueDate}</div>
+      <p>${p.description}</p>
+    </div>
+  `).join('');
+
+  // Assessments
+  const assessmentBody = document.getElementById('assessmentTableBody');
+  assessmentBody.innerHTML = currentStudent.assessments.map(a => {
+    const grades = [a.q1, a.q2, a.q3, a.q4].filter(g => g !== null);
+    const final = grades.length > 0 ? Math.round(grades.reduce((s, g) => s + g, 0) / grades.length) : '-';
+    return `
+      <tr>
+        <td><strong>${a.subject}</strong></td>
+        <td>${a.q1 || '-'}</td>
+        <td>${a.q2 || '-'}</td>
+        <td>${a.q3 || '-'}</td>
+        <td>${a.q4 || '-'}</td>
+        <td><strong>${final}</strong></td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function switchDashTab(event, tabId) {
+  document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function logout() {
+  currentStudent = null;
+  localStorage.removeItem('studentToken');
+  localStorage.removeItem('studentData');
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('loginWrapper').style.display = 'flex';
+  document.getElementById('studentId').value = '';
+  document.getElementById('studentPassword').value = '';
+}
+
+
+// Toggle activity detail (show/hide image)
+function toggleActivityDetail(card) {
+  const photoWrapper = card.querySelector('.activity-photo-wrapper');
+  if (photoWrapper) {
+    photoWrapper.style.display = photoWrapper.style.display === 'none' ? 'block' : 'none';
+  }
+}
+
+// Open activity image in fullscreen overlay
+function openActivityImage(url) {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:flex;justify-content:center;align-items:center;z-index:9999;cursor:pointer;';
+  overlay.innerHTML = `<img src="${url}" style="max-width:90%;max-height:90%;border-radius:10px;"><span style="position:absolute;top:20px;right:30px;color:#fff;font-size:2rem;cursor:pointer;">✕</span>`;
+  overlay.onclick = () => overlay.remove();
+  document.body.appendChild(overlay);
+}
+
+
+// Render and filter student payments
+function renderStudentPayments() {
+  const month = document.getElementById('studentPayMonth') ? document.getElementById('studentPayMonth').value : 'all';
+  const year = document.getElementById('studentPayYear') ? document.getElementById('studentPayYear').value : 'all';
+  const paymentBody = document.getElementById('paymentTableBody');
+
+  let payments = [...currentStudent.payments];
+
+  // Filter by month
+  if (month !== 'all') {
+    payments = payments.filter(p => p.date && p.date.substring(5, 7) === month);
+  }
+
+  // Filter by year
+  if (year !== 'all') {
+    payments = payments.filter(p => p.date && p.date.substring(0, 4) === year);
+  }
+
+  // Sort newest first
+  payments.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  paymentBody.innerHTML = payments.map(p => `
+    <tr>
+      <td>${p.date}</td>
+      <td>${p.description}</td>
+      <td>₱${p.amount.toLocaleString()}</td>
+      <td><span class="status-${p.status}">${p.status === 'paid' ? '✓ Paid' : '⏳ Pending'}</span></td>
+    </tr>
+  `).join('');
+
+  if (payments.length === 0) {
+    paymentBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#888;padding:2rem;">No payments found</td></tr>';
+  }
+}
+
+function filterStudentPayments() {
+  renderStudentPayments();
+}
+
+
+// Load announcements for student
+async function loadStudentAnnouncements() {
+  const grade = currentStudent.grade || '';
+  const res = await fetch(`${API_URL}/announcements?grade=${encodeURIComponent(grade)}`);
+  if (res.ok) {
+    const announcements = await res.json();
+    const list = document.getElementById('studentAnnouncementsList');
+    if (announcements.length === 0) {
+      list.innerHTML = '<p style="color:#888;text-align:center;">No announcements yet.</p>';
+      return;
+    }
+    list.innerHTML = announcements.map(a => `
+      <div class="activity-card" style="cursor:default;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <h4>${a.subject}</h4>
+          <span style="background:#ffebee;color:#b71c1c;padding:0.2rem 0.8rem;border-radius:15px;font-size:0.8rem;font-weight:600;">${a.targetGrade === 'all' ? 'All Grades' : a.targetGrade}</span>
+        </div>
+        <p style="margin-top:0.5rem;">${a.body}</p>
+        <span class="meta">${new Date(a.createdAt).toLocaleDateString()}</span>
+      </div>
+    `).join('');
+  }
+}
