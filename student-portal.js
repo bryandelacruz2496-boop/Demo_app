@@ -18,6 +18,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('dashboard').style.display = 'block';
     populateDashboard();
     startSessionCheck();
+    startStudentNotificationCheck();
 
     // Then try to refresh in background
     fetch(`${API_URL}/student/refresh`, {
@@ -65,6 +66,7 @@ async function handleStudentLogin(event) {
       errorEl.textContent = '';
       showDashboard();
       startSessionCheck();
+      startStudentNotificationCheck();
     } else {
       errorEl.textContent = data.message;
     }
@@ -300,4 +302,51 @@ async function studentReply(announcementId) {
     input.value = '';
     loadStudentAnnouncements();
   }
+}
+
+// Reply notification for students
+let lastAdminReplyCount = 0;
+
+function startStudentNotificationCheck() {
+  fetchAdminReplyCount().then(count => { lastAdminReplyCount = count; });
+
+  setInterval(async () => {
+    const newCount = await fetchAdminReplyCount();
+    if (newCount > lastAdminReplyCount) {
+      const diff = newCount - lastAdminReplyCount;
+      showStudentNotification(`💬 ${diff} new reply${diff > 1 ? 's' : ''} from admin`);
+      lastAdminReplyCount = newCount;
+      loadStudentAnnouncements();
+    }
+  }, 5000);
+}
+
+async function fetchAdminReplyCount() {
+  try {
+    const grade = currentStudent ? currentStudent.grade : '';
+    const res = await fetch(`${API_URL}/announcements?grade=${encodeURIComponent(grade)}`);
+    if (!res.ok) return lastAdminReplyCount;
+    const announcements = await res.json();
+    let total = 0;
+    announcements.forEach(a => {
+      total += (a.replies || []).filter(r => r.role === 'admin').length;
+    });
+    return total;
+  } catch (e) {
+    return lastAdminReplyCount;
+  }
+}
+
+function showStudentNotification(message) {
+  const existing = document.querySelector('.student-notification');
+  if (existing) existing.remove();
+
+  const notif = document.createElement('div');
+  notif.className = 'student-notification';
+  notif.innerHTML = `
+        <span>${message}</span>
+        <button onclick="this.parentElement.remove()">✕</button>
+    `;
+  document.body.appendChild(notif);
+  setTimeout(() => { if (notif.parentElement) notif.remove(); }, 8000);
 }

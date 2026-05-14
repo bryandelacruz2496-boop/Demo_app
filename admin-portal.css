@@ -1226,7 +1226,7 @@ h4 {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background: #1a237e;
+    background: rgba(26, 35, 126, 0.7);
     color: #fff;
     padding: 1rem 1.5rem;
     border-radius: 12px;
@@ -1237,7 +1237,7 @@ h4 {
     align-items: center;
     gap: 1rem;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-    animation: slideUp 0.4s ease;
+    animation: notifFade 8s ease forwards;
 }
 
 .admin-notification button {
@@ -1254,14 +1254,24 @@ h4 {
     background: rgba(255, 255, 255, 0.3);
 }
 
-@keyframes slideUp {
-    from {
+@keyframes notifFade {
+    0% {
         opacity: 0;
         transform: translateY(20px);
     }
 
-    to {
+    10% {
         opacity: 1;
         transform: translateY(0);
+    }
+
+    70% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(10px);
     }
 }
