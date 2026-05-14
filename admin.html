@@ -210,6 +210,26 @@
                     </div>
                 </div>
 
+                <!-- Student List with Filter -->
+                <div class="student-section">
+                    <div class="sort-row">
+                        <label>Filter by Grade:</label>
+                        <select id="filterGrade" onchange="renderStudentList()">
+                            <option value="all">All Grades</option>
+                            <option value="Palaruan 1">Palaruan 1</option>
+                            <option value="Palaruan 2">Palaruan 2</option>
+                            <option value="Kindergarten">Kindergarten</option>
+                            <option value="Grade 1">Grade 1</option>
+                            <option value="Grade 2">Grade 2</option>
+                            <option value="Grade 3">Grade 3</option>
+                            <option value="Grade 4">Grade 4</option>
+                            <option value="Grade 5">Grade 5</option>
+                            <option value="Grade 6">Grade 6</option>
+                        </select>
+                    </div>
+                    <div class="student-list" id="studentList"></div>
+                </div>
+
                 <!-- Monthly Collection Summary -->
                 <div class="collection-summary">
                     <h3>💰 Monthly Collection</h3>
@@ -251,26 +271,6 @@
 
                 <!-- Announcements List -->
                 <div id="announcementsList" style="margin-bottom:1.5rem;"></div>
-
-                <!-- Student List with Filter -->
-                <div class="student-section">
-                    <div class="sort-row">
-                        <label>Filter by Grade:</label>
-                        <select id="filterGrade" onchange="renderStudentList()">
-                            <option value="all">All Grades</option>
-                            <option value="Palaruan 1">Palaruan 1</option>
-                            <option value="Palaruan 2">Palaruan 2</option>
-                            <option value="Kindergarten">Kindergarten</option>
-                            <option value="Grade 1">Grade 1</option>
-                            <option value="Grade 2">Grade 2</option>
-                            <option value="Grade 3">Grade 3</option>
-                            <option value="Grade 4">Grade 4</option>
-                            <option value="Grade 5">Grade 5</option>
-                            <option value="Grade 6">Grade 6</option>
-                        </select>
-                    </div>
-                    <div class="student-list" id="studentList"></div>
-                </div>
             </div>
 
             <!-- Student Detail -->
