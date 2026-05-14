@@ -765,6 +765,7 @@ function switchAdminView(viewId) {
     if (viewId === 'messagesView') loadInquiries();
     if (viewId === 'announcementsView') loadAnnouncements();
     if (viewId === 'projectsView') loadGlobalProjects();
+    if (viewId === 'auditView') loadAuditLog();
 }
 
 // Toast notification
@@ -1578,4 +1579,61 @@ async function deleteGlobalProject(id) {
             loadGlobalProjects();
         }
     });
+}
+
+// ============================================
+// FEATURE: Export to CSV
+// ============================================
+async function exportStudentList() {
+    const res = await fetch(`${API_URL}/exports/students`, {
+        headers: { 'Authorization': `Bearer ${adminToken}` }
+    });
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'students.csv'; a.click();
+    URL.revokeObjectURL(url);
+}
+
+async function exportStudentPayments() {
+    if (!selectedStudent) return;
+    const res = await fetch(`${API_URL}/exports/payments/${selectedStudent._id}`, {
+        headers: { 'Authorization': `Bearer ${adminToken}` }
+    });
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `payments_${selectedStudent.studentNo}.csv`; a.click();
+    URL.revokeObjectURL(url);
+}
+
+// ============================================
+// FEATURE: Audit Log
+// ============================================
+async function loadAuditLog() {
+    const res = await fetch(`${API_URL}/audit`, {
+        headers: { 'Authorization': `Bearer ${adminToken}` }
+    });
+    if (!res.ok) return;
+    const logs = await res.json();
+    const list = document.getElementById('auditLogList');
+    if (logs.length === 0) {
+        list.innerHTML = '<p style="text-align:center;color:#888;padding:2rem;">No activity yet.</p>';
+        return;
+    }
+    list.innerHTML = logs.map(log => `
+        <div class="audit-item">
+            <div class="audit-icon">${getAuditIcon(log.action)}</div>
+            <div class="audit-details">
+                <strong>${log.action.replace(/_/g, ' ')}</strong>
+                <p>${log.details || ''}</p>
+                <span class="audit-meta">By: ${log.performedBy} • ${new Date(log.createdAt).toLocaleString()}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+function getAuditIcon(action) {
+    const icons = { ADMIN_LOGIN: '🔑', CREATE_STUDENT: '👤', UPDATE_PAYMENT: '💰', DELETE_STUDENT: '🗑️', ARCHIVE_STUDENT: '📦' };
+    return icons[action] || '📝';
 }

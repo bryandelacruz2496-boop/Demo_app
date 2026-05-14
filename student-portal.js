@@ -25,6 +25,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     populateDashboard();
     startSessionCheck();
     startStudentNotificationCheck();
+    subscribeToPush();
 
     // Then try to refresh in background
     fetch(`${API_URL}/student/refresh`, {
@@ -73,6 +74,7 @@ async function handleStudentLogin(event) {
       showDashboard();
       startSessionCheck();
       startStudentNotificationCheck();
+      subscribeToPush();
     } else {
       errorEl.textContent = data.message;
     }
@@ -175,6 +177,9 @@ function populateDashboard() {
       }
     );
   }
+
+  // Update notification badge
+  updateNotifBadge();
 }
 
 function switchDashTab(event, tabId) {
@@ -512,4 +517,94 @@ async function uploadStudentPhoto(input) {
   } catch (err) {
     showStudentNotification('Error uploading photo', true);
   }
+}
+
+
+// ============================================
+// FEATURE: Notification Center (Bell Icon)
+// ============================================
+function toggleNotifCenter() {
+  const center = document.getElementById('notifCenter');
+  center.style.display = center.style.display === 'none' ? 'block' : 'none';
+  if (center.style.display === 'block') renderNotifCenter();
+}
+
+function renderNotifCenter() {
+  const list = document.getElementById('notifCenterList');
+  const notifs = currentStudent.notifications || [];
+  if (notifs.length === 0) {
+    list.innerHTML = '<p class="notif-empty">No notifications yet</p>';
+    return;
+  }
+  list.innerHTML = notifs.slice().reverse().slice(0, 20).map(n => `
+        <div class="notif-item ${n.read ? '' : 'unread'}">
+            <span class="notif-dot"></span>
+            <div>
+                <p>${n.message}</p>
+                <span class="notif-time">${new Date(n.createdAt).toLocaleString()}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+function updateNotifBadge() {
+  const notifs = currentStudent.notifications || [];
+  const unread = notifs.filter(n => !n.read).length;
+  const badge = document.getElementById('notifBadge');
+  if (unread > 0) {
+    badge.style.display = 'flex';
+    badge.textContent = unread > 9 ? '9+' : unread;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+async function markAllRead() {
+  const token = localStorage.getItem('studentToken');
+  await fetch(`${API_URL}/student/notifications/read`, {
+    method: 'PUT',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (currentStudent.notifications) {
+    currentStudent.notifications.forEach(n => n.read = true);
+  }
+  updateNotifBadge();
+  renderNotifCenter();
+}
+
+// ============================================
+// FEATURE: Push Notifications (Web Push)
+// ============================================
+async function subscribeToPush() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const existing = await reg.pushManager.getSubscription();
+    if (existing) return;
+
+    const res = await fetch(`${API_URL}/push/vapid-public`);
+    const { key } = await res.json();
+
+    const subscription = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(key)
+    });
+
+    await fetch(`${API_URL}/push/subscribe`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(subscription)
+    });
+  } catch (e) {
+    console.log('Push subscription failed:', e);
+  }
+}
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
+  return outputArray;
 }

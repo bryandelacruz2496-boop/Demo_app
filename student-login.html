@@ -50,10 +50,22 @@
                     <span>Student Portal</span>
                 </div>
                 <div class="dash-user">
+                    <div class="notif-bell" onclick="toggleNotifCenter()">
+                        🔔
+                        <span class="notif-badge" id="notifBadge" style="display:none;">0</span>
+                    </div>
                     <span id="dashStudentName"></span>
                     <button onclick="logout()" class="btn-logout">Logout</button>
                 </div>
             </header>
+
+            <div class="notif-center" id="notifCenter" style="display:none;">
+                <div class="notif-center-header">
+                    <h4>Notifications</h4>
+                    <button onclick="markAllRead()">Mark all read</button>
+                </div>
+                <div class="notif-center-list" id="notifCenterList"></div>
+            </div>
 
             <div class="dash-content">
                 <!-- Student Info Card -->

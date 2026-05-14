@@ -5,6 +5,7 @@ const Student = require('../models/Student');
 const authMiddleware = require('../middleware/auth');
 const { TUITION_TABLE, generatePayments } = require('../config/tuition');
 const { clearCache } = require('../middleware/cache');
+const { logAction } = require('../middleware/auditLogger');
 
 const router = express.Router();
 
@@ -116,6 +117,7 @@ router.post('/students', authMiddleware, upload.single('profileImage'), async (r
         });
 
         await student.save();
+        logAction('CREATE_STUDENT', req.admin.username, `Created student ${student.fullName}`, student.studentNo, req.ip);
         res.status(201).json({
             message: 'Student created successfully',
             student: { ...student.toObject(), password: undefined },
@@ -229,6 +231,7 @@ router.put('/students/:id/payments/:paymentId', authMiddleware, async (req, res)
         });
 
         await student.save();
+        logAction('UPDATE_PAYMENT', req.admin.username, `Marked payment as ${status} for ${student.fullName}`, student.studentNo, req.ip);
         res.json({ message: 'Payment updated', payments: student.payments });
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
@@ -393,6 +396,7 @@ router.delete('/students/:id', authMiddleware, async (req, res) => {
         if (!student) return res.status(404).json({ message: 'Student not found' });
 
         await Student.findByIdAndDelete(req.params.id);
+        logAction('DELETE_STUDENT', req.admin.username, `Deleted student ${student.fullName}`, student.studentNo, req.ip);
         res.json({ message: 'Student deleted successfully' });
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
@@ -407,6 +411,7 @@ router.put('/students/:id/archive', authMiddleware, async (req, res) => {
 
         student.status = 'archived';
         await student.save();
+        logAction('ARCHIVE_STUDENT', req.admin.username, `Archived student ${student.fullName}`, student.studentNo, req.ip);
         res.json({ message: 'Student archived', student: { ...student.toObject(), password: undefined } });
     } catch (err) {
         res.status(500).json({ message: 'Server error' });

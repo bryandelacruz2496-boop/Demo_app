@@ -59,6 +59,7 @@
                 <button class="admin-nav-btn" onclick="switchAdminView('announcementsView')">📢 Announcements</button>
                 <button class="admin-nav-btn" onclick="switchAdminView('messagesView')">📩 Messages</button>
                 <button class="admin-nav-btn" onclick="switchAdminView('projectsView')">📁 Projects</button>
+                <button class="admin-nav-btn" onclick="switchAdminView('auditView')">📋 Audit Log</button>
             </div>
 
             <!-- Student List -->
@@ -110,6 +111,7 @@
                         <h2>📋 Student List</h2>
                         <div class="top-actions">
                             <button class="btn-add-student" onclick="showAddStudentForm()">+ Add New Student</button>
+                            <button class="btn-export" onclick="exportStudentList()">📥 Export Students</button>
                         </div>
                     </div>
 
@@ -380,6 +382,15 @@
                 </div>
                 <!-- End Projects View -->
 
+                <!-- Audit Log View -->
+                <div class="admin-view" id="auditView">
+                    <div class="dashboard-header">
+                        <h2>📋 Audit Log</h2>
+                    </div>
+                    <div id="auditLogList"></div>
+                </div>
+                <!-- End Audit Log View -->
+
             </div>
             <!-- End studentListPanel -->
 
@@ -534,6 +545,7 @@
                             <option value="2026">2026</option>
                             <option value="2027">2027</option>
                         </select>
+                        <button class="btn-export" onclick="exportStudentPayments()">📥 Export Payments</button>
                     </div>
                     <div class="add-form">
                         <h4>Add Payment</h4>

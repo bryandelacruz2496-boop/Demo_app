@@ -143,6 +143,22 @@ router.get('/refresh', async (req, res) => {
     }
 });
 
+// PUT /api/student/notifications/read - Mark all notifications as read
+router.put('/notifications/read', async (req, res) => {
+    try {
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        if (!token) return res.status(401).json({ message: 'No token' });
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const student = await Student.findById(decoded.id);
+        if (!student) return res.status(404).json({ message: 'Not found' });
+        student.notifications.forEach(n => n.read = true);
+        await student.save();
+        res.json({ message: 'All marked as read' });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 // POST /api/student/profile-photo - Upload profile photo (student token required)
 router.post('/profile-photo', upload.single('profileImage'), async (req, res) => {
     try {

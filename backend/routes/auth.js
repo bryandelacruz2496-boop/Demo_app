@@ -2,6 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/Admin');
 const authMiddleware = require('../middleware/auth');
+const { logAction } = require('../middleware/auditLogger');
 
 const router = express.Router();
 
@@ -25,6 +26,8 @@ router.post('/login', async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: '8h' }
         );
+
+        logAction('ADMIN_LOGIN', admin.username, 'Admin logged in', null, req.ip);
 
         res.json({
             token,

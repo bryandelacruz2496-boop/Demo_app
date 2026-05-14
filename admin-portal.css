@@ -2059,3 +2059,75 @@ h4 {
     padding: 0.5rem;
     text-align: center;
 }
+
+
+/* ============================================
+   EXPORT BUTTON
+   ============================================ */
+.btn-export {
+    background: linear-gradient(135deg, #1b5e20, #2e7d32);
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(27, 94, 32, 0.3);
+    font-family: inherit;
+}
+
+.btn-export:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(27, 94, 32, 0.4);
+}
+
+.btn-export:active {
+    transform: scale(0.97);
+}
+
+/* ============================================
+   AUDIT LOG
+   ============================================ */
+.audit-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    align-items: flex-start;
+    animation: cardEntrance 0.3s ease forwards;
+}
+
+.audit-icon {
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e8eaf6;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.audit-details {
+    flex: 1;
+}
+
+.audit-details strong {
+    font-size: 0.9rem;
+    color: #333;
+    text-transform: capitalize;
+}
+
+.audit-details p {
+    color: #666;
+    font-size: 0.85rem;
+    margin: 0.2rem 0;
+}
+
+.audit-meta {
+    font-size: 0.75rem;
+    color: #999;
+}
