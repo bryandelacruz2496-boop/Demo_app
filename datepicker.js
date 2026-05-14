@@ -36,10 +36,26 @@
         const today = new Date();
         const selectedDate = pickerInput.dataset.value || '';
 
+        // Year options
+        const currentYear = new Date().getFullYear();
+        const minYear = 1950;
+        const maxYear = currentYear + 5;
+        let yearOptions = '';
+        for (let y = maxYear; y >= minYear; y--) {
+            yearOptions += `<option value="${y}" ${y === pickerYear ? 'selected' : ''}>${y}</option>`;
+        }
+
+        // Month options
+        let monthOptions = '';
+        MONTHS.forEach((m, i) => {
+            monthOptions += `<option value="${i}" ${i === pickerMonth ? 'selected' : ''}>${m}</option>`;
+        });
+
         let html = `
             <div class="dp-header">
                 <button class="dp-nav" id="dpPrev">&#10094;</button>
-                <span class="dp-title">${MONTHS[pickerMonth]} ${pickerYear}</span>
+                <select class="dp-month-select" id="dpMonthSelect">${monthOptions}</select>
+                <select class="dp-year-select" id="dpYearSelect">${yearOptions}</select>
                 <button class="dp-nav" id="dpNext">&#10095;</button>
             </div>
             <div class="dp-days-header">
@@ -83,6 +99,20 @@
             e.stopPropagation();
             pickerMonth++;
             if (pickerMonth > 11) { pickerMonth = 0; pickerYear++; }
+            currentPicker.innerHTML = renderCalendar();
+            attachPickerEvents();
+        };
+
+        currentPicker.querySelector('#dpMonthSelect').onchange = (e) => {
+            e.stopPropagation();
+            pickerMonth = parseInt(e.target.value);
+            currentPicker.innerHTML = renderCalendar();
+            attachPickerEvents();
+        };
+
+        currentPicker.querySelector('#dpYearSelect').onchange = (e) => {
+            e.stopPropagation();
+            pickerYear = parseInt(e.target.value);
             currentPicker.innerHTML = renderCalendar();
             attachPickerEvents();
         };

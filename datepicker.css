@@ -41,6 +41,25 @@
     color: #333;
 }
 
+.dp-month-select,
+.dp-year-select {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #333;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 0.3rem 0.5rem;
+    cursor: pointer;
+    background: #fff;
+    font-family: inherit;
+}
+
+.dp-month-select:focus,
+.dp-year-select:focus {
+    outline: none;
+    border-color: #b71c1c;
+}
+
 .dp-nav {
     background: none;
     border: 1px solid #eee;
