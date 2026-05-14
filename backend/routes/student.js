@@ -118,11 +118,6 @@ router.get('/refresh', async (req, res) => {
             return res.status(401).json({ message: 'Session expired. You have been logged in on another device.' });
         }
 
-        // Check cache (30 second TTL)
-        const cacheKey = `student_${decoded.id}`;
-        const cached = getCache(cacheKey);
-        if (cached) return res.json({ student: cached });
-
         const totalPaid = student.payments
             .filter(p => p.status === 'paid')
             .reduce((sum, p) => sum + p.amount, 0);
@@ -142,7 +137,6 @@ router.get('/refresh', async (req, res) => {
             notifications: student.notifications || []
         };
 
-        setCache(cacheKey, studentData, 30);
         res.json({ student: studentData });
     } catch (err) {
         res.status(401).json({ message: 'Invalid token' });

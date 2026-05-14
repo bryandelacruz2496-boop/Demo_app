@@ -101,7 +101,6 @@
                         <button class="btn-add-student" onclick="showAddStudentForm()">+ Add New Student</button>
                         <button class="btn-add-student" onclick="showAnnouncementForm()">📢 Add Announcement</button>
                         <button class="btn-add-student" onclick="toggleInquiries()">📩 Messages</button>
-                        <button class="btn-add-student" onclick="toggleCalendarPanel()">📅 Calendar</button>
                     </div>
                 </div>
 
@@ -248,41 +247,6 @@
                         <button class="btn-save" onclick="createAnnouncement()">📢 Post Announcement</button>
                         <button class="btn-cancel" onclick="hideAnnouncementForm()">Cancel</button>
                     </div>
-                </div>
-
-                <div id="calendarPanel" class="expandable-panel" style="display:none;">
-                    <h3>📅 School Calendar</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Event Title *</label>
-                            <input type="text" id="eventTitle" placeholder="e.g. Final Exams" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Date *</label>
-                            <input type="text" id="eventDate" class="datepicker-input" placeholder="Pick a date"
-                                readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>Type *</label>
-                            <select id="eventType">
-                                <option value="Exam">Exam</option>
-                                <option value="Holiday">Holiday</option>
-                                <option value="Field Trip">Field Trip</option>
-                                <option value="Event">Event</option>
-                                <option value="Meeting">Meeting</option>
-                            </select>
-                        </div>
-                        <div class="form-group full-width">
-                            <label>Description</label>
-                            <textarea id="eventDescription" rows="3" placeholder="Event details..."
-                                style="width:100%;padding:0.7rem 1rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.95rem;resize:vertical;"></textarea>
-                        </div>
-                    </div>
-                    <div class="form-actions">
-                        <button class="btn-save" onclick="createEvent()">📅 Add Event</button>
-                        <button class="btn-cancel" onclick="hideCalendarPanel()">Cancel</button>
-                    </div>
-                    <div id="eventsList" style="margin-top:1.5rem;"></div>
                 </div>
 
                 <!-- Student List with Filter -->
