@@ -60,4 +60,55 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     }
 });
 
+// POST /api/announcements/:id/replies - Add reply (admin)
+router.post('/:id/replies', authMiddleware, async (req, res) => {
+    try {
+        const { message } = req.body;
+        if (!message) return res.status(400).json({ message: 'Message is required' });
+
+        const announcement = await Announcement.findById(req.params.id);
+        if (!announcement) return res.status(404).json({ message: 'Announcement not found' });
+
+        announcement.replies.push({
+            author: req.admin.name || req.admin.username,
+            role: 'admin',
+            message
+        });
+        await announcement.save();
+        res.json({ replies: announcement.replies });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// POST /api/announcements/:id/student-reply - Add reply (student)
+router.post('/:id/student-reply', async (req, res) => {
+    try {
+        const jwt = require('jsonwebtoken');
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        if (!token) return res.status(401).json({ message: 'No token' });
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const Student = require('../models/Student');
+        const student = await Student.findById(decoded.id);
+        if (!student) return res.status(401).json({ message: 'Invalid token' });
+
+        const { message } = req.body;
+        if (!message) return res.status(400).json({ message: 'Message is required' });
+
+        const announcement = await Announcement.findById(req.params.id);
+        if (!announcement) return res.status(404).json({ message: 'Announcement not found' });
+
+        announcement.replies.push({
+            author: student.fullName,
+            role: 'student',
+            message
+        });
+        await announcement.save();
+        res.json({ replies: announcement.replies });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 module.exports = router;

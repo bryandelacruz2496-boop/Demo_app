@@ -266,7 +266,38 @@ async function loadStudentAnnouncements() {
         </div>
         <p style="margin-top:0.5rem;">${a.body}</p>
         <span class="meta">${new Date(a.createdAt).toLocaleDateString()}</span>
+        <div class="replies-section" style="margin-top:1rem;border-top:1px solid #eee;padding-top:0.8rem;">
+          ${(a.replies || []).map(r => `
+            <div style="margin-bottom:0.6rem;padding:0.5rem 0.8rem;background:${r.role === 'admin' ? '#fff3e0' : '#e8f5e9'};border-radius:8px;">
+              <strong style="font-size:0.85rem;">${r.author}</strong> <span style="font-size:0.75rem;color:#888;">${r.role === 'admin' ? '(Admin)' : '(Student)'}</span>
+              <p style="margin:0.3rem 0 0;font-size:0.9rem;">${r.message}</p>
+              <span style="font-size:0.7rem;color:#aaa;">${new Date(r.createdAt).toLocaleString()}</span>
+            </div>
+          `).join('')}
+          <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
+            <input type="text" id="student-reply-${a._id}" placeholder="Write a reply..." style="flex:1;padding:0.5rem 0.8rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.9rem;">
+            <button onclick="studentReply('${a._id}')" style="background:#b71c1c;color:#fff;border:none;padding:0.5rem 1rem;border-radius:8px;font-weight:600;cursor:pointer;">Reply</button>
+          </div>
+        </div>
       </div>
     `).join('');
+  }
+}
+
+async function studentReply(announcementId) {
+  const input = document.getElementById(`student-reply-${announcementId}`);
+  const message = input.value.trim();
+  if (!message) return;
+
+  const token = localStorage.getItem('studentToken');
+  const res = await fetch(`${API_URL}/announcements/${announcementId}/student-reply`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ message })
+  });
+
+  if (res.ok) {
+    input.value = '';
+    loadStudentAnnouncements();
   }
 }

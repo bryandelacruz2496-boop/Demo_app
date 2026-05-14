@@ -1107,6 +1107,78 @@ h4 {
     font-size: 0.8rem;
 }
 
+/* Replies */
+.replies-section {
+    margin-top: 1rem;
+    border-top: 1px solid #eee;
+    padding-top: 0.8rem;
+}
+
+.reply-item {
+    margin-bottom: 0.6rem;
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+}
+
+.reply-admin {
+    background: #fff3e0;
+}
+
+.reply-student {
+    background: #e8f5e9;
+}
+
+.reply-role {
+    font-size: 0.75rem;
+    color: #888;
+}
+
+.reply-item p {
+    margin: 0.3rem 0 0;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.reply-date {
+    font-size: 0.7rem;
+    color: #aaa;
+}
+
+.reply-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.reply-input {
+    flex: 1;
+    padding: 0.5rem 0.8rem;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+
+.reply-input:focus {
+    outline: none;
+    border-color: #b71c1c;
+}
+
+.btn-reply {
+    background: #b71c1c;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-reply:hover {
+    background: #d32f2f;
+}
+
 /* Change Password */
 .change-password-section {
     margin-top: 2rem;

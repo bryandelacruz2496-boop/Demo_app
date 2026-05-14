@@ -79,6 +79,19 @@ async function loadAnnouncements() {
                 </div>
                 <p>${a.body}</p>
                 <span class="announcement-date">${new Date(a.createdAt).toLocaleDateString()}</span>
+                <div class="replies-section">
+                    ${(a.replies || []).map(r => `
+                        <div class="reply-item reply-${r.role}">
+                            <strong>${r.author}</strong> <span class="reply-role">${r.role}</span>
+                            <p>${r.message}</p>
+                            <span class="reply-date">${new Date(r.createdAt).toLocaleString()}</span>
+                        </div>
+                    `).join('')}
+                    <div class="reply-form">
+                        <input type="text" id="reply-${a._id}" placeholder="Write a reply..." class="reply-input">
+                        <button class="btn-reply" onclick="adminReply('${a._id}')">Reply</button>
+                    </div>
+                </div>
             </div>
         `).join('')}
     `;
@@ -125,6 +138,24 @@ async function deleteAnnouncement(id) {
     });
     if (res.ok) {
         showToast('Announcement deleted');
+        loadAnnouncements();
+    }
+}
+
+async function adminReply(announcementId) {
+    const input = document.getElementById(`reply-${announcementId}`);
+    const message = input.value.trim();
+    if (!message) return;
+
+    const res = await fetch(`${API_URL}/announcements/${announcementId}/replies`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+        body: JSON.stringify({ message })
+    });
+
+    if (res.ok) {
+        input.value = '';
+        showToast('Reply posted!');
         loadAnnouncements();
     }
 }
