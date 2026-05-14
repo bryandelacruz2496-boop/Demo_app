@@ -101,7 +101,12 @@ async function loadAnnouncements() {
 }
 
 function showAnnouncementForm() {
-    document.getElementById('announcementForm').style.display = 'block';
+    const form = document.getElementById('announcementForm');
+    if (form.style.display === 'block') {
+        form.style.display = 'none';
+        return;
+    }
+    form.style.display = 'block';
     document.getElementById('addStudentForm').style.display = 'none';
 }
 
@@ -694,7 +699,12 @@ function showToast(message) {
 
 // Add Student
 function showAddStudentForm() {
-    document.getElementById('addStudentForm').style.display = 'block';
+    const form = document.getElementById('addStudentForm');
+    if (form.style.display === 'block') {
+        form.style.display = 'none';
+        return;
+    }
+    form.style.display = 'block';
     document.getElementById('announcementForm').style.display = 'none';
     document.getElementById('newStudentResult').style.display = 'none';
 }
