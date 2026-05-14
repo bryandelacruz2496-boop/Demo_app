@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api';
+const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : 'https://beata-backend.onrender.com/api';
 let currentStudent = null;
 
 // Check if already logged in - show cached data immediately

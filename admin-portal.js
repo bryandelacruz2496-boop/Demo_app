@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api';
+const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : 'https://beata-backend.onrender.com/api';
 let adminToken = localStorage.getItem('adminToken');
 let students = [];
 let selectedStudent = null;
