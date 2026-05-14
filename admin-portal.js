@@ -935,9 +935,63 @@ async function createStudent() {
     }
 
     // Show confirmation popup
-    showConfirmPopup('Are you sure you want to register this student?', async () => {
-        await doCreateStudent(btn, originalText, fullName, grade, guardian);
+    const enrolleeType = document.getElementById('newStudentEnrolleeType').value;
+    const confirmMsg = selectedOldStudent
+        ? `Are you sure you want to re-enroll ${selectedOldStudent.fullName} with updated details?`
+        : 'Are you sure you want to register this student?';
+
+    showConfirmPopup(confirmMsg, async () => {
+        if (selectedOldStudent && enrolleeType === 'old') {
+            await doReenrollStudent(btn, originalText, fullName, grade, guardian);
+        } else {
+            await doCreateStudent(btn, originalText, fullName, grade, guardian);
+        }
     });
+}
+
+async function doReenrollStudent(btn, originalText, fullName, grade, guardian) {
+    btn.disabled = true;
+    btn.textContent = '⏳ Updating...';
+
+    try {
+        const formData = new FormData();
+        formData.append('fullName', fullName);
+        formData.append('grade', grade);
+        formData.append('guardian', guardian);
+        formData.append('guardianContact', document.getElementById('newStudentContact').value);
+        formData.append('address', document.getElementById('newStudentAddress').value);
+        formData.append('birthDate', getDatePickerValue('newStudentBirth'));
+        formData.append('gender', document.getElementById('newStudentGender').value);
+        formData.append('paymentOption', document.getElementById('newStudentPayOption').value);
+        formData.append('enrolleeType', 'old');
+
+        const photoFile = document.getElementById('newStudentPhoto').files[0];
+        if (photoFile) formData.append('profileImage', photoFile);
+
+        const res = await fetch(`${API_URL}/admin/students/${selectedOldStudent._id}/reenroll`, {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${adminToken}` },
+            body: formData
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            showToast('Student re-enrolled successfully!');
+            selectedOldStudent = null;
+            document.getElementById('oldStudentSearch').value = '';
+            document.getElementById('oldStudentResults').innerHTML = '';
+            hideAddStudentForm();
+            loadStudents();
+        } else {
+            const data = await res.json();
+            showToast(data.message || 'Error re-enrolling student');
+        }
+    } catch (err) {
+        showToast('Cannot connect to server');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+    }
 }
 
 async function doCreateStudent(btn, originalText, fullName, grade, guardian) {
@@ -1415,4 +1469,93 @@ function unarchiveStudent() {
 
 function toggleShowArchived() {
     loadStudents();
+}
+
+// Old Student Search & Re-enrollment
+let selectedOldStudent = null;
+
+function handleEnrolleeTypeChange() {
+    const type = document.getElementById('newStudentEnrolleeType').value;
+    const searchBox = document.getElementById('oldStudentSearchBox');
+    if (type === 'old') {
+        searchBox.style.display = 'block';
+    } else {
+        searchBox.style.display = 'none';
+        selectedOldStudent = null;
+        document.getElementById('oldStudentSearch').value = '';
+        document.getElementById('oldStudentResults').innerHTML = '';
+    }
+    updateTuitionDisplay();
+}
+
+// Show search box on page load since "Old Student" is default
+document.addEventListener('DOMContentLoaded', () => {
+    const searchBox = document.getElementById('oldStudentSearchBox');
+    if (searchBox) searchBox.style.display = 'block';
+});
+
+function searchExistingStudent(query) {
+    const results = document.getElementById('oldStudentResults');
+    if (!query || query.length < 2) {
+        results.innerHTML = '';
+        return;
+    }
+
+    const q = query.toLowerCase();
+    const matches = students.filter(s =>
+        s.fullName.toLowerCase().includes(q) || s.studentNo.toLowerCase().includes(q)
+    ).slice(0, 5);
+
+    if (matches.length === 0) {
+        results.innerHTML = '<p class="no-results">No students found</p>';
+        return;
+    }
+
+    results.innerHTML = matches.map(s => `
+        <div class="old-student-item" onclick="selectOldStudent('${s._id}')">
+            <strong>${s.fullName}</strong>
+            <span>${s.studentNo} • ${s.grade || 'No grade'}</span>
+        </div>
+    `).join('');
+}
+
+function selectOldStudent(id) {
+    const student = students.find(s => s._id === id);
+    if (!student) return;
+
+    selectedOldStudent = student;
+    document.getElementById('oldStudentSearch').value = student.fullName;
+    document.getElementById('oldStudentResults').innerHTML = `
+        <div class="old-student-selected">
+            ✅ Selected: <strong>${student.fullName}</strong> (${student.studentNo})
+            <p>Grade, payment scheme, and other details will be updated upon registration.</p>
+        </div>
+    `;
+
+    // Auto-fill the form with existing data
+    const nameParts = student.fullName.split(' ');
+    if (nameParts.length >= 3) {
+        document.getElementById('newStudentFirstName').value = nameParts[0];
+        document.getElementById('newStudentMiddleName').value = nameParts.slice(1, -1).join(' ');
+        document.getElementById('newStudentLastName').value = nameParts[nameParts.length - 1];
+    } else if (nameParts.length === 2) {
+        document.getElementById('newStudentFirstName').value = nameParts[0];
+        document.getElementById('newStudentMiddleName').value = '';
+        document.getElementById('newStudentLastName').value = nameParts[1];
+    } else {
+        document.getElementById('newStudentFirstName').value = student.fullName;
+    }
+
+    document.getElementById('newStudentGuardian').value = student.guardian || '';
+    document.getElementById('newStudentContact').value = student.guardianContact || '';
+    document.getElementById('newStudentAddress').value = student.address || '';
+    if (student.birthDate) setDatePickerValue('newStudentBirth', student.birthDate);
+    document.getElementById('newStudentGender').value = student.gender || '';
+    if (student.grade) {
+        const gradeSelect = document.getElementById('newStudentGrade');
+        for (let opt of gradeSelect.options) {
+            if (student.grade.includes(opt.value)) { gradeSelect.value = opt.value; break; }
+        }
+    }
+    updateTuitionDisplay();
 }

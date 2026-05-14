@@ -115,10 +115,17 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label>Enrollee Type *</label>
-                            <select id="newStudentEnrolleeType" onchange="updateTuitionDisplay()">
+                            <select id="newStudentEnrolleeType" onchange="handleEnrolleeTypeChange()">
                                 <option value="old">Old Student</option>
                                 <option value="new">New Student</option>
                             </select>
+                        </div>
+                        <div class="form-group full-width" id="oldStudentSearchBox" style="display:none;">
+                            <label>Search Existing Student</label>
+                            <input type="text" id="oldStudentSearch"
+                                placeholder="Type student name or number to search..."
+                                oninput="searchExistingStudent(this.value)">
+                            <div id="oldStudentResults" class="old-student-results"></div>
                         </div>
                         <div class="form-group">
                             <label>Grade *</label>

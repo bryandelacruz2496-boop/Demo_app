@@ -1677,3 +1677,59 @@ h4 {
     cursor: pointer;
     accent-color: #b71c1c;
 }
+
+/* Old Student Search */
+.old-student-results {
+    margin-top: 0.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.old-student-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.7rem 1rem;
+    background: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    margin-bottom: 0.4rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.old-student-item:hover {
+    background: #ffebee;
+    border-color: #b71c1c;
+}
+
+.old-student-item strong {
+    color: #333;
+}
+
+.old-student-item span {
+    color: #888;
+    font-size: 0.85rem;
+}
+
+.old-student-selected {
+    padding: 0.8rem 1rem;
+    background: #e8f5e9;
+    border-radius: 8px;
+    border: 1px solid #c8e6c9;
+    color: #2e7d32;
+    font-size: 0.9rem;
+}
+
+.old-student-selected p {
+    margin-top: 0.3rem;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.no-results {
+    color: #888;
+    font-size: 0.85rem;
+    padding: 0.5rem;
+    text-align: center;
+}

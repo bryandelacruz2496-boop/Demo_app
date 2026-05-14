@@ -319,6 +319,47 @@ router.delete('/students/:id/projects/:projectId', authMiddleware, async (req, r
     }
 });
 
+// PUT /api/admin/students/:id/reenroll - Re-enroll existing student with updated data
+router.put('/students/:id/reenroll', authMiddleware, upload.single('profileImage'), async (req, res) => {
+    try {
+        const student = await Student.findById(req.params.id);
+        if (!student) return res.status(404).json({ message: 'Student not found' });
+
+        const { fullName, grade, guardian, guardianContact, address, birthDate, gender, paymentOption, enrolleeType } = req.body;
+
+        // Update student info
+        if (fullName) student.fullName = fullName;
+        if (grade) student.grade = grade;
+        if (guardian) student.guardian = guardian;
+        if (guardianContact) student.guardianContact = guardianContact;
+        if (address) student.address = address;
+        if (birthDate) student.birthDate = birthDate;
+        if (gender) student.gender = gender;
+        if (paymentOption) student.paymentOption = paymentOption;
+        if (req.file) student.profileImage = '/uploads/' + req.file.filename;
+
+        // Update tuition and generate new payments based on new grade/payment option
+        if (grade && paymentOption) {
+            const { TUITION_TABLE, generatePayments } = require('../config/tuition');
+            const type = enrolleeType || 'old';
+            const tuitionData = TUITION_TABLE[type] && TUITION_TABLE[type][grade];
+            if (tuitionData) {
+                student.totalTuition = tuitionData.total;
+                student.payments = generatePayments(grade, paymentOption, type);
+            }
+        }
+
+        // Unarchive if archived
+        if (student.status === 'archived') student.status = 'active';
+
+        await student.save();
+        res.json({ message: 'Student re-enrolled', student });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 // PUT /api/admin/students/:id/force-logout - Clear student session
 router.put('/students/:id/force-logout', authMiddleware, async (req, res) => {
     try {
