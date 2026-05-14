@@ -1,6 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const Student = require('../models/Student');
+const { getCache, setCache } = require('../middleware/cache');
 
 const router = express.Router();
 
@@ -59,6 +60,12 @@ router.get('/refresh', async (req, res) => {
         if (!token) return res.status(401).json({ message: 'No token' });
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        // Check cache first (30 second TTL)
+        const cacheKey = `student_${decoded.id}`;
+        const cached = getCache(cacheKey);
+        if (cached) return res.json({ student: cached });
+
         const student = await Student.findById(decoded.id);
         if (!student) return res.status(404).json({ message: 'Student not found' });
 
@@ -66,21 +73,22 @@ router.get('/refresh', async (req, res) => {
             .filter(p => p.status === 'paid')
             .reduce((sum, p) => sum + p.amount, 0);
 
-        res.json({
-            student: {
-                fullName: student.fullName,
-                studentNo: student.studentNo,
-                grade: student.grade,
-                guardian: student.guardian,
-                profileImage: student.profileImage,
-                totalTuition: student.totalTuition,
-                totalPaid,
-                payments: student.payments,
-                activities: student.activities,
-                projects: student.projects,
-                assessments: student.assessments
-            }
-        });
+        const studentData = {
+            fullName: student.fullName,
+            studentNo: student.studentNo,
+            grade: student.grade,
+            guardian: student.guardian,
+            profileImage: student.profileImage,
+            totalTuition: student.totalTuition,
+            totalPaid,
+            payments: student.payments,
+            activities: student.activities,
+            projects: student.projects,
+            assessments: student.assessments
+        };
+
+        setCache(cacheKey, studentData, 30);
+        res.json({ student: studentData });
     } catch (err) {
         res.status(401).json({ message: 'Invalid token' });
     }

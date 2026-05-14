@@ -138,13 +138,11 @@ function calculateCollection() {
 
     students.forEach(student => {
         student.payments.forEach(payment => {
-            // Match payments by year-month in the date field
-            if (payment.date && payment.date.startsWith(`${year}-${month}`)) {
-                if (payment.status === 'paid') {
-                    collected += payment.amount;
-                } else {
-                    pending += payment.amount;
-                }
+            if (payment.status === 'paid' && payment.paidDate && payment.paidDate.startsWith(`${year}-${month}`)) {
+                collected += payment.amount;
+            }
+            if (payment.status === 'pending' && payment.date && payment.date.startsWith(`${year}-${month}`)) {
+                pending += payment.amount;
             }
         });
     });
@@ -426,6 +424,7 @@ function renderPayments() {
       <td>${p.description}</td>
       <td>₱${p.amount.toLocaleString()}</td>
       <td><span class="status-${p.status}">${p.status === 'paid' ? '✓ Paid' : '⏳ Pending'}</span></td>
+      <td>${p.paidDate || '-'}</td>
       <td>
         ${p.status === 'pending'
             ? `<button class="btn-status btn-mark-paid" onclick="updatePaymentStatus('${p._id}', 'paid')">Mark Paid</button>`
@@ -436,7 +435,7 @@ function renderPayments() {
   `).join('');
 
     if (payments.length === 0) {
-        body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#888;padding:2rem;">No payments found</td></tr>';
+        body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;padding:2rem;">No payments found</td></tr>';
     }
 }
 

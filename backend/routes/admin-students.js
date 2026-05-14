@@ -4,6 +4,7 @@ const path = require('path');
 const Student = require('../models/Student');
 const authMiddleware = require('../middleware/auth');
 const { TUITION_TABLE, generatePayments } = require('../config/tuition');
+const { clearCache } = require('../middleware/cache');
 
 const router = express.Router();
 
@@ -154,6 +155,7 @@ router.put('/students/:id/profile', authMiddleware, upload.single('profileImage'
         if (req.file) student.profileImage = `/uploads/${req.file.filename}`;
 
         await student.save();
+        clearCache(`student_${req.params.id}`);
         res.json({ message: 'Profile updated', student: { ...student.toObject(), password: undefined } });
     } catch (err) {
         console.error(err);
@@ -202,6 +204,7 @@ router.put('/students/:id/payments/:paymentId', authMiddleware, async (req, res)
         if (!payment) return res.status(404).json({ message: 'Payment not found' });
 
         payment.status = status;
+        payment.paidDate = status === 'paid' ? new Date().toISOString().split('T')[0] : null;
         await student.save();
         res.json({ message: 'Payment updated', payments: student.payments });
     } catch (err) {

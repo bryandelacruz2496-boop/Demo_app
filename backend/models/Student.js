@@ -5,7 +5,8 @@ const paymentSchema = new mongoose.Schema({
     date: String,
     description: String,
     amount: Number,
-    status: { type: String, enum: ['paid', 'pending'], default: 'pending' }
+    status: { type: String, enum: ['paid', 'pending'], default: 'pending' },
+    paidDate: { type: String, default: null }
 });
 
 const activitySchema = new mongoose.Schema({
