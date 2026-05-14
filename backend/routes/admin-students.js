@@ -198,7 +198,17 @@ router.post('/students/:id/payments', authMiddleware, async (req, res) => {
 // PUT /api/admin/students/:id/payments/:paymentId - Update payment status
 router.put('/students/:id/payments/:paymentId', authMiddleware, async (req, res) => {
     try {
-        const { status } = req.body;
+        const { status, password } = req.body;
+
+        // Verify admin password
+        if (password) {
+            const Admin = require('../models/Admin');
+            const admin = await Admin.findById(req.admin.id);
+            if (!admin) return res.status(404).json({ message: 'Admin not found' });
+            const isMatch = await admin.comparePassword(password);
+            if (!isMatch) return res.status(401).json({ message: 'Incorrect password' });
+        }
+
         const student = await Student.findById(req.params.id);
         if (!student) return res.status(404).json({ message: 'Student not found' });
 
@@ -207,6 +217,17 @@ router.put('/students/:id/payments/:paymentId', authMiddleware, async (req, res)
 
         payment.status = status;
         payment.paidDate = status === 'paid' ? new Date().toISOString().split('T')[0] : null;
+
+        // Add notification for student
+        if (!student.notifications) student.notifications = [];
+        student.notifications.push({
+            message: status === 'paid'
+                ? `Your payment of ₱${payment.amount.toLocaleString()} for "${payment.description}" has been confirmed as paid.`
+                : `Your payment for "${payment.description}" has been marked as pending.`,
+            type: 'payment',
+            read: false
+        });
+
         await student.save();
         res.json({ message: 'Payment updated', payments: student.payments });
     } catch (err) {

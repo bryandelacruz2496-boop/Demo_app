@@ -74,7 +74,8 @@ router.post('/login', async (req, res) => {
                 payments: student.payments,
                 activities: student.activities,
                 projects: student.projects,
-                assessments: student.assessments
+                assessments: student.assessments,
+                notifications: student.notifications || []
             }
         });
     } catch (err) {
@@ -137,7 +138,8 @@ router.get('/refresh', async (req, res) => {
             payments: student.payments,
             activities: student.activities,
             projects: student.projects,
-            assessments: student.assessments
+            assessments: student.assessments,
+            notifications: student.notifications || []
         };
 
         setCache(cacheKey, studentData, 30);

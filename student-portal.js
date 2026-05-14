@@ -361,6 +361,8 @@ function startStudentNotificationCheck() {
   }, 2000);
 
   // Check assessment updates every 3 seconds
+  let lastNotifCount = (currentStudent.notifications || []).length;
+
   setInterval(async () => {
     const token = localStorage.getItem('studentToken');
     if (!token) return;
@@ -371,14 +373,23 @@ function startStudentNotificationCheck() {
       if (res.ok) {
         const data = await res.json();
         if (data && data.student) {
+          // Check for new notifications
+          const newNotifs = (data.student.notifications || []).length;
+          if (newNotifs > lastNotifCount) {
+            const latest = data.student.notifications[data.student.notifications.length - 1];
+            showStudentNotification(latest.message);
+            lastNotifCount = newNotifs;
+          }
+
           const newHash = JSON.stringify(data.student.assessments);
           if (lastAssessmentHash && newHash !== lastAssessmentHash) {
             showStudentNotification('📝 Your assessments have been updated by the admin');
-            currentStudent = data.student;
-            localStorage.setItem('studentData', JSON.stringify(data.student));
-            populateDashboard();
           }
           lastAssessmentHash = newHash;
+
+          currentStudent = data.student;
+          localStorage.setItem('studentData', JSON.stringify(data.student));
+          populateDashboard();
         }
       }
     } catch (e) { }

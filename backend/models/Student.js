@@ -51,7 +51,13 @@ const studentSchema = new mongoose.Schema({
     payments: [paymentSchema],
     activities: [activitySchema],
     projects: [projectSchema],
-    assessments: [assessmentSchema]
+    assessments: [assessmentSchema],
+    notifications: [{
+        message: String,
+        type: { type: String, default: 'general' },
+        read: { type: Boolean, default: false },
+        createdAt: { type: Date, default: Date.now }
+    }]
 }, { timestamps: true });
 
 studentSchema.pre('save', async function (next) {

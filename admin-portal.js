@@ -567,19 +567,24 @@ async function addPayment() {
 
 async function updatePaymentStatus(paymentId, status) {
     const msg = status === 'paid' ? 'Are you sure you want to mark this payment as paid?' : 'Are you sure you want to mark this payment as pending?';
-    showConfirmPopup(msg, async () => {
-        const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/payments/${paymentId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
-            body: JSON.stringify({ status })
-        });
+    showConfirmPopup(msg, () => {
+        showPasswordPrompt(async (password) => {
+            const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/payments/${paymentId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+                body: JSON.stringify({ status, password })
+            });
 
-        if (res.ok) {
-            const data = await res.json();
-            selectedStudent.payments = data.payments;
-            renderPayments();
-            showToast('Payment status updated!');
-        }
+            if (res.ok) {
+                const data = await res.json();
+                selectedStudent.payments = data.payments;
+                renderPayments();
+                showToast('Payment status updated!');
+            } else {
+                const data = await res.json();
+                showToast(data.message || 'Error updating payment');
+            }
+        });
     });
 }
 
