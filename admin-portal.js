@@ -108,6 +108,7 @@ function showAnnouncementForm() {
     }
     form.style.display = 'block';
     document.getElementById('addStudentForm').style.display = 'none';
+    document.getElementById('inquiriesPanel').style.display = 'none';
 }
 
 function hideAnnouncementForm() {
@@ -703,6 +704,7 @@ function showAddStudentForm() {
     }
     form.style.display = 'block';
     document.getElementById('announcementForm').style.display = 'none';
+    document.getElementById('inquiriesPanel').style.display = 'none';
     document.getElementById('newStudentResult').style.display = 'none';
 }
 
