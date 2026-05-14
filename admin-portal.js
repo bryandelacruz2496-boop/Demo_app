@@ -118,20 +118,22 @@ async function createAnnouncement() {
         return;
     }
 
-    const res = await fetch(`${API_URL}/announcements`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
-        body: JSON.stringify({ subject, body, targetGrade })
-    });
+    showConfirmPopup('Are you sure you want to post this announcement?', async () => {
+        const res = await fetch(`${API_URL}/announcements`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+            body: JSON.stringify({ subject, body, targetGrade })
+        });
 
-    if (res.ok) {
-        showToast('Announcement posted!');
-        document.getElementById('annSubject').value = '';
-        document.getElementById('annBody').value = '';
-        document.getElementById('annGrade').value = 'all';
-        hideAnnouncementForm();
-        loadAnnouncements();
-    }
+        if (res.ok) {
+            showToast('Announcement posted!');
+            document.getElementById('annSubject').value = '';
+            document.getElementById('annBody').value = '';
+            document.getElementById('annGrade').value = 'all';
+            hideAnnouncementForm();
+            loadAnnouncements();
+        }
+    });
 }
 
 async function deleteAnnouncement(id) {
@@ -503,18 +505,21 @@ async function addPayment() {
 }
 
 async function updatePaymentStatus(paymentId, status) {
-    const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/payments/${paymentId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
-        body: JSON.stringify({ status })
-    });
+    const msg = status === 'paid' ? 'Are you sure you want to mark this payment as paid?' : 'Are you sure you want to mark this payment as pending?';
+    showConfirmPopup(msg, async () => {
+        const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/payments/${paymentId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+            body: JSON.stringify({ status })
+        });
 
-    if (res.ok) {
-        const data = await res.json();
-        selectedStudent.payments = data.payments;
-        renderPayments();
-        showToast('Payment status updated!');
-    }
+        if (res.ok) {
+            const data = await res.json();
+            selectedStudent.payments = data.payments;
+            renderPayments();
+            showToast('Payment status updated!');
+        }
+    });
 }
 
 // Activities
@@ -820,13 +825,33 @@ async function createStudent() {
     const btn = document.querySelector('#addStudentForm .btn-save');
     const originalText = btn.textContent;
 
-    const fullName = document.getElementById('newStudentName').value;
+    const firstName = document.getElementById('newStudentFirstName').value.trim();
+    const middleName = document.getElementById('newStudentMiddleName').value.trim();
+    const lastName = document.getElementById('newStudentLastName').value.trim();
     const grade = document.getElementById('newStudentGrade').value;
     const guardian = document.getElementById('newStudentGuardian').value;
 
-    if (!fullName || !grade || !guardian) {
-        showToast('Please fill in required fields (Name, Grade, Guardian)');
+    if (!firstName || !lastName || !grade || !guardian) {
+        showToast('Please fill in required fields (First Name, Last Name, Grade, Guardian)');
         return;
+    }
+
+    const fullName = `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`;
+
+    // Validate age (must be at least 2 years old)
+    const birthDate = document.getElementById('newStudentBirth').value;
+    if (birthDate) {
+        const today = new Date();
+        const birth = new Date(birthDate);
+        let age = today.getFullYear() - birth.getFullYear();
+        const monthDiff = today.getMonth() - birth.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+            age--;
+        }
+        if (age < 2) {
+            showToast('Student must be at least 2 years old');
+            return;
+        }
     }
 
     // Show confirmation popup
@@ -875,7 +900,9 @@ async function doCreateStudent(btn, originalText, fullName, grade, guardian) {
             `;
 
             // Clear form
-            document.getElementById('newStudentName').value = '';
+            document.getElementById('newStudentFirstName').value = '';
+            document.getElementById('newStudentMiddleName').value = '';
+            document.getElementById('newStudentLastName').value = '';
             document.getElementById('newStudentGrade').value = '';
             document.getElementById('newStudentGuardian').value = '';
             document.getElementById('newStudentContact').value = '';
