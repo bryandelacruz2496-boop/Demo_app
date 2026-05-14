@@ -326,6 +326,7 @@ h4 {
     width: 100%;
     overflow-x: auto;
     border-radius: 8px;
+    -webkit-overflow-scrolling: touch;
 }
 
 .data-table {
