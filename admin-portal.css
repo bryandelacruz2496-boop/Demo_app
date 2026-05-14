@@ -1355,3 +1355,26 @@ h4 {
         opacity: 1;
     }
 }
+
+/* Date Select Dropdowns */
+.date-selects {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.date-selects select {
+    flex: 1;
+    padding: 0.7rem 0.8rem;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+    background: #fff;
+    transition: border-color 0.3s;
+}
+
+.date-selects select:focus {
+    outline: none;
+    border-color: #b71c1c;
+}

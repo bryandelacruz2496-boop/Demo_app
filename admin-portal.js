@@ -256,7 +256,7 @@ function renderProfile() {
     document.getElementById('editGuardian').value = selectedStudent.guardian || '';
     document.getElementById('editGuardianContact').value = selectedStudent.guardianContact || '';
     document.getElementById('editAddress').value = selectedStudent.address || '';
-    document.getElementById('editBirthDate').value = selectedStudent.birthDate || '';
+    setDateSelects('editBirthMonth', 'editBirthDay', 'editBirthYear', selectedStudent.birthDate || '');
     document.getElementById('editGender').value = selectedStudent.gender || '';
     document.getElementById('editTuition').value = selectedStudent.totalTuition || '';
     document.getElementById('editPayOption').value = selectedStudent.paymentOption || 'monthly';
@@ -336,7 +336,7 @@ async function saveProfile() {
     formData.append('guardian', document.getElementById('editGuardian').value);
     formData.append('guardianContact', document.getElementById('editGuardianContact').value);
     formData.append('address', document.getElementById('editAddress').value);
-    formData.append('birthDate', document.getElementById('editBirthDate').value);
+    formData.append('birthDate', getDateFromSelects('editBirthMonth', 'editBirthDay', 'editBirthYear'));
     formData.append('gender', document.getElementById('editGender').value);
     formData.append('totalTuition', document.getElementById('editTuition').value);
     formData.append('paymentOption', document.getElementById('editPayOption').value);
@@ -480,7 +480,7 @@ function renderPayments() {
 }
 
 async function addPayment() {
-    const date = document.getElementById('payDate').value;
+    const date = getDateFromSelects('payDateMonth', 'payDateDay', 'payDateYear');
     const description = document.getElementById('payDesc').value;
     const amount = Number(document.getElementById('payAmount').value);
     const status = document.getElementById('payStatus').value;
@@ -498,7 +498,9 @@ async function addPayment() {
         selectedStudent.payments = data.payments;
         renderPayments();
         showToast('Payment added!');
-        document.getElementById('payDate').value = '';
+        document.getElementById('payDateMonth').value = '';
+        document.getElementById('payDateDay').value = '';
+        document.getElementById('payDateYear').value = '';
         document.getElementById('payDesc').value = '';
         document.getElementById('payAmount').value = '';
     }
@@ -574,7 +576,7 @@ function viewImage(url) {
 async function addActivity() {
     const title = document.getElementById('actTitle').value;
     const subject = document.getElementById('actSubject').value;
-    const date = document.getElementById('actDate').value;
+    const date = getDateFromSelects('actDateMonth', 'actDateDay', 'actDateYear');
     const description = document.getElementById('actDesc').value;
     const imageFile = document.getElementById('actImage').files[0];
 
@@ -601,7 +603,9 @@ async function addActivity() {
             showToast('Activity added!');
             document.getElementById('actTitle').value = '';
             document.getElementById('actSubject').value = '';
-            document.getElementById('actDate').value = '';
+            document.getElementById('actDateMonth').value = '';
+            document.getElementById('actDateDay').value = '';
+            document.getElementById('actDateYear').value = '';
             document.getElementById('actDesc').value = '';
             document.getElementById('actImage').value = '';
             document.getElementById('actImagePreview').style.display = 'none';
@@ -641,7 +645,7 @@ async function deleteProject(projectId) {
 async function addProject() {
     const title = document.getElementById('projTitle').value;
     const subject = document.getElementById('projSubject').value;
-    const dueDate = document.getElementById('projDue').value;
+    const dueDate = getDateFromSelects('projDueMonth', 'projDueDay', 'projDueYear');
     const description = document.getElementById('projDesc').value;
     const grade = document.getElementById('projGrade').value || null;
 
@@ -661,7 +665,9 @@ async function addProject() {
             showToast('Project added!');
             document.getElementById('projTitle').value = '';
             document.getElementById('projSubject').value = '';
-            document.getElementById('projDue').value = '';
+            document.getElementById('projDueMonth').value = '';
+            document.getElementById('projDueDay').value = '';
+            document.getElementById('projDueYear').value = '';
             document.getElementById('projDesc').value = '';
             document.getElementById('projGrade').value = '';
         }
@@ -843,7 +849,7 @@ async function createStudent() {
     const fullName = `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`;
 
     // Validate age (must be at least 2 years old)
-    const birthDate = document.getElementById('newStudentBirth').value;
+    const birthDate = getDateFromSelects('newStudentBirthMonth', 'newStudentBirthDay', 'newStudentBirthYear');
     if (birthDate) {
         const today = new Date();
         const birth = new Date(birthDate);
@@ -876,7 +882,7 @@ async function doCreateStudent(btn, originalText, fullName, grade, guardian) {
         formData.append('guardian', guardian);
         formData.append('guardianContact', document.getElementById('newStudentContact').value);
         formData.append('address', document.getElementById('newStudentAddress').value);
-        formData.append('birthDate', document.getElementById('newStudentBirth').value);
+        formData.append('birthDate', getDateFromSelects('newStudentBirthMonth', 'newStudentBirthDay', 'newStudentBirthYear'));
         formData.append('gender', document.getElementById('newStudentGender').value);
         formData.append('paymentOption', document.getElementById('newStudentPayOption').value);
         formData.append('enrolleeType', document.getElementById('newStudentEnrolleeType').value);
@@ -911,7 +917,9 @@ async function doCreateStudent(btn, originalText, fullName, grade, guardian) {
             document.getElementById('newStudentGuardian').value = '';
             document.getElementById('newStudentContact').value = '';
             document.getElementById('newStudentAddress').value = '';
-            document.getElementById('newStudentBirth').value = '';
+            document.getElementById('newStudentBirthMonth').value = '';
+            document.getElementById('newStudentBirthDay').value = '';
+            document.getElementById('newStudentBirthYear').value = '';
             document.getElementById('newStudentGender').value = '';
             document.getElementById('newStudentPhoto').value = '';
             document.getElementById('newStudentPhotoPreview').style.display = 'none';
@@ -1012,4 +1020,73 @@ function showConfirmPopup(message, onConfirm) {
     overlay.querySelector('#confirmNo').onclick = () => {
         overlay.remove();
     };
+}
+
+// Date select helpers
+function populateDaySelect(selectId, days) {
+    const sel = document.getElementById(selectId);
+    if (!sel) return;
+    const current = sel.value;
+    sel.innerHTML = '<option value="">Day</option>';
+    for (let i = 1; i <= days; i++) {
+        const val = String(i).padStart(2, '0');
+        sel.innerHTML += `<option value="${val}">${i}</option>`;
+    }
+    if (current && parseInt(current) <= days) sel.value = current;
+}
+
+function populateYearSelect(selectId, startYear, endYear) {
+    const sel = document.getElementById(selectId);
+    if (!sel) return;
+    sel.innerHTML = '<option value="">Year</option>';
+    for (let y = startYear; y <= endYear; y++) {
+        sel.innerHTML += `<option value="${y}">${y}</option>`;
+    }
+}
+
+function getDateFromSelects(monthId, dayId, yearId) {
+    const m = document.getElementById(monthId)?.value;
+    const d = document.getElementById(dayId)?.value;
+    const y = document.getElementById(yearId)?.value;
+    if (m && d && y) return `${y}-${m}-${d}`;
+    return '';
+}
+
+function setDateSelects(monthId, dayId, yearId, dateStr) {
+    if (!dateStr) return;
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+        const sel = document.getElementById(monthId);
+        if (sel) sel.value = parts[1];
+        populateDaySelect(dayId, 31);
+        const daySel = document.getElementById(dayId);
+        if (daySel) daySel.value = parts[2];
+        const yearSel = document.getElementById(yearId);
+        if (yearSel) yearSel.value = parts[0];
+    }
+}
+
+// Initialize all date selects on page load
+function initDateSelects() {
+    // Days (1-31 for all)
+    ['newStudentBirthDay', 'editBirthDay', 'payDateDay', 'actDateDay', 'projDueDay'].forEach(id => {
+        populateDaySelect(id, 31);
+    });
+
+    // Birth years (1950 to current year)
+    const currentYear = new Date().getFullYear();
+    populateYearSelect('newStudentBirthYear', 1950, currentYear);
+    populateYearSelect('editBirthYear', 1950, currentYear);
+
+    // Payment/Activity/Project years (current year range)
+    populateYearSelect('payDateYear', currentYear - 1, currentYear + 2);
+    populateYearSelect('actDateYear', currentYear - 1, currentYear + 2);
+    populateYearSelect('projDueYear', currentYear, currentYear + 2);
+}
+
+// Run on DOM load
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDateSelects);
+} else {
+    initDateSelects();
 }
