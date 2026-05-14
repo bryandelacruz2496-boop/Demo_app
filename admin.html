@@ -55,6 +55,45 @@
         <div class="admin-content">
             <!-- Student List -->
             <div class="panel student-list-panel" id="studentListPanel">
+                <!-- Monthly Collection Summary -->
+                <div class="collection-summary">
+                    <h3>💰 Monthly Collection</h3>
+                    <div class="month-selector">
+                        <select id="collectionMonth" onchange="calculateCollection()">
+                            <option value="01">January</option>
+                            <option value="02">February</option>
+                            <option value="03">March</option>
+                            <option value="04">April</option>
+                            <option value="05">May</option>
+                            <option value="06">June</option>
+                            <option value="07">July</option>
+                            <option value="08">August</option>
+                            <option value="09">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                        <select id="collectionYear" onchange="calculateCollection()">
+                            <option value="2026">2026</option>
+                            <option value="2027">2027</option>
+                        </select>
+                    </div>
+                    <div class="collection-cards">
+                        <div class="collection-card">
+                            <span class="collection-label">Total Collected</span>
+                            <span class="collection-value collected" id="monthCollected">₱0</span>
+                        </div>
+                        <div class="collection-card">
+                            <span class="collection-label">Pending</span>
+                            <span class="collection-value pending" id="monthPending">₱0</span>
+                        </div>
+                        <div class="collection-card">
+                            <span class="collection-label">Total Expected</span>
+                            <span class="collection-value" id="monthTotal">₱0</span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Dashboard Header -->
                 <div class="dashboard-header">
                     <h2>📋 Student List</h2>
@@ -207,45 +246,6 @@
                     <div class="form-actions">
                         <button class="btn-save" onclick="createAnnouncement()">📢 Post Announcement</button>
                         <button class="btn-cancel" onclick="hideAnnouncementForm()">Cancel</button>
-                    </div>
-                </div>
-
-                <!-- Monthly Collection Summary -->
-                <div class="collection-summary">
-                    <h3>💰 Monthly Collection</h3>
-                    <div class="month-selector">
-                        <select id="collectionMonth" onchange="calculateCollection()">
-                            <option value="01">January</option>
-                            <option value="02">February</option>
-                            <option value="03">March</option>
-                            <option value="04">April</option>
-                            <option value="05">May</option>
-                            <option value="06">June</option>
-                            <option value="07">July</option>
-                            <option value="08">August</option>
-                            <option value="09">September</option>
-                            <option value="10">October</option>
-                            <option value="11">November</option>
-                            <option value="12">December</option>
-                        </select>
-                        <select id="collectionYear" onchange="calculateCollection()">
-                            <option value="2026">2026</option>
-                            <option value="2027">2027</option>
-                        </select>
-                    </div>
-                    <div class="collection-cards">
-                        <div class="collection-card">
-                            <span class="collection-label">Total Collected</span>
-                            <span class="collection-value collected" id="monthCollected">₱0</span>
-                        </div>
-                        <div class="collection-card">
-                            <span class="collection-label">Pending</span>
-                            <span class="collection-value pending" id="monthPending">₱0</span>
-                        </div>
-                        <div class="collection-card">
-                            <span class="collection-label">Total Expected</span>
-                            <span class="collection-value" id="monthTotal">₱0</span>
-                        </div>
                     </div>
                 </div>
 
