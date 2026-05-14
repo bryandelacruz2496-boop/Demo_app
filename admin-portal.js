@@ -91,7 +91,7 @@ async function loadAnnouncements() {
                         </div>
                     `).join('')}
                     <div class="reply-form">
-                        <input type="text" id="reply-${a._id}" placeholder="Write a reply..." class="reply-input" onkeydown="if(event.key==='Enter')adminReply('${a._id}')">
+                        <input type="text" id="reply-${a._id}" placeholder="Write a reply..." class="reply-input" onkeydown="handleAdminReplyKey(event,'${a._id}')">
                         <button class="btn-reply" onclick="adminReply('${a._id}')">Reply</button>
                     </div>
                 </div>
@@ -143,6 +143,10 @@ async function deleteAnnouncement(id) {
         showToast('Announcement deleted');
         loadAnnouncements();
     }
+}
+
+function handleAdminReplyKey(e, id) {
+    if (e.key === 'Enter') adminReply(id);
 }
 
 async function adminReply(announcementId) {
