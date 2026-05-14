@@ -1102,3 +1102,59 @@ if (document.readyState === 'loading') {
 } else {
     initDateSelects();
 }
+
+// Delete student with confirmation and password
+function deleteStudent() {
+    if (!selectedStudent) return;
+
+    showConfirmPopup(`Are you sure you want to permanently delete ${selectedStudent.fullName}? This cannot be undone.`, () => {
+        showPasswordPrompt(async (password) => {
+            const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+                body: JSON.stringify({ password })
+            });
+
+            if (res.ok) {
+                showToast('Student deleted successfully');
+                backToList();
+            } else {
+                const data = await res.json();
+                showToast(data.message || 'Error deleting student');
+            }
+        });
+    });
+}
+
+function showPasswordPrompt(onConfirm) {
+    const overlay = document.createElement('div');
+    overlay.className = 'confirm-overlay';
+    overlay.innerHTML = `
+        <div class="confirm-box">
+            <p>Enter your admin password to confirm deletion:</p>
+            <input type="password" id="deletePasswordInput" placeholder="Admin password" style="width:100%;padding:0.7rem 1rem;border:2px solid #eee;border-radius:8px;font-size:1rem;margin-bottom:1rem;">
+            <div class="confirm-buttons">
+                <button class="confirm-yes" id="passwordConfirmBtn">Confirm</button>
+                <button class="confirm-no" id="passwordCancelBtn">Cancel</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+
+    overlay.querySelector('#passwordConfirmBtn').onclick = () => {
+        const password = document.getElementById('deletePasswordInput').value;
+        if (!password) {
+            showToast('Please enter your password');
+            return;
+        }
+        overlay.remove();
+        onConfirm(password);
+    };
+    overlay.querySelector('#passwordCancelBtn').onclick = () => {
+        overlay.remove();
+    };
+    // Allow Enter key
+    overlay.querySelector('#deletePasswordInput').onkeydown = (e) => {
+        if (e.key === 'Enter') overlay.querySelector('#passwordConfirmBtn').click();
+    };
+}

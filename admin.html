@@ -286,7 +286,10 @@
 
             <!-- Student Detail -->
             <div class="panel student-detail-panel" id="studentDetailPanel" style="display:none;">
-                <button class="btn-back" onclick="backToList()">← Back to List</button>
+                <div class="detail-top-actions">
+                    <button class="btn-back" onclick="backToList()">← Back to List</button>
+                    <button class="btn-delete-student" onclick="deleteStudent()">🗑️ Delete Student</button>
+                </div>
                 <div class="student-header" id="studentHeader"></div>
 
                 <div class="admin-tabs">

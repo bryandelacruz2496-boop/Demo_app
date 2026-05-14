@@ -309,4 +309,27 @@ router.put('/students/:id/force-logout', authMiddleware, async (req, res) => {
     }
 });
 
+// DELETE /api/admin/students/:id - Delete student (requires admin password)
+router.delete('/students/:id', authMiddleware, async (req, res) => {
+    try {
+        const { password } = req.body;
+        if (!password) return res.status(400).json({ message: 'Password is required' });
+
+        const Admin = require('../models/Admin');
+        const admin = await Admin.findById(req.admin.id);
+        if (!admin) return res.status(404).json({ message: 'Admin not found' });
+
+        const isMatch = await admin.comparePassword(password);
+        if (!isMatch) return res.status(401).json({ message: 'Incorrect password' });
+
+        const student = await Student.findById(req.params.id);
+        if (!student) return res.status(404).json({ message: 'Student not found' });
+
+        await Student.findByIdAndDelete(req.params.id);
+        res.json({ message: 'Student deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 module.exports = router;

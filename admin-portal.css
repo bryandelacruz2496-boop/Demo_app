@@ -1378,3 +1378,27 @@ h4 {
     outline: none;
     border-color: #b71c1c;
 }
+
+/* Detail Top Actions */
+.detail-top-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.btn-delete-student {
+    background: #b71c1c;
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-delete-student:hover {
+    background: #d32f2f;
+}
