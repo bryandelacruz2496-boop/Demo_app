@@ -99,6 +99,13 @@
                 <div class="top-actions">
                     <button class="btn-add-student" onclick="showAddStudentForm()">+ Add New Student</button>
                     <button class="btn-add-student" onclick="showAnnouncementForm()">📢 Add Announcement</button>
+                    <button class="btn-add-student" onclick="toggleInquiries()">📩 Messages</button>
+                </div>
+
+                <!-- Inquiries Panel (hidden by default) -->
+                <div class="add-student-form" id="inquiriesPanel" style="display:none;margin-top:1.5rem;">
+                    <h3>📩 Inquiries / Messages</h3>
+                    <div id="inquiriesList"></div>
                 </div>
 
                 <!-- Add Student Form (hidden by default) -->

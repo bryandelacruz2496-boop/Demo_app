@@ -1402,3 +1402,105 @@ h4 {
 .btn-delete-student:hover {
     background: #d32f2f;
 }
+
+/* Inquiries */
+.inquiry-card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #1976d2;
+}
+
+.inquiry-card.inquiry-read {
+    border-left-color: #ff9800;
+}
+
+.inquiry-card.inquiry-replied {
+    border-left-color: #2e7d32;
+    opacity: 0.7;
+}
+
+.inquiry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.inquiry-header strong {
+    font-size: 1.05rem;
+    color: #333;
+}
+
+.inquiry-status-badge {
+    padding: 0.2rem 0.7rem;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.status-new {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.status-read {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+.status-replied {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.inquiry-details p {
+    color: #555;
+    font-size: 0.9rem;
+    margin: 0.3rem 0;
+}
+
+.inquiry-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.8rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid #eee;
+}
+
+.inquiry-date {
+    color: #999;
+    font-size: 0.8rem;
+}
+
+.inquiry-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-mark-read,
+.btn-mark-replied {
+    background: #1976d2;
+    color: #fff;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-mark-replied {
+    background: #2e7d32;
+}
+
+.btn-delete-inquiry {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+}

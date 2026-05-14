@@ -1154,3 +1154,73 @@ function showPasswordPrompt(onConfirm) {
         if (e.key === 'Enter') overlay.querySelector('#passwordConfirmBtn').click();
     };
 }
+
+// Inquiries
+function toggleInquiries() {
+    const panel = document.getElementById('inquiriesPanel');
+    document.getElementById('addStudentForm').style.display = 'none';
+    document.getElementById('announcementForm').style.display = 'none';
+    if (panel.style.display === 'block') {
+        panel.style.display = 'none';
+        return;
+    }
+    panel.style.display = 'block';
+    loadInquiries();
+}
+
+async function loadInquiries() {
+    const res = await fetch(`${API_URL}/inquiries`, {
+        headers: { 'Authorization': `Bearer ${adminToken}` }
+    });
+    if (!res.ok) return;
+    const inquiries = await res.json();
+    const list = document.getElementById('inquiriesList');
+
+    if (inquiries.length === 0) {
+        list.innerHTML = '<p style="text-align:center;color:#888;padding:2rem;">No inquiries yet.</p>';
+        return;
+    }
+
+    list.innerHTML = inquiries.map(inq => `
+        <div class="inquiry-card inquiry-${inq.status}">
+            <div class="inquiry-header">
+                <strong>${inq.childName}</strong>
+                <span class="inquiry-status-badge status-${inq.status}">${inq.status}</span>
+            </div>
+            <div class="inquiry-details">
+                <p>📧 ${inq.email}</p>
+                <p>📞 ${inq.contact}</p>
+                <p>📚 ${inq.gradeLevel || 'Not specified'}</p>
+                ${inq.message ? `<p>💬 ${inq.message}</p>` : ''}
+            </div>
+            <div class="inquiry-footer">
+                <span class="inquiry-date">${new Date(inq.createdAt).toLocaleString()}</span>
+                <div class="inquiry-actions">
+                    ${inq.status === 'new' ? `<button class="btn-mark-read" onclick="updateInquiryStatus('${inq._id}', 'read')">Mark Read</button>` : ''}
+                    ${inq.status === 'read' ? `<button class="btn-mark-replied" onclick="updateInquiryStatus('${inq._id}', 'replied')">Mark Replied</button>` : ''}
+                    <button class="btn-delete-inquiry" onclick="deleteInquiry('${inq._id}')">🗑️</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function updateInquiryStatus(id, status) {
+    await fetch(`${API_URL}/inquiries/${id}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+        body: JSON.stringify({ status })
+    });
+    loadInquiries();
+}
+
+async function deleteInquiry(id) {
+    showConfirmPopup('Delete this inquiry?', async () => {
+        await fetch(`${API_URL}/inquiries/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+        showToast('Inquiry deleted');
+        loadInquiries();
+    });
+}

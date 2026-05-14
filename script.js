@@ -90,11 +90,27 @@ function scrollToTop() {
 // Inquiry form
 function handleInquiry(event) {
     event.preventDefault();
+    const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : 'https://beata-backend.onrender.com/api';
+
+    const data = {
+        childName: document.getElementById('inqName').value,
+        email: document.getElementById('inqEmail').value,
+        contact: document.getElementById('inqContact').value,
+        gradeLevel: document.getElementById('inqGrade').value,
+        message: document.getElementById('inqMessage').value
+    };
+
+    fetch(`${API_URL}/inquiries`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    }).catch(() => { });
+
     document.getElementById('formSuccess').style.display = 'block';
     event.target.reset();
     setTimeout(() => {
         document.getElementById('formSuccess').style.display = 'none';
-    }, 4000);
+    }, 6000);
 }
 
 // Smooth scroll for nav links
