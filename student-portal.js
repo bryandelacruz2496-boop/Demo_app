@@ -357,12 +357,14 @@ async function studentReply(announcementId) {
 // Reply notification for students
 let lastAdminReplyCount = 0;
 let lastAssessmentHash = '';
+let lastProjectCount = 0;
 
 function startStudentNotificationCheck() {
   fetchAdminReplyCount().then(count => { lastAdminReplyCount = count; });
   lastAssessmentHash = getAssessmentHash();
+  fetchProjectCount().then(count => { lastProjectCount = count; });
 
-  // Check replies every 2 seconds (real-time feel)
+  // Check replies and projects every 2 seconds (real-time feel)
   setInterval(async () => {
     const newCount = await fetchAdminReplyCount();
     if (newCount > lastAdminReplyCount) {
@@ -370,6 +372,14 @@ function startStudentNotificationCheck() {
       showStudentNotification(`💬 ${diff} new reply${diff > 1 ? 's' : ''} from admin`);
       lastAdminReplyCount = newCount;
       loadStudentAnnouncements();
+    }
+
+    // Check for new projects
+    const newProjCount = await fetchProjectCount();
+    if (newProjCount > lastProjectCount) {
+      showStudentNotification('📁 A new project has been posted');
+      lastProjectCount = newProjCount;
+      loadStudentProjects();
     }
   }, 2000);
 
@@ -427,6 +437,18 @@ async function fetchAdminReplyCount() {
     return total;
   } catch (e) {
     return lastAdminReplyCount;
+  }
+}
+
+async function fetchProjectCount() {
+  try {
+    const grade = currentStudent ? currentStudent.grade : '';
+    const res = await fetch(`${API_URL}/projects?grade=${encodeURIComponent(grade)}`);
+    if (!res.ok) return lastProjectCount;
+    const projects = await res.json();
+    return projects.length;
+  } catch (e) {
+    return lastProjectCount;
   }
 }
 
