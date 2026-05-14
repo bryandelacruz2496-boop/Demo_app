@@ -326,10 +326,13 @@ async function studentReply(announcementId) {
 
 // Reply notification for students
 let lastAdminReplyCount = 0;
+let lastAssessmentHash = '';
 
 function startStudentNotificationCheck() {
   fetchAdminReplyCount().then(count => { lastAdminReplyCount = count; });
+  lastAssessmentHash = getAssessmentHash();
 
+  // Check replies every 2 seconds (real-time feel)
   setInterval(async () => {
     const newCount = await fetchAdminReplyCount();
     if (newCount > lastAdminReplyCount) {
@@ -338,7 +341,36 @@ function startStudentNotificationCheck() {
       lastAdminReplyCount = newCount;
       loadStudentAnnouncements();
     }
+  }, 2000);
+
+  // Check assessment updates every 5 seconds
+  setInterval(async () => {
+    const token = localStorage.getItem('studentToken');
+    if (!token) return;
+    try {
+      const res = await fetch(`${API_URL}/student/refresh`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.student) {
+          const newHash = JSON.stringify(data.student.assessments);
+          if (lastAssessmentHash && newHash !== lastAssessmentHash) {
+            showStudentNotification('📝 Your assessments have been updated by the admin');
+            currentStudent = data.student;
+            localStorage.setItem('studentData', JSON.stringify(data.student));
+            populateDashboard();
+          }
+          lastAssessmentHash = newHash;
+        }
+      }
+    } catch (e) { }
   }, 5000);
+}
+
+function getAssessmentHash() {
+  if (!currentStudent || !currentStudent.assessments) return '';
+  return JSON.stringify(currentStudent.assessments);
 }
 
 async function fetchAdminReplyCount() {
