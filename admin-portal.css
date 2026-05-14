@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Nunito', sans-serif;
-    background: #f0f2f5;
+    background: #f8f9fa;
     min-height: 100vh;
 }
 
@@ -42,7 +42,7 @@ h4 {
     position: relative;
     z-index: 1;
     padding: 3rem;
-    border-radius: 20px;
+    border-radius: 24px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     width: 100%;
     max-width: 400px;
@@ -84,32 +84,39 @@ h4 {
     width: 100%;
     padding: 0.8rem 1rem;
     border: 2px solid #eee;
-    border-radius: 10px;
+    border-radius: 12px;
     font-size: 1rem;
     font-family: inherit;
-    transition: border-color 0.3s;
+    transition: all 0.3s ease;
 }
 
 .form-group input:focus {
     outline: none;
-    border-color: #b71c1c;
+    border-color: #e53935;
+    box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
 }
 
 .btn-login {
     width: 100%;
     padding: 0.9rem;
-    background: #b71c1c;
+    background: linear-gradient(135deg, #b71c1c, #e53935);
     color: #fff;
     border: none;
-    border-radius: 10px;
+    border-radius: 25px;
     font-size: 1.1rem;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(183, 28, 28, 0.3);
 }
 
 .btn-login:hover {
-    background: #d32f2f;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(183, 28, 28, 0.4);
+}
+
+.btn-login:active {
+    transform: translateY(0);
 }
 
 .error-msg {
@@ -128,12 +135,13 @@ h4 {
 }
 
 .admin-header {
-    background: #1a1a2e;
+    background: linear-gradient(135deg, #b71c1c 0%, #e53935 100%);
     padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: #fff;
+    box-shadow: 0 4px 15px rgba(183, 28, 28, 0.3);
 }
 
 .admin-logo {
@@ -177,36 +185,36 @@ h4 {
 /* Admin Navigation */
 .admin-nav {
     display: flex;
-    gap: 0;
+    gap: 0.3rem;
     background: #fff;
-    border-radius: 12px;
-    padding: 0.4rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    border-radius: 16px;
+    padding: 0.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .admin-nav-btn {
     flex: 1;
-    padding: 0.8rem 1.5rem;
+    padding: 0.9rem 1.5rem;
     border: none;
     background: transparent;
     font-family: 'Fredoka', sans-serif;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
     color: #666;
     cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.3s;
+    border-radius: 12px;
+    transition: all 0.3s ease;
 }
 
 .admin-nav-btn.active {
-    background: #b71c1c;
+    background: linear-gradient(135deg, #b71c1c, #e53935);
     color: #fff;
-    box-shadow: 0 3px 10px rgba(183, 28, 28, 0.3);
+    box-shadow: 0 4px 12px rgba(183, 28, 28, 0.3);
 }
 
 .admin-nav-btn:hover:not(.active) {
-    background: #ffebee;
+    background: #fff5f5;
     color: #b71c1c;
 }
 
@@ -233,9 +241,10 @@ h4 {
 
 .panel {
     background: #fff;
-    border-radius: 15px;
+    border-radius: 20px;
     padding: 2rem;
-    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
 }
 
 .student-list-panel h2 {
@@ -253,16 +262,17 @@ h4 {
     justify-content: space-between;
     align-items: center;
     padding: 1.2rem 1.5rem;
-    background: #f8f8f8;
-    border-radius: 10px;
-    border-left: 4px solid #b71c1c;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border-left: 4px solid #e53935;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
 }
 
 .student-item:hover {
     background: #fff5f5;
     transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .student-item-info h4 {
@@ -323,21 +333,23 @@ h4 {
 }
 
 .admin-tab {
-    padding: 0.6rem 1.2rem;
-    border: 2px solid #ddd;
+    padding: 0.7rem 1.5rem;
+    border: 2px solid #eee;
     background: #fff;
-    border-radius: 8px;
+    border-radius: 25px;
     cursor: pointer;
+    font-size: 0.9rem;
     font-weight: 600;
     font-family: inherit;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
 }
 
 .admin-tab.active,
 .admin-tab:hover {
-    background: #b71c1c;
+    background: linear-gradient(135deg, #b71c1c, #e53935);
     color: #fff;
-    border-color: #b71c1c;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(183, 28, 28, 0.3);
 }
 
 .admin-panel {
@@ -394,34 +406,44 @@ h4 {
 }
 
 .btn-add {
-    background: #b71c1c;
+    background: linear-gradient(135deg, #b71c1c, #e53935);
     color: #fff;
     border: none;
     padding: 0.6rem 1.2rem;
-    border-radius: 8px;
+    border-radius: 20px;
     cursor: pointer;
     font-weight: 600;
     white-space: nowrap;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 8px rgba(183, 28, 28, 0.2);
 }
 
 .btn-add:hover {
-    background: #d32f2f;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(183, 28, 28, 0.3);
 }
 
 .btn-save {
-    background: #b71c1c;
+    background: linear-gradient(135deg, #b71c1c, #e53935);
     color: #fff;
     border: none;
     padding: 0.8rem 2rem;
-    border-radius: 10px;
+    border-radius: 25px;
     font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
     margin-top: 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(183, 28, 28, 0.3);
 }
 
 .btn-save:hover {
-    background: #d32f2f;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(183, 28, 28, 0.4);
+}
+
+.btn-save:active {
+    transform: translateY(0);
 }
 
 .table-wrapper {
@@ -440,10 +462,11 @@ h4 {
 }
 
 .admin-table th {
-    background: #b71c1c;
+    background: linear-gradient(135deg, #b71c1c, #e53935);
     color: #fff;
-    padding: 0.7rem 1rem;
+    padding: 0.8rem 1rem;
     text-align: left;
+    font-weight: 600;
 }
 
 .admin-table td {
@@ -582,10 +605,12 @@ h4 {
 
 /* Collection Summary */
 .collection-summary {
-    background: linear-gradient(135deg, #fff5f5, #ffe0e0);
+    background: linear-gradient(135deg, #fff5f5 0%, #ffebee 100%);
+    border-radius: 20px;
     padding: 2rem;
-    border-radius: 12px;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    border: none;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
 }
 
 .collection-summary h3 {
@@ -624,10 +649,16 @@ h4 {
     flex: 1;
     background: #fff;
     padding: 1.5rem;
-    border-radius: 12px;
+    border-radius: 16px;
     text-align: center;
     min-width: 150px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.collection-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .collection-label {
@@ -791,21 +822,27 @@ h4 {
 
 /* Add Student */
 .btn-add-student {
-    background: #b71c1c;
+    background: linear-gradient(135deg, #b71c1c, #e53935);
     color: #fff;
     border: none;
     padding: 0.7rem 1.5rem;
-    border-radius: 10px;
-    font-size: 1rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
     font-weight: 700;
     cursor: pointer;
     margin-bottom: 1.5rem;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(183, 28, 28, 0.3);
+    font-family: inherit;
 }
 
 .btn-add-student:hover {
-    background: #d32f2f;
     transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(183, 28, 28, 0.4);
+}
+
+.btn-add-student:active {
+    transform: translateY(0);
 }
 
 .add-student-form {
@@ -866,18 +903,20 @@ h4 {
 }
 
 .btn-cancel {
-    background: #eee;
+    background: #f0f0f0;
     color: #555;
     border: none;
     padding: 0.7rem 1.5rem;
-    border-radius: 10px;
+    border-radius: 25px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 .btn-cancel:hover {
-    background: #ddd;
+    background: #e0e0e0;
+    transform: translateY(-1px);
 }
 
 .success-card {
@@ -988,16 +1027,18 @@ h4 {
     color: #b71c1c;
     border: 2px solid #b71c1c;
     padding: 0.7rem 1.5rem;
-    border-radius: 10px;
+    border-radius: 25px;
     font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
 }
 
 .btn-edit:hover {
-    background: #b71c1c;
+    background: linear-gradient(135deg, #b71c1c, #e53935);
     color: #fff;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(183, 28, 28, 0.3);
 }
 
 #profilePanel input:disabled,
@@ -1257,18 +1298,20 @@ h4 {
 }
 
 .btn-reply {
-    background: #b71c1c;
+    background: linear-gradient(135deg, #b71c1c, #e53935);
     color: #fff;
     border: none;
     padding: 0.5rem 1rem;
-    border-radius: 8px;
+    border-radius: 20px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(183, 28, 28, 0.2);
 }
 
 .btn-reply:hover {
-    background: #d32f2f;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(183, 28, 28, 0.3);
 }
 
 /* Change Password */

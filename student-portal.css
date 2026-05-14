@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Nunito', sans-serif;
-    background: #f5f5f5;
+    background: #f8f9fa;
     min-height: 100vh;
 }
 
@@ -41,7 +41,7 @@ h4 {
 .login-card {
     background: #fff;
     padding: 3rem;
-    border-radius: 20px;
+    border-radius: 24px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
     width: 100%;
     position: relative;
@@ -86,34 +86,40 @@ h4 {
     width: 100%;
     padding: 0.8rem 1rem;
     border: 2px solid #eee;
-    border-radius: 10px;
+    border-radius: 12px;
     font-size: 1rem;
     font-family: inherit;
-    transition: border-color 0.3s;
+    transition: all 0.3s ease;
 }
 
 .form-group input:focus {
     outline: none;
-    border-color: #b71c1c;
+    border-color: #e53935;
+    box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
 }
 
 .btn-login {
     width: 100%;
     padding: 0.9rem;
-    background: #b71c1c;
+    background: linear-gradient(135deg, #b71c1c, #e53935);
     color: #fff;
     border: none;
-    border-radius: 10px;
+    border-radius: 25px;
     font-size: 1.1rem;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
     margin-top: 0.5rem;
+    box-shadow: 0 4px 12px rgba(183, 28, 28, 0.3);
 }
 
 .btn-login:hover {
-    background: #d32f2f;
     transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(183, 28, 28, 0.4);
+}
+
+.btn-login:active {
+    transform: translateY(0);
 }
 
 .error-msg {
@@ -149,13 +155,13 @@ h4 {
 
 /* Dashboard */
 .dash-header {
-    background: #b71c1c;
+    background: linear-gradient(135deg, #b71c1c 0%, #e53935 100%);
     padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: #fff;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 15px rgba(183, 28, 28, 0.3);
 }
 
 .dash-logo {
@@ -182,18 +188,20 @@ h4 {
 }
 
 .btn-logout {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.15);
     color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    padding: 0.4rem 1rem;
-    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 0.4rem 1.2rem;
+    border-radius: 25px;
     cursor: pointer;
     font-size: 0.9rem;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
+    font-weight: 600;
 }
 
 .btn-logout:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
 }
 
 .dash-content {
@@ -206,14 +214,14 @@ h4 {
 /* Info Card */
 .info-card {
     background: #fff;
-    border-radius: 15px;
+    border-radius: 20px;
     padding: 2rem;
     display: flex;
     align-items: center;
     gap: 2rem;
-    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     margin-bottom: 2rem;
-    border-left: 5px solid #b71c1c;
+    border-left: 5px solid #e53935;
 }
 
 .info-avatar {
@@ -247,30 +255,31 @@ h4 {
 
 .dash-tab {
     padding: 0.7rem 1.5rem;
-    border: 2px solid #ddd;
+    border: 2px solid #eee;
     background: #fff;
-    border-radius: 10px;
+    border-radius: 25px;
     cursor: pointer;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 600;
     font-family: inherit;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
 }
 
 .dash-tab.active,
 .dash-tab:hover {
-    background: #b71c1c;
+    background: linear-gradient(135deg, #b71c1c, #e53935);
     color: #fff;
-    border-color: #b71c1c;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(183, 28, 28, 0.3);
 }
 
 /* Panels */
 .dash-panel {
     display: none;
     background: #fff;
-    border-radius: 15px;
+    border-radius: 20px;
     padding: 2rem;
-    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     animation: fadeIn 0.3s ease;
 }
 
@@ -307,11 +316,18 @@ h4 {
 
 .summary-item {
     flex: 1;
-    background: #f8f8f8;
+    background: #f8f9fa;
     padding: 1.2rem;
-    border-radius: 10px;
+    border-radius: 16px;
     text-align: center;
     min-width: 150px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.summary-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .summary-label {
@@ -351,7 +367,7 @@ h4 {
 }
 
 .data-table th {
-    background: #b71c1c;
+    background: linear-gradient(135deg, #b71c1c, #e53935);
     color: #fff;
     padding: 0.8rem 1rem;
     text-align: left;
@@ -402,16 +418,18 @@ h4 {
 
 .activity-card,
 .project-card {
-    background: #f8f8f8;
+    background: #f8f9fa;
     padding: 1.5rem;
-    border-radius: 12px;
-    border-left: 4px solid #b71c1c;
-    transition: transform 0.2s;
+    border-radius: 16px;
+    border-left: 4px solid #e53935;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .activity-card:hover,
 .project-card:hover {
     transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .activity-card h4,
@@ -486,11 +504,12 @@ h4 {
 /* Activity Photos */
 .activity-card {
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
 }
 
 .activity-card:hover {
     background: #fff5f5;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .activity-photo-wrapper {
@@ -642,11 +661,18 @@ h4 {
 
 /* Assessment View Cards */
 .assessment-view-card {
-    background: #f8f8f8;
-    border-radius: 12px;
+    background: #f8f9fa;
+    border-radius: 16px;
     padding: 1.2rem;
     margin-bottom: 1rem;
-    border-left: 4px solid #b71c1c;
+    border-left: 4px solid #e53935;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.assessment-view-card:hover {
+    transform: translateX(3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .assessment-view-card h4 {
