@@ -580,31 +580,33 @@ async function addActivity() {
 
     if (!title || !subject || !date || !description) return;
 
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('subject', subject);
-    formData.append('date', date);
-    formData.append('description', description);
-    if (imageFile) formData.append('image', imageFile);
+    showConfirmPopup('Are you sure you want to add this activity?', async () => {
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('subject', subject);
+        formData.append('date', date);
+        formData.append('description', description);
+        if (imageFile) formData.append('image', imageFile);
 
-    const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/activities`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${adminToken}` },
-        body: formData
+        const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/activities`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${adminToken}` },
+            body: formData
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            selectedStudent.activities = data.activities;
+            renderActivities();
+            showToast('Activity added!');
+            document.getElementById('actTitle').value = '';
+            document.getElementById('actSubject').value = '';
+            document.getElementById('actDate').value = '';
+            document.getElementById('actDesc').value = '';
+            document.getElementById('actImage').value = '';
+            document.getElementById('actImagePreview').style.display = 'none';
+        }
     });
-
-    if (res.ok) {
-        const data = await res.json();
-        selectedStudent.activities = data.activities;
-        renderActivities();
-        showToast('Activity added!');
-        document.getElementById('actTitle').value = '';
-        document.getElementById('actSubject').value = '';
-        document.getElementById('actDate').value = '';
-        document.getElementById('actDesc').value = '';
-        document.getElementById('actImage').value = '';
-        document.getElementById('actImagePreview').style.display = 'none';
-    }
 }
 
 // Projects
@@ -645,23 +647,25 @@ async function addProject() {
 
     if (!title || !subject || !dueDate || !description) return;
 
-    const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/projects`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
-        body: JSON.stringify({ title, subject, dueDate, description, grade })
-    });
+    showConfirmPopup('Are you sure you want to add this project?', async () => {
+        const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/projects`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+            body: JSON.stringify({ title, subject, dueDate, description, grade })
+        });
 
-    if (res.ok) {
-        const data = await res.json();
-        selectedStudent.projects = data.projects;
-        renderProjects();
-        showToast('Project added!');
-        document.getElementById('projTitle').value = '';
-        document.getElementById('projSubject').value = '';
-        document.getElementById('projDue').value = '';
-        document.getElementById('projDesc').value = '';
-        document.getElementById('projGrade').value = '';
-    }
+        if (res.ok) {
+            const data = await res.json();
+            selectedStudent.projects = data.projects;
+            renderProjects();
+            showToast('Project added!');
+            document.getElementById('projTitle').value = '';
+            document.getElementById('projSubject').value = '';
+            document.getElementById('projDue').value = '';
+            document.getElementById('projDesc').value = '';
+            document.getElementById('projGrade').value = '';
+        }
+    });
 }
 
 // Tab switching
