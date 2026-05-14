@@ -1,3 +1,89 @@
+/* ============================================
+   STUDENT PORTAL - PREMIUM RED GRADIENT THEME
+   ============================================ */
+
+/* Keyframe Animations */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes cardEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(15px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes studentNotifFade {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    70% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+}
+
+/* Reset & Base */
 * {
     margin: 0;
     padding: 0;
@@ -6,7 +92,7 @@
 
 body {
     font-family: 'Nunito', sans-serif;
-    background: #f8f9fa;
+    background: #fafafa;
     min-height: 100vh;
 }
 
@@ -35,19 +121,20 @@ h4 {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(183, 28, 28, 0.6);
+    background: linear-gradient(135deg, rgba(183, 28, 28, 0.75), rgba(229, 57, 53, 0.6));
 }
 
 .login-card {
     background: #fff;
     padding: 3rem;
     border-radius: 24px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1);
     width: 100%;
     position: relative;
     z-index: 1;
     max-width: 400px;
     text-align: center;
+    animation: cardEntrance 0.4s ease forwards;
 }
 
 .login-header {
@@ -85,11 +172,11 @@ h4 {
 .form-group input {
     width: 100%;
     padding: 0.8rem 1rem;
-    border: 2px solid #eee;
+    border: 1.5px solid #e0e0e0;
     border-radius: 12px;
     font-size: 1rem;
     font-family: inherit;
-    transition: all 0.3s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .form-group input:focus {
@@ -104,22 +191,23 @@ h4 {
     background: linear-gradient(135deg, #b71c1c, #e53935);
     color: #fff;
     border: none;
-    border-radius: 25px;
+    border-radius: 10px;
     font-size: 1.1rem;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     margin-top: 0.5rem;
-    box-shadow: 0 4px 12px rgba(183, 28, 28, 0.3);
+    box-shadow: 0 4px 12px rgba(183, 28, 28, 0.4);
+    will-change: transform;
 }
 
 .btn-login:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(183, 28, 28, 0.4);
+    box-shadow: 0 6px 20px rgba(183, 28, 28, 0.5);
 }
 
 .btn-login:active {
-    transform: translateY(0);
+    transform: scale(0.97);
 }
 
 .error-msg {
@@ -135,6 +223,7 @@ h4 {
     color: #888;
     text-decoration: none;
     font-size: 0.9rem;
+    transition: color 0.2s;
 }
 
 .back-link:hover {
@@ -153,15 +242,18 @@ h4 {
     border: none;
 }
 
-/* Dashboard */
+/* Dashboard Header */
 .dash-header {
-    background: linear-gradient(135deg, #b71c1c 0%, #e53935 100%);
+    background: linear-gradient(135deg, #8e0000 0%, #b71c1c 40%, #e53935 100%);
     padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: #fff;
-    box-shadow: 0 4px 15px rgba(183, 28, 28, 0.3);
+    box-shadow: 0 4px 20px rgba(183, 28, 28, 0.35);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 .dash-logo {
@@ -188,20 +280,26 @@ h4 {
 }
 
 .btn-logout {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.12);
     color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     padding: 0.4rem 1.2rem;
-    border-radius: 25px;
+    border-radius: 10px;
     cursor: pointer;
     font-size: 0.9rem;
-    transition: all 0.3s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     font-weight: 600;
+    backdrop-filter: blur(4px);
 }
 
 .btn-logout:hover {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.22);
     transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-logout:active {
+    transform: scale(0.97);
 }
 
 .dash-content {
@@ -209,30 +307,33 @@ h4 {
     margin: 2rem auto;
     padding: 0 2rem;
     overflow: hidden;
+    animation: slideUp 0.5s ease;
 }
 
 /* Info Card */
 .info-card {
     background: #fff;
-    border-radius: 20px;
+    border-radius: 16px;
     padding: 2rem;
     display: flex;
     align-items: center;
     gap: 2rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.04);
     margin-bottom: 2rem;
     border-left: 5px solid #e53935;
+    animation: cardEntrance 0.4s ease forwards;
 }
 
 .info-avatar {
     font-size: 4rem;
-    background: #ffebee;
+    background: linear-gradient(135deg, #ffebee, #ffcdd2);
     width: 80px;
     height: 80px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
 }
 
 .info-details h2 {
@@ -255,14 +356,15 @@ h4 {
 
 .dash-tab {
     padding: 0.7rem 1.5rem;
-    border: 2px solid #eee;
+    border: 1.5px solid #e0e0e0;
     background: #fff;
-    border-radius: 25px;
+    border-radius: 10px;
     cursor: pointer;
     font-size: 0.9rem;
     font-weight: 600;
     font-family: inherit;
-    transition: all 0.3s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
 }
 
 .dash-tab.active,
@@ -270,17 +372,21 @@ h4 {
     background: linear-gradient(135deg, #b71c1c, #e53935);
     color: #fff;
     border-color: transparent;
-    box-shadow: 0 4px 12px rgba(183, 28, 28, 0.3);
+    box-shadow: 0 4px 12px rgba(183, 28, 28, 0.35);
+}
+
+.dash-tab:active {
+    transform: scale(0.97);
 }
 
 /* Panels */
 .dash-panel {
     display: none;
     background: #fff;
-    border-radius: 20px;
+    border-radius: 16px;
     padding: 2rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    animation: fadeIn 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.04);
+    animation: cardEntrance 0.4s ease forwards;
 }
 
 .dash-panel.active {
@@ -294,18 +400,6 @@ h4 {
     font-size: 1.3rem;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 /* Payment Summary */
 .payment-summary {
     display: flex;
@@ -316,18 +410,19 @@ h4 {
 
 .summary-item {
     flex: 1;
-    background: #f8f9fa;
+    background: #fafafa;
     padding: 1.2rem;
-    border-radius: 16px;
+    border-radius: 12px;
     text-align: center;
     min-width: 150px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
 }
 
 .summary-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
 .summary-label {
@@ -355,7 +450,7 @@ h4 {
 .table-wrapper {
     width: 100%;
     overflow-x: auto;
-    border-radius: 8px;
+    border-radius: 12px;
     -webkit-overflow-scrolling: touch;
 }
 
@@ -369,22 +464,23 @@ h4 {
 .data-table th {
     background: linear-gradient(135deg, #b71c1c, #e53935);
     color: #fff;
-    padding: 0.8rem 1rem;
+    padding: 0.9rem 1rem;
     text-align: left;
     font-weight: 600;
 }
 
 .data-table th:first-child {
-    border-radius: 8px 0 0 0;
+    border-radius: 12px 0 0 0;
 }
 
 .data-table th:last-child {
-    border-radius: 0 8px 0 0;
+    border-radius: 0 12px 0 0;
 }
 
 .data-table td {
     padding: 0.8rem 1rem;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s;
 }
 
 .data-table tr:hover td {
@@ -418,18 +514,26 @@ h4 {
 
 .activity-card,
 .project-card {
-    background: #f8f9fa;
+    background: #fafafa;
     padding: 1.5rem;
-    border-radius: 16px;
+    border-radius: 12px;
     border-left: 4px solid #e53935;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    cursor: pointer;
+    will-change: transform;
 }
 
 .activity-card:hover,
 .project-card:hover {
     transform: translateX(5px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(183, 28, 28, 0.1);
+    background: #fff5f5;
+}
+
+.activity-card:active,
+.project-card:active {
+    transform: translateX(3px) scale(0.99);
 }
 
 .activity-card h4,
@@ -452,14 +556,16 @@ h4 {
 
 .grade-badge {
     display: inline-block;
-    background: #b71c1c;
+    background: linear-gradient(135deg, #b71c1c, #e53935);
     color: #fff;
     padding: 0.2rem 0.7rem;
     border-radius: 15px;
     font-size: 0.8rem;
     font-weight: 700;
     margin-left: 0.5rem;
+    box-shadow: 0 2px 6px rgba(183, 28, 28, 0.3);
 }
+
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -500,35 +606,25 @@ h4 {
     }
 }
 
-
 /* Activity Photos */
-.activity-card {
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.activity-card:hover {
-    background: #fff5f5;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
 .activity-photo-wrapper {
     margin-top: 1rem;
     padding-top: 1rem;
-    border-top: 1px solid #eee;
+    border-top: 1px solid #f0f0f0;
 }
 
 .activity-photo {
     width: 100%;
     max-width: 400px;
-    border-radius: 10px;
-    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .activity-photo:hover {
     transform: scale(1.02);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.18);
 }
 
 .photo-hint {
@@ -537,7 +633,6 @@ h4 {
     margin-top: 0.5rem;
     font-style: italic;
 }
-
 
 /* Filter Row */
 .filter-row {
@@ -554,18 +649,19 @@ h4 {
 
 .filter-row select {
     padding: 0.5rem 1rem;
-    border: 2px solid #ddd;
-    border-radius: 8px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
     font-family: inherit;
     font-size: 0.95rem;
     cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .filter-row select:focus {
     outline: none;
-    border-color: #b71c1c;
+    border-color: #e53935;
+    box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.1);
 }
-
 
 /* Sort Row */
 .sort-row {
@@ -584,20 +680,20 @@ h4 {
 
 .sort-row select {
     padding: 0.5rem 1.2rem;
-    border: 2px solid #b71c1c;
-    border-radius: 8px;
+    border: 1.5px solid #e53935;
+    border-radius: 10px;
     font-family: inherit;
     font-size: 0.95rem;
     cursor: pointer;
     background: #fff;
     color: #b71c1c;
     font-weight: 600;
-    transition: all 0.3s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sort-row select:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(183, 28, 28, 0.15);
+    box-shadow: 0 0 0 3px rgba(183, 28, 28, 0.12);
 }
 
 /* Student Notification */
@@ -605,7 +701,8 @@ h4 {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background: rgba(46, 125, 50, 0.8);
+    background: rgba(46, 125, 50, 0.9);
+    backdrop-filter: blur(10px);
     color: #fff;
     padding: 1rem 1.5rem;
     border-radius: 12px;
@@ -615,64 +712,45 @@ h4 {
     display: flex;
     align-items: center;
     gap: 1rem;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 32px rgba(46, 125, 50, 0.35);
     animation: studentNotifFade 8s ease forwards;
 }
 
 .student-notification button {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.15);
     border: none;
     color: #fff;
     font-size: 1.1rem;
     cursor: pointer;
     padding: 0.2rem 0.5rem;
-    border-radius: 5px;
+    border-radius: 6px;
+    transition: background 0.2s;
 }
 
 .student-notification button:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
-
-@keyframes studentNotifFade {
-    0% {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    10% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    70% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-
-    100% {
-        opacity: 0;
-        transform: translateY(10px);
-    }
+    background: rgba(255, 255, 255, 0.25);
 }
 
 .student-notification-error {
-    background: rgba(183, 28, 28, 0.85) !important;
+    background: rgba(183, 28, 28, 0.9) !important;
+    box-shadow: 0 8px 32px rgba(183, 28, 28, 0.35) !important;
 }
 
 /* Assessment View Cards */
 .assessment-view-card {
-    background: #f8f9fa;
-    border-radius: 16px;
+    background: #fafafa;
+    border-radius: 12px;
     padding: 1.2rem;
     margin-bottom: 1rem;
     border-left: 4px solid #e53935;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    will-change: transform;
 }
 
 .assessment-view-card:hover {
     transform: translateX(3px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(183, 28, 28, 0.08);
 }
 
 .assessment-view-card h4 {
@@ -690,8 +768,14 @@ h4 {
 .assessment-view-quarter {
     background: #fff;
     padding: 0.8rem;
-    border-radius: 8px;
-    border: 1px solid #eee;
+    border-radius: 10px;
+    border: 1px solid #f0f0f0;
+    transition: all 0.2s;
+}
+
+.assessment-view-quarter:hover {
+    border-color: #ffcdd2;
+    box-shadow: 0 2px 8px rgba(183, 28, 28, 0.06);
 }
 
 .quarter-label {
@@ -716,7 +800,6 @@ h4 {
     }
 }
 
-
 /* Avatar Upload Button */
 .info-avatar {
     position: relative;
@@ -726,7 +809,7 @@ h4 {
     position: absolute;
     bottom: 0;
     right: 0;
-    background: #b71c1c;
+    background: linear-gradient(135deg, #b71c1c, #e53935);
     color: #fff;
     width: 28px;
     height: 28px;
@@ -736,12 +819,13 @@ h4 {
     justify-content: center;
     font-size: 0.8rem;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    transition: transform 0.2s;
+    box-shadow: 0 2px 8px rgba(183, 28, 28, 0.4);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .avatar-upload-btn:hover {
-    transform: scale(1.1);
+    transform: scale(1.15);
+    box-shadow: 0 4px 12px rgba(183, 28, 28, 0.5);
 }
 
 /* Calendar Event Cards */
@@ -753,12 +837,11 @@ h4 {
     font-weight: 600;
 }
 
-
 /* Pay Now Section */
 .payment-options-section {
     margin-top: 2rem;
     padding-top: 1.5rem;
-    border-top: 2px solid #eee;
+    border-top: 2px solid #f0f0f0;
 }
 
 .payment-options-section h4 {
@@ -781,10 +864,15 @@ h4 {
 
 .qr-code-box {
     text-align: center;
-    background: #f9f9f9;
+    background: #fafafa;
     padding: 1.2rem;
     border-radius: 12px;
-    border: 1px solid #eee;
+    border: 1px solid #f0f0f0;
+    transition: all 0.2s;
+}
+
+.qr-code-box:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .qr-code-box canvas {
@@ -799,10 +887,10 @@ h4 {
 }
 
 .bank-details-box {
-    background: #f9f9f9;
+    background: #fafafa;
     padding: 1.2rem;
     border-radius: 12px;
-    border: 1px solid #eee;
+    border: 1px solid #f0f0f0;
 }
 
 .bank-details-box h5 {
@@ -815,7 +903,7 @@ h4 {
     display: flex;
     justify-content: space-between;
     padding: 0.5rem 0;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #f0f0f0;
     font-size: 0.9rem;
 }
 
