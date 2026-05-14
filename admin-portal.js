@@ -376,15 +376,15 @@ function renderGrades() {
     const form = document.getElementById('gradesForm');
     form.innerHTML = `
     <table class="admin-table">
-      <thead><tr><th>Subject</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th><th></th></tr></thead>
+      <thead><tr><th>Subject</th><th>Q1 Remarks</th><th>Q2 Remarks</th><th>Q3 Remarks</th><th>Q4 Remarks</th><th></th></tr></thead>
       <tbody>
         ${selectedStudent.assessments.map((a, i) => `
           <tr>
             <td><strong>${a.subject}</strong></td>
-            <td><input class="grade-input" id="q1_${i}" type="number" min="0" max="100" value="${a.q1 || ''}"></td>
-            <td><input class="grade-input" id="q2_${i}" type="number" min="0" max="100" value="${a.q2 || ''}"></td>
-            <td><input class="grade-input" id="q3_${i}" type="number" min="0" max="100" value="${a.q3 || ''}"></td>
-            <td><input class="grade-input" id="q4_${i}" type="number" min="0" max="100" value="${a.q4 || ''}"></td>
+            <td><input class="grade-input remark-input" id="q1_${i}" type="text" placeholder="Remarks" value="${a.q1 || ''}"></td>
+            <td><input class="grade-input remark-input" id="q2_${i}" type="text" placeholder="Remarks" value="${a.q2 || ''}"></td>
+            <td><input class="grade-input remark-input" id="q3_${i}" type="text" placeholder="Remarks" value="${a.q3 || ''}"></td>
+            <td><input class="grade-input remark-input" id="q4_${i}" type="text" placeholder="Remarks" value="${a.q4 || ''}"></td>
             <td><button class="btn-remove-subject" onclick="removeSubject(${i})">✕</button></td>
           </tr>
         `).join('')}
@@ -424,10 +424,10 @@ function removeSubject(index) {
 async function saveGrades() {
     const assessments = selectedStudent.assessments.map((a, i) => ({
         subject: a.subject,
-        q1: document.getElementById(`q1_${i}`).value ? Number(document.getElementById(`q1_${i}`).value) : null,
-        q2: document.getElementById(`q2_${i}`).value ? Number(document.getElementById(`q2_${i}`).value) : null,
-        q3: document.getElementById(`q3_${i}`).value ? Number(document.getElementById(`q3_${i}`).value) : null,
-        q4: document.getElementById(`q4_${i}`).value ? Number(document.getElementById(`q4_${i}`).value) : null
+        q1: document.getElementById(`q1_${i}`).value || null,
+        q2: document.getElementById(`q2_${i}`).value || null,
+        q3: document.getElementById(`q3_${i}`).value || null,
+        q4: document.getElementById(`q4_${i}`).value || null
     }));
 
     const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/assessments`, {
@@ -437,7 +437,7 @@ async function saveGrades() {
     });
 
     if (res.ok) {
-        showToast('Grades saved successfully!');
+        showToast('Assessments saved successfully!');
         const data = await res.json();
         selectedStudent.assessments = data.assessments;
         renderGrades();

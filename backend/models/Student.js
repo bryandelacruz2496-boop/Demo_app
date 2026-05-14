@@ -27,10 +27,10 @@ const projectSchema = new mongoose.Schema({
 
 const assessmentSchema = new mongoose.Schema({
     subject: String,
-    q1: { type: Number, default: null },
-    q2: { type: Number, default: null },
-    q3: { type: Number, default: null },
-    q4: { type: Number, default: null }
+    q1: { type: String, default: null },
+    q2: { type: String, default: null },
+    q3: { type: String, default: null },
+    q4: { type: String, default: null }
 });
 
 const studentSchema = new mongoose.Schema({

@@ -133,8 +133,6 @@ function populateDashboard() {
   // Assessments
   const assessmentBody = document.getElementById('assessmentTableBody');
   assessmentBody.innerHTML = currentStudent.assessments.map(a => {
-    const grades = [a.q1, a.q2, a.q3, a.q4].filter(g => g !== null);
-    const final = grades.length > 0 ? Math.round(grades.reduce((s, g) => s + g, 0) / grades.length) : '-';
     return `
       <tr>
         <td><strong>${a.subject}</strong></td>
@@ -142,7 +140,6 @@ function populateDashboard() {
         <td>${a.q2 || '-'}</td>
         <td>${a.q3 || '-'}</td>
         <td>${a.q4 || '-'}</td>
-        <td><strong>${final}</strong></td>
       </tr>
     `;
   }).join('');
