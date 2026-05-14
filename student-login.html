@@ -58,7 +58,14 @@
             <div class="dash-content">
                 <!-- Student Info Card -->
                 <div class="info-card">
-                    <div class="info-avatar">👦</div>
+                    <div class="info-avatar">
+                        👦
+                        <label class="avatar-upload-btn" title="Change photo">
+                            📷
+                            <input type="file" id="studentPhotoUpload" accept="image/*"
+                                onchange="uploadStudentPhoto(this)" style="display:none;">
+                        </label>
+                    </div>
                     <div class="info-details">
                         <h2 id="infoFullName"></h2>
                         <p><strong>Student No:</strong> <span id="infoStudentNo"></span></p>
@@ -74,6 +81,7 @@
                     <button class="dash-tab" onclick="switchDashTab(event, 'activities')">📋 Activities</button>
                     <button class="dash-tab" onclick="switchDashTab(event, 'projects')">📁 Projects</button>
                     <button class="dash-tab" onclick="switchDashTab(event, 'assessments')">📝 Assessments</button>
+                    <button class="dash-tab" onclick="switchDashTab(event, 'calendar')">📅 Calendar</button>
                 </div>
 
                 <!-- Announcements Tab -->
@@ -154,6 +162,12 @@
                 <div class="dash-panel" id="assessments">
                     <h3>Assessments & Remarks</h3>
                     <div id="assessmentsList"></div>
+                </div>
+
+                <!-- Calendar Tab -->
+                <div class="dash-panel" id="calendar">
+                    <h3>📅 School Calendar</h3>
+                    <div class="activity-list" id="calendarEventsList"></div>
                 </div>
             </div>
         </div>

@@ -1604,3 +1604,76 @@ h4 {
         grid-template-columns: 1fr;
     }
 }
+
+
+/* Archive Styles */
+.student-archived {
+    opacity: 0.6;
+}
+
+.archived-badge {
+    display: inline-block;
+    background: #ff9800;
+    color: #fff;
+    padding: 0.1rem 0.6rem;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+}
+
+.btn-archive-student {
+    background: #ff9800;
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-archive-student:hover {
+    background: #f57c00;
+}
+
+.btn-unarchive-student {
+    background: #2e7d32;
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-unarchive-student:hover {
+    background: #388e3c;
+}
+
+.detail-right-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.archive-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 600;
+    color: #555;
+    cursor: pointer;
+    margin-left: 1rem;
+}
+
+.archive-toggle-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: #b71c1c;
+}

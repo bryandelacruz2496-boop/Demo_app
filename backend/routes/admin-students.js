@@ -32,10 +32,12 @@ const upload = multer({
     }
 });
 
-// GET /api/admin/students - List all students
+// GET /api/admin/students - List all students (excludes archived by default)
 router.get('/students', authMiddleware, async (req, res) => {
     try {
-        const students = await Student.find({}).select('-password');
+        const includeArchived = req.query.includeArchived === 'true';
+        const filter = includeArchived ? {} : { status: { $ne: 'archived' } };
+        const students = await Student.find(filter).select('-password');
         res.json(students);
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
@@ -327,6 +329,34 @@ router.delete('/students/:id', authMiddleware, async (req, res) => {
 
         await Student.findByIdAndDelete(req.params.id);
         res.json({ message: 'Student deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// PUT /api/admin/students/:id/archive - Archive student
+router.put('/students/:id/archive', authMiddleware, async (req, res) => {
+    try {
+        const student = await Student.findById(req.params.id);
+        if (!student) return res.status(404).json({ message: 'Student not found' });
+
+        student.status = 'archived';
+        await student.save();
+        res.json({ message: 'Student archived', student: { ...student.toObject(), password: undefined } });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// PUT /api/admin/students/:id/unarchive - Unarchive student
+router.put('/students/:id/unarchive', authMiddleware, async (req, res) => {
+    try {
+        const student = await Student.findById(req.params.id);
+        if (!student) return res.status(404).json({ message: 'Student not found' });
+
+        student.status = 'active';
+        await student.save();
+        res.json({ message: 'Student unarchived', student: { ...student.toObject(), password: undefined } });
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
     }

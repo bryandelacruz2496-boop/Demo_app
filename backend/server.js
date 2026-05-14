@@ -10,6 +10,7 @@ const studentRoutes = require('./routes/student');
 const adminStudentRoutes = require('./routes/admin-students');
 const announcementRoutes = require('./routes/announcements');
 const inquiryRoutes = require('./routes/inquiries');
+const eventRoutes = require('./routes/events');
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use('/api/student', studentRoutes);
 app.use('/api/admin', adminStudentRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/inquiries', inquiryRoutes);
+app.use('/api/events', eventRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });

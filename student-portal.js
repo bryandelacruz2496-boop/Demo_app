@@ -95,7 +95,11 @@ function populateDashboard() {
   // Set profile image
   const avatarEl = document.querySelector('.info-avatar');
   if (currentStudent.profileImage) {
-    avatarEl.innerHTML = `<img src="http://localhost:5000${currentStudent.profileImage}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">`;
+    avatarEl.innerHTML = `<img src="http://localhost:5000${currentStudent.profileImage}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">
+    <label class="avatar-upload-btn" title="Change photo">
+      📷
+      <input type="file" id="studentPhotoUpload" accept="image/*" onchange="uploadStudentPhoto(this)" style="display:none;">
+    </label>`;
   }
 
   // Payments
@@ -159,6 +163,9 @@ function populateDashboard() {
       </div>
     `).join('');
   }
+
+  // Calendar events
+  loadCalendarEvents();
 }
 
 function switchDashTab(event, tabId) {
@@ -401,4 +408,76 @@ function showStudentNotification(message, isError) {
     `;
   document.body.appendChild(notif);
   setTimeout(() => { if (notif.parentElement) notif.remove(); }, 8000);
+}
+
+// Calendar Events
+async function loadCalendarEvents() {
+  try {
+    const res = await fetch(`${API_URL}/events`);
+    if (!res.ok) return;
+    const events = await res.json();
+    const list = document.getElementById('calendarEventsList');
+
+    if (!list) return;
+
+    if (events.length === 0) {
+      list.innerHTML = '<p style="color:#888;text-align:center;">No upcoming events.</p>';
+      return;
+    }
+
+    const typeColors = { Exam: '#b71c1c', Holiday: '#2e7d32', 'Field Trip': '#1565c0', Event: '#e65100', Meeting: '#6a1b9a' };
+
+    list.innerHTML = events.map(e => `
+      <div class="activity-card" style="cursor:default;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+          <h4>${e.title}</h4>
+          <span class="event-type-badge" style="background:${typeColors[e.type] || '#b71c1c'}20;color:${typeColors[e.type] || '#b71c1c'};padding:0.2rem 0.8rem;border-radius:15px;font-size:0.8rem;font-weight:600;">${e.type}</span>
+        </div>
+        <div class="meta">📅 ${e.date}</div>
+        ${e.description ? `<p style="margin-top:0.5rem;">${e.description}</p>` : ''}
+      </div>
+    `).join('');
+  } catch (err) {
+    console.error('Error loading calendar events:', err);
+  }
+}
+
+// Student Profile Photo Upload
+async function uploadStudentPhoto(input) {
+  if (!input.files || !input.files[0]) return;
+
+  const token = localStorage.getItem('studentToken');
+  if (!token) return;
+
+  const formData = new FormData();
+  formData.append('profileImage', input.files[0]);
+
+  try {
+    const res = await fetch(`${API_URL}/student/profile-photo`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
+      body: formData
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      currentStudent.profileImage = data.profileImage;
+      localStorage.setItem('studentData', JSON.stringify(currentStudent));
+
+      // Update avatar display
+      const avatarEl = document.querySelector('.info-avatar');
+      avatarEl.innerHTML = `<img src="http://localhost:5000${data.profileImage}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">
+      <label class="avatar-upload-btn" title="Change photo">
+        📷
+        <input type="file" id="studentPhotoUpload" accept="image/*" onchange="uploadStudentPhoto(this)" style="display:none;">
+      </label>`;
+
+      showStudentNotification('Profile photo updated!');
+    } else {
+      const data = await res.json();
+      showStudentNotification(data.message || 'Error uploading photo', true);
+    }
+  } catch (err) {
+    showStudentNotification('Error uploading photo', true);
+  }
 }

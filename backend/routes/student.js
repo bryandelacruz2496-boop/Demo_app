@@ -1,9 +1,35 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
+const path = require('path');
 const Student = require('../models/Student');
-const { getCache, setCache } = require('../middleware/cache');
+const { getCache, setCache, clearCache } = require('../middleware/cache');
 
 const router = express.Router();
+
+// Configure multer for student photo uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const dir = path.join(__dirname, '..', 'uploads');
+        cb(null, dir);
+    },
+    filename: (req, file, cb) => {
+        const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(file.originalname);
+        cb(null, uniqueName);
+    }
+});
+
+const upload = multer({
+    storage,
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter: (req, file, cb) => {
+        const allowed = /jpeg|jpg|png|gif|webp/;
+        const ext = allowed.test(path.extname(file.originalname).toLowerCase());
+        const mime = allowed.test(file.mimetype);
+        if (ext && mime) cb(null, true);
+        else cb(new Error('Only image files are allowed'));
+    }
+});
 
 // POST /api/student/login
 router.post('/login', async (req, res) => {
@@ -118,6 +144,33 @@ router.get('/refresh', async (req, res) => {
         res.json({ student: studentData });
     } catch (err) {
         res.status(401).json({ message: 'Invalid token' });
+    }
+});
+
+// POST /api/student/profile-photo - Upload profile photo (student token required)
+router.post('/profile-photo', upload.single('profileImage'), async (req, res) => {
+    try {
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        if (!token) return res.status(401).json({ message: 'No token' });
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const student = await Student.findById(decoded.id);
+        if (!student) return res.status(404).json({ message: 'Student not found' });
+
+        if (student.activeToken !== token) {
+            return res.status(401).json({ message: 'Session expired' });
+        }
+
+        if (!req.file) return res.status(400).json({ message: 'No image uploaded' });
+
+        student.profileImage = `/uploads/${req.file.filename}`;
+        await student.save();
+        clearCache(`student_${decoded.id}`);
+
+        res.json({ message: 'Profile photo updated', profileImage: student.profileImage });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
     }
 });
 
