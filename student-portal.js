@@ -154,6 +154,13 @@ function switchDashTab(event, tabId) {
 }
 
 function logout() {
+  const token = localStorage.getItem('studentToken');
+  if (token) {
+    fetch(`${API_URL}/student/logout`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` }
+    }).catch(() => { });
+  }
   currentStudent = null;
   localStorage.removeItem('studentToken');
   localStorage.removeItem('studentData');

@@ -20,6 +20,17 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ message: 'Invalid student number or password' });
         }
 
+        // Check if already logged in on another device
+        if (student.activeToken) {
+            try {
+                jwt.verify(student.activeToken, process.env.JWT_SECRET);
+                // Token is still valid - someone is already logged in
+                return res.status(403).json({ message: 'This account is already logged in on another device. Please log out from the other device first.' });
+            } catch (e) {
+                // Token expired, allow login
+            }
+        }
+
         const token = jwt.sign(
             { id: student._id, studentNo: student.studentNo },
             process.env.JWT_SECRET,
@@ -54,6 +65,24 @@ router.post('/login', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// POST /api/student/logout
+router.post('/logout', async (req, res) => {
+    try {
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        if (!token) return res.status(401).json({ message: 'No token' });
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const student = await Student.findById(decoded.id);
+        if (student && student.activeToken === token) {
+            student.activeToken = null;
+            await student.save();
+        }
+        res.json({ message: 'Logged out successfully' });
+    } catch (err) {
+        res.json({ message: 'Logged out' });
     }
 });
 
