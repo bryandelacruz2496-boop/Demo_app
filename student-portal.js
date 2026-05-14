@@ -17,11 +17,18 @@ window.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('loginWrapper').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
     populateDashboard();
+    startSessionCheck();
 
     // Then try to refresh in background
     fetch(`${API_URL}/student/refresh`, {
       headers: { 'Authorization': `Bearer ${token}` }
     }).then(res => {
+      if (res.status === 401) {
+        // Session expired - logged in on another device
+        alert('Your session has ended because your account was logged in on another device.');
+        logout();
+        return null;
+      }
       if (res.ok) return res.json();
       return null;
     }).then(data => {
@@ -57,6 +64,7 @@ async function handleStudentLogin(event) {
       localStorage.setItem('studentData', JSON.stringify(data.student));
       errorEl.textContent = '';
       showDashboard();
+      startSessionCheck();
     } else {
       errorEl.textContent = data.message;
     }
@@ -149,10 +157,28 @@ function logout() {
   currentStudent = null;
   localStorage.removeItem('studentToken');
   localStorage.removeItem('studentData');
+  if (window._sessionCheckInterval) clearInterval(window._sessionCheckInterval);
   document.getElementById('dashboard').style.display = 'none';
   document.getElementById('loginWrapper').style.display = 'flex';
   document.getElementById('studentId').value = '';
   document.getElementById('studentPassword').value = '';
+}
+
+// Check session validity every 30 seconds
+function startSessionCheck() {
+  window._sessionCheckInterval = setInterval(async () => {
+    const token = localStorage.getItem('studentToken');
+    if (!token) return;
+    try {
+      const res = await fetch(`${API_URL}/student/refresh`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.status === 401) {
+        alert('Your session has ended because your account was logged in on another device.');
+        logout();
+      }
+    } catch (e) { }
+  }, 30000);
 }
 
 

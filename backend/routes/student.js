@@ -26,6 +26,10 @@ router.post('/login', async (req, res) => {
             { expiresIn: '8h' }
         );
 
+        // Save active token - invalidates any previous session
+        student.activeToken = token;
+        await student.save();
+
         // Calculate total paid
         const totalPaid = student.payments
             .filter(p => p.status === 'paid')
@@ -61,13 +65,18 @@ router.get('/refresh', async (req, res) => {
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        // Check cache first (30 second TTL)
+        const student = await Student.findById(decoded.id);
+        if (!student) return res.status(404).json({ message: 'Student not found' });
+
+        // Check if this token is still the active session
+        if (student.activeToken !== token) {
+            return res.status(401).json({ message: 'Session expired. You have been logged in on another device.' });
+        }
+
+        // Check cache (30 second TTL)
         const cacheKey = `student_${decoded.id}`;
         const cached = getCache(cacheKey);
         if (cached) return res.json({ student: cached });
-
-        const student = await Student.findById(decoded.id);
-        if (!student) return res.status(404).json({ message: 'Student not found' });
 
         const totalPaid = student.payments
             .filter(p => p.status === 'paid')
