@@ -14,7 +14,7 @@ const eventRoutes = require('./routes/events');
 const projectRoutes = require('./routes/projects');
 const exportRoutes = require('./routes/exports');
 const auditRoutes = require('./routes/audit');
-const { router: pushRoutes, sendPushToAll } = require('./routes/push');
+
 
 const app = express();
 
@@ -43,10 +43,7 @@ app.use('/api/events', eventRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/exports', exportRoutes);
 app.use('/api/audit', auditRoutes);
-app.use('/api/push', pushRoutes);
 
-// Make sendPushToAll available globally
-app.set('sendPushToAll', sendPushToAll);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });

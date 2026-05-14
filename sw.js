@@ -48,20 +48,4 @@ self.addEventListener('fetch', event => {
 });
 
 
-// Push notification handler
-self.addEventListener('push', event => {
-    const data = event.data ? event.data.json() : { title: 'Beata Sai', body: 'New notification' };
-    event.waitUntil(
-        self.registration.showNotification(data.title, {
-            body: data.body,
-            icon: '/logo.png',
-            badge: '/logo.png',
-            vibrate: [200, 100, 200]
-        })
-    );
-});
 
-self.addEventListener('notificationclick', event => {
-    event.notification.close();
-    event.waitUntil(clients.openWindow('/student-login.html'));
-});
