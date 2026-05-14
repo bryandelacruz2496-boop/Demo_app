@@ -91,7 +91,7 @@ async function loadAnnouncements() {
                         </div>
                     `).join('')}
                     <div class="reply-form">
-                        <input type="text" id="reply-${a._id}" placeholder="Write a reply..." class="reply-input">
+                        <input type="text" id="reply-${a._id}" placeholder="Write a reply..." class="reply-input" onkeydown="if(event.key==='Enter')adminReply('${a._id}')">
                         <button class="btn-reply" onclick="adminReply('${a._id}')">Reply</button>
                     </div>
                 </div>

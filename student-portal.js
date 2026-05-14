@@ -277,7 +277,7 @@ async function loadStudentAnnouncements() {
             </div>
           `).join('')}
           <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
-            <input type="text" id="student-reply-${a._id}" placeholder="Write a reply..." style="flex:1;padding:0.5rem 0.8rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.9rem;">
+            <input type="text" id="student-reply-${a._id}" placeholder="Write a reply..." style="flex:1;padding:0.5rem 0.8rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.9rem;" onkeydown="if(event.key==='Enter')studentReply('${a._id}')">
             <button onclick="studentReply('${a._id}')" style="background:#b71c1c;color:#fff;border:none;padding:0.5rem 1rem;border-radius:8px;font-weight:600;cursor:pointer;">Reply</button>
           </div>
         </div>
