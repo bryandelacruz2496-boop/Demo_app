@@ -343,7 +343,7 @@ function startStudentNotificationCheck() {
     }
   }, 2000);
 
-  // Check assessment updates every 5 seconds
+  // Check assessment updates every 3 seconds
   setInterval(async () => {
     const token = localStorage.getItem('studentToken');
     if (!token) return;
@@ -365,7 +365,7 @@ function startStudentNotificationCheck() {
         }
       }
     } catch (e) { }
-  }, 5000);
+  }, 3000);
 }
 
 function getAssessmentHash() {
