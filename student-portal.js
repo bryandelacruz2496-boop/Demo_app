@@ -1,6 +1,12 @@
 const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : 'https://beata-backend.onrender.com/api';
 let currentStudent = null;
 
+// Prevent browser back/forward button from navigating away
+history.pushState(null, null, location.href);
+window.addEventListener('popstate', function () {
+  history.pushState(null, null, location.href);
+});
+
 // Check if already logged in - show cached data immediately
 window.addEventListener('DOMContentLoaded', async () => {
   try {

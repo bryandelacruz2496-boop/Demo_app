@@ -15,6 +15,12 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Prevent browser back/forward button from navigating away
+history.pushState(null, null, location.href);
+window.addEventListener('popstate', function () {
+    history.pushState(null, null, location.href);
+});
+
 // Login
 async function handleAdminLogin(event) {
     event.preventDefault();
