@@ -301,6 +301,9 @@ async function studentReply(announcementId) {
   if (res.ok) {
     input.value = '';
     loadStudentAnnouncements();
+  } else {
+    const data = await res.json();
+    showStudentNotification(data.message || 'Error sending reply');
   }
 }
 

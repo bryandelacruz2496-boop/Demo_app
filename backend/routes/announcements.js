@@ -96,6 +96,21 @@ router.post('/:id/student-reply', async (req, res) => {
         const { message } = req.body;
         if (!message) return res.status(400).json({ message: 'Message is required' });
 
+        // Rate limit: 3 replies per minute per student
+        const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
+        const allAnnouncements = await Announcement.find({ status: 'active' });
+        let recentReplies = 0;
+        allAnnouncements.forEach(a => {
+            (a.replies || []).forEach(r => {
+                if (r.author === student.fullName && r.role === 'student' && new Date(r.createdAt) > oneMinuteAgo) {
+                    recentReplies++;
+                }
+            });
+        });
+        if (recentReplies >= 3) {
+            return res.status(429).json({ message: 'You can only send 3 replies per minute. Please wait.' });
+        }
+
         const announcement = await Announcement.findById(req.params.id);
         if (!announcement) return res.status(404).json({ message: 'Announcement not found' });
 
