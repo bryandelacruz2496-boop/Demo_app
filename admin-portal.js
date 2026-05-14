@@ -109,8 +109,6 @@ function showAnnouncementForm() {
         return;
     }
     form.style.display = 'block';
-    document.getElementById('addStudentForm').style.display = 'none';
-    document.getElementById('inquiriesPanel').style.display = 'none';
 }
 
 function hideAnnouncementForm() {
@@ -234,6 +232,7 @@ async function selectStudent(id) {
 
     document.getElementById('studentListPanel').style.display = 'none';
     document.getElementById('studentDetailPanel').style.display = 'block';
+    document.querySelector('.admin-nav').style.display = 'none';
 
     document.getElementById('studentHeader').innerHTML = `
     <h2>${selectedStudent.fullName} ${selectedStudent.status === 'archived' ? '<span style="background:rgba(255,255,255,0.3);padding:0.2rem 0.8rem;border-radius:15px;font-size:0.8rem;">Archived</span>' : ''}</h2>
@@ -380,6 +379,7 @@ async function saveProfile() {
 function backToList() {
     document.getElementById('studentDetailPanel').style.display = 'none';
     document.getElementById('studentListPanel').style.display = 'block';
+    document.querySelector('.admin-nav').style.display = 'flex';
     loadStudents();
 }
 
@@ -743,6 +743,23 @@ function switchAdminTab(event, tabId) {
     event.target.classList.add('active');
 }
 
+// Admin View switching (Students / Announcements / Messages)
+function switchAdminView(viewId) {
+    document.querySelectorAll('.admin-view').forEach(v => {
+        v.style.display = 'none';
+        v.classList.remove('active');
+    });
+    document.querySelectorAll('.admin-nav-btn').forEach(b => b.classList.remove('active'));
+    const view = document.getElementById(viewId);
+    view.style.display = 'block';
+    view.classList.add('active');
+    if (event && event.target) event.target.classList.add('active');
+
+    // Load data for the view
+    if (viewId === 'messagesView') loadInquiries();
+    if (viewId === 'announcementsView') loadAnnouncements();
+}
+
 // Toast notification
 function showToast(message) {
     const toast = document.createElement('div');
@@ -760,8 +777,6 @@ function showAddStudentForm() {
         return;
     }
     form.style.display = 'block';
-    document.getElementById('announcementForm').style.display = 'none';
-    document.getElementById('inquiriesPanel').style.display = 'none';
     document.getElementById('newStudentResult').style.display = 'none';
 }
 
@@ -1270,15 +1285,10 @@ function showPasswordPrompt(onConfirm) {
 
 // Inquiries
 function toggleInquiries() {
-    const panel = document.getElementById('inquiriesPanel');
-    document.getElementById('addStudentForm').style.display = 'none';
-    document.getElementById('announcementForm').style.display = 'none';
-    if (panel.style.display === 'block') {
-        panel.style.display = 'none';
-        return;
-    }
-    panel.style.display = 'block';
-    loadInquiries();
+    switchAdminView('messagesView');
+    // Update nav button active state
+    document.querySelectorAll('.admin-nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.admin-nav-btn')[2].classList.add('active');
 }
 
 async function loadInquiries() {
