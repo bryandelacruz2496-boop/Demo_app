@@ -322,10 +322,17 @@ h4 {
 }
 
 /* Data Table */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 8px;
+}
+
 .data-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.95rem;
+    min-width: 500px;
 }
 
 .data-table th {

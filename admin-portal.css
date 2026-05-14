@@ -367,13 +367,19 @@ h4 {
     background: #d32f2f;
 }
 
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 10px;
+}
+
 .admin-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.9rem;
     background: #fff;
     border-radius: 10px;
-    overflow: hidden;
+    min-width: 600px;
 }
 
 .admin-table th {
