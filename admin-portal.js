@@ -111,7 +111,6 @@ function showAnnouncementForm() {
     form.style.display = 'block';
     document.getElementById('addStudentForm').style.display = 'none';
     document.getElementById('inquiriesPanel').style.display = 'none';
-    document.getElementById('calendarPanel').style.display = 'none';
 }
 
 function hideAnnouncementForm() {
@@ -763,7 +762,6 @@ function showAddStudentForm() {
     form.style.display = 'block';
     document.getElementById('announcementForm').style.display = 'none';
     document.getElementById('inquiriesPanel').style.display = 'none';
-    document.getElementById('calendarPanel').style.display = 'none';
     document.getElementById('newStudentResult').style.display = 'none';
 }
 
@@ -1275,7 +1273,6 @@ function toggleInquiries() {
     const panel = document.getElementById('inquiriesPanel');
     document.getElementById('addStudentForm').style.display = 'none';
     document.getElementById('announcementForm').style.display = 'none';
-    document.getElementById('calendarPanel').style.display = 'none';
     if (panel.style.display === 'block') {
         panel.style.display = 'none';
         return;
@@ -1338,97 +1335,6 @@ async function deleteInquiry(id) {
         });
         showToast('Inquiry deleted');
         loadInquiries();
-    });
-}
-
-// Calendar
-function toggleCalendarPanel() {
-    const panel = document.getElementById('calendarPanel');
-    document.getElementById('addStudentForm').style.display = 'none';
-    document.getElementById('announcementForm').style.display = 'none';
-    document.getElementById('inquiriesPanel').style.display = 'none';
-    if (panel.style.display === 'block') {
-        panel.style.display = 'none';
-        return;
-    }
-    panel.style.display = 'block';
-    loadEvents();
-}
-
-function hideCalendarPanel() {
-    document.getElementById('calendarPanel').style.display = 'none';
-}
-
-async function loadEvents() {
-    const res = await fetch(`${API_URL}/events`);
-    if (!res.ok) return;
-    const events = await res.json();
-    const list = document.getElementById('eventsList');
-
-    if (events.length === 0) {
-        list.innerHTML = '<p style="text-align:center;color:#888;padding:1rem;">No events yet.</p>';
-        return;
-    }
-
-    const typeColors = { Exam: '#b71c1c', Holiday: '#2e7d32', 'Field Trip': '#1565c0', Event: '#e65100', Meeting: '#6a1b9a' };
-
-    list.innerHTML = `
-        <h4 style="color:#b71c1c;margin-bottom:1rem;">📅 Upcoming Events</h4>
-        ${events.map(e => `
-            <div class="announcement-card">
-                <div class="announcement-header">
-                    <h4>${e.title}</h4>
-                    <div>
-                        <span class="announcement-badge" style="background:${typeColors[e.type] || '#b71c1c'}20;color:${typeColors[e.type] || '#b71c1c'}">${e.type}</span>
-                        <button class="btn-remove-subject" onclick="deleteEvent('${e._id}')">🗑️</button>
-                    </div>
-                </div>
-                <p>${e.description || ''}</p>
-                <span class="announcement-date">${e.date}</span>
-            </div>
-        `).join('')}
-    `;
-}
-
-async function createEvent() {
-    const title = document.getElementById('eventTitle').value;
-    const date = getDatePickerValue('eventDate');
-    const type = document.getElementById('eventType').value;
-    const description = document.getElementById('eventDescription').value;
-
-    if (!title || !date || !type) {
-        showToast('Please fill in title, date, and type');
-        return;
-    }
-
-    showConfirmPopup('Are you sure you want to add this event?', async () => {
-        const res = await fetch(`${API_URL}/events`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
-            body: JSON.stringify({ title, date, type, description })
-        });
-
-        if (res.ok) {
-            showToast('Event added!');
-            document.getElementById('eventTitle').value = '';
-            document.getElementById('eventDate').value = '';
-            document.getElementById('eventDate').dataset.value = '';
-            document.getElementById('eventDescription').value = '';
-            loadEvents();
-        }
-    });
-}
-
-async function deleteEvent(id) {
-    showConfirmPopup('Delete this event?', async () => {
-        const res = await fetch(`${API_URL}/events/${id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${adminToken}` }
-        });
-        if (res.ok) {
-            showToast('Event deleted');
-            loadEvents();
-        }
     });
 }
 
