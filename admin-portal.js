@@ -262,7 +262,7 @@ function renderProfile() {
     document.getElementById('editGuardian').value = selectedStudent.guardian || '';
     document.getElementById('editGuardianContact').value = selectedStudent.guardianContact || '';
     document.getElementById('editAddress').value = selectedStudent.address || '';
-    setDateSelects('editBirthMonth', 'editBirthDay', 'editBirthYear', selectedStudent.birthDate || '');
+    setDatePickerValue('editBirthDate', selectedStudent.birthDate || '');
     document.getElementById('editGender').value = selectedStudent.gender || '';
     document.getElementById('editTuition').value = selectedStudent.totalTuition || '';
     document.getElementById('editPayOption').value = selectedStudent.paymentOption || 'monthly';
@@ -342,7 +342,7 @@ async function saveProfile() {
     formData.append('guardian', document.getElementById('editGuardian').value);
     formData.append('guardianContact', document.getElementById('editGuardianContact').value);
     formData.append('address', document.getElementById('editAddress').value);
-    formData.append('birthDate', getDateFromSelects('editBirthMonth', 'editBirthDay', 'editBirthYear'));
+    formData.append('birthDate', getDatePickerValue('editBirthDate'));
     formData.append('gender', document.getElementById('editGender').value);
     formData.append('totalTuition', document.getElementById('editTuition').value);
     formData.append('paymentOption', document.getElementById('editPayOption').value);
@@ -486,7 +486,7 @@ function renderPayments() {
 }
 
 async function addPayment() {
-    const date = getDateFromSelects('payDateMonth', 'payDateDay', 'payDateYear');
+    const date = getDatePickerValue('payDate');
     const description = document.getElementById('payDesc').value;
     const amount = Number(document.getElementById('payAmount').value);
     const status = document.getElementById('payStatus').value;
@@ -504,9 +504,8 @@ async function addPayment() {
         selectedStudent.payments = data.payments;
         renderPayments();
         showToast('Payment added!');
-        document.getElementById('payDateMonth').value = '';
-        document.getElementById('payDateDay').value = '';
-        document.getElementById('payDateYear').value = '';
+        document.getElementById('payDate').value = '';
+        document.getElementById('payDate').dataset.value = '';
         document.getElementById('payDesc').value = '';
         document.getElementById('payAmount').value = '';
     }
@@ -582,7 +581,7 @@ function viewImage(url) {
 async function addActivity() {
     const title = document.getElementById('actTitle').value;
     const subject = document.getElementById('actSubject').value;
-    const date = getDateFromSelects('actDateMonth', 'actDateDay', 'actDateYear');
+    const date = getDatePickerValue('actDate');
     const description = document.getElementById('actDesc').value;
     const imageFile = document.getElementById('actImage').files[0];
 
@@ -609,9 +608,8 @@ async function addActivity() {
             showToast('Activity added!');
             document.getElementById('actTitle').value = '';
             document.getElementById('actSubject').value = '';
-            document.getElementById('actDateMonth').value = '';
-            document.getElementById('actDateDay').value = '';
-            document.getElementById('actDateYear').value = '';
+            document.getElementById('actDate').value = '';
+            document.getElementById('actDate').dataset.value = '';
             document.getElementById('actDesc').value = '';
             document.getElementById('actImage').value = '';
             document.getElementById('actImagePreview').style.display = 'none';
@@ -651,7 +649,7 @@ async function deleteProject(projectId) {
 async function addProject() {
     const title = document.getElementById('projTitle').value;
     const subject = document.getElementById('projSubject').value;
-    const dueDate = getDateFromSelects('projDueMonth', 'projDueDay', 'projDueYear');
+    const dueDate = getDatePickerValue('projDue');
     const description = document.getElementById('projDesc').value;
     const grade = document.getElementById('projGrade').value || null;
 
@@ -671,9 +669,8 @@ async function addProject() {
             showToast('Project added!');
             document.getElementById('projTitle').value = '';
             document.getElementById('projSubject').value = '';
-            document.getElementById('projDueMonth').value = '';
-            document.getElementById('projDueDay').value = '';
-            document.getElementById('projDueYear').value = '';
+            document.getElementById('projDue').value = '';
+            document.getElementById('projDue').dataset.value = '';
             document.getElementById('projDesc').value = '';
             document.getElementById('projGrade').value = '';
         }
@@ -861,7 +858,7 @@ async function createStudent() {
     const fullName = `${firstName} ${middleName ? middleName + ' ' : ''}${lastName}`;
 
     // Validate age (must be at least 2 years old)
-    const birthDate = getDateFromSelects('newStudentBirthMonth', 'newStudentBirthDay', 'newStudentBirthYear');
+    const birthDate = getDatePickerValue('newStudentBirth');
     if (birthDate) {
         const today = new Date();
         const birth = new Date(birthDate);
@@ -894,7 +891,7 @@ async function doCreateStudent(btn, originalText, fullName, grade, guardian) {
         formData.append('guardian', guardian);
         formData.append('guardianContact', document.getElementById('newStudentContact').value);
         formData.append('address', document.getElementById('newStudentAddress').value);
-        formData.append('birthDate', getDateFromSelects('newStudentBirthMonth', 'newStudentBirthDay', 'newStudentBirthYear'));
+        formData.append('birthDate', getDatePickerValue('newStudentBirth'));
         formData.append('gender', document.getElementById('newStudentGender').value);
         formData.append('paymentOption', document.getElementById('newStudentPayOption').value);
         formData.append('enrolleeType', document.getElementById('newStudentEnrolleeType').value);
@@ -929,9 +926,8 @@ async function doCreateStudent(btn, originalText, fullName, grade, guardian) {
             document.getElementById('newStudentGuardian').value = '';
             document.getElementById('newStudentContact').value = '';
             document.getElementById('newStudentAddress').value = '';
-            document.getElementById('newStudentBirthMonth').value = '';
-            document.getElementById('newStudentBirthDay').value = '';
-            document.getElementById('newStudentBirthYear').value = '';
+            document.getElementById('newStudentBirth').value = '';
+            document.getElementById('newStudentBirth').dataset.value = '';
             document.getElementById('newStudentGender').value = '';
             document.getElementById('newStudentPhoto').value = '';
             document.getElementById('newStudentPhotoPreview').style.display = 'none';
