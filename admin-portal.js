@@ -829,6 +829,13 @@ async function createStudent() {
         return;
     }
 
+    // Show confirmation popup
+    showConfirmPopup('Are you sure you want to register this student?', async () => {
+        await doCreateStudent(btn, originalText, fullName, grade, guardian);
+    });
+}
+
+async function doCreateStudent(btn, originalText, fullName, grade, guardian) {
     // Disable button and show loading state
     btn.disabled = true;
     btn.textContent = '⏳ Registering...';
@@ -950,4 +957,28 @@ function showNotification(message) {
     `;
     document.body.appendChild(notif);
     setTimeout(() => { if (notif.parentElement) notif.remove(); }, 8000);
+}
+
+// Confirmation popup
+function showConfirmPopup(message, onConfirm) {
+    const overlay = document.createElement('div');
+    overlay.className = 'confirm-overlay';
+    overlay.innerHTML = `
+        <div class="confirm-box">
+            <p>${message}</p>
+            <div class="confirm-buttons">
+                <button class="confirm-yes" id="confirmYes">Yes</button>
+                <button class="confirm-no" id="confirmNo">No</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+
+    overlay.querySelector('#confirmYes').onclick = () => {
+        overlay.remove();
+        onConfirm();
+    };
+    overlay.querySelector('#confirmNo').onclick = () => {
+        overlay.remove();
+    };
 }
