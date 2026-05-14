@@ -131,18 +131,34 @@ function populateDashboard() {
   `).join('');
 
   // Assessments
-  const assessmentBody = document.getElementById('assessmentTableBody');
-  assessmentBody.innerHTML = currentStudent.assessments.map(a => {
-    return `
-      <tr>
-        <td><strong>${a.subject}</strong></td>
-        <td>${a.q1 || '-'}</td>
-        <td>${a.q2 || '-'}</td>
-        <td>${a.q3 || '-'}</td>
-        <td>${a.q4 || '-'}</td>
-      </tr>
-    `;
-  }).join('');
+  const assessmentsList = document.getElementById('assessmentsList');
+  if (currentStudent.assessments.length === 0) {
+    assessmentsList.innerHTML = '<p style="color:#888;text-align:center;">No assessments yet.</p>';
+  } else {
+    assessmentsList.innerHTML = currentStudent.assessments.map(a => `
+      <div class="assessment-view-card">
+        <h4>${a.subject}</h4>
+        <div class="assessment-view-grid">
+          <div class="assessment-view-quarter">
+            <span class="quarter-label">1st Quarter</span>
+            <p>${a.q1 || 'No remarks yet'}</p>
+          </div>
+          <div class="assessment-view-quarter">
+            <span class="quarter-label">2nd Quarter</span>
+            <p>${a.q2 || 'No remarks yet'}</p>
+          </div>
+          <div class="assessment-view-quarter">
+            <span class="quarter-label">3rd Quarter</span>
+            <p>${a.q3 || 'No remarks yet'}</p>
+          </div>
+          <div class="assessment-view-quarter">
+            <span class="quarter-label">4th Quarter</span>
+            <p>${a.q4 || 'No remarks yet'}</p>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
 }
 
 function switchDashTab(event, tabId) {
