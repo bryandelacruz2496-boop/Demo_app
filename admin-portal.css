@@ -475,25 +475,35 @@ h4 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background: rgba(46, 125, 50, 0.85);
+    background: rgba(46, 125, 50, 0.6);
     color: #fff;
     padding: 1.5rem 3rem;
     border-radius: 12px;
     font-weight: 600;
     font-size: 1.2rem;
     z-index: 1000;
-    animation: fadeIn 0.3s ease;
+    animation: toastFade 3s ease forwards;
 }
 
-@keyframes fadeIn {
-    from {
+@keyframes toastFade {
+    0% {
         opacity: 0;
         transform: translate(-50%, -50%) scale(0.9);
     }
 
-    to {
+    15% {
         opacity: 1;
         transform: translate(-50%, -50%) scale(1);
+    }
+
+    70% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.95);
     }
 
     to {
