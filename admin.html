@@ -380,7 +380,14 @@
                 <div class="admin-panel" id="gradesPanel">
                     <h3>Update Assessments</h3>
                     <div id="gradesForm"></div>
-                    <button class="btn-save" onclick="saveGrades()">💾 Save Assessments</button>
+                    <div class="form-actions">
+                        <button class="btn-edit" id="btnEditAssessment" onclick="enableAssessmentEdit()">✏️ Edit
+                            Assessments</button>
+                        <button class="btn-save" id="btnSaveAssessment" onclick="saveGrades()" style="display:none;">💾
+                            Save Assessments</button>
+                        <button class="btn-cancel" id="btnCancelAssessment" onclick="cancelAssessmentEdit()"
+                            style="display:none;">Cancel</button>
+                    </div>
                 </div>
 
                 <!-- Payments Panel -->

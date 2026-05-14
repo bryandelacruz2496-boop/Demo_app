@@ -240,6 +240,7 @@ async function selectStudent(id) {
 
     renderProfile();
     renderGrades();
+    setAssessmentReadOnly();
     renderPayments();
     renderActivities();
     renderProjects();
@@ -375,21 +376,34 @@ function backToList() {
 function renderGrades() {
     const form = document.getElementById('gradesForm');
     form.innerHTML = `
-    <table class="admin-table">
-      <thead><tr><th>Subject</th><th>Q1 Remarks</th><th>Q2 Remarks</th><th>Q3 Remarks</th><th>Q4 Remarks</th><th></th></tr></thead>
-      <tbody>
-        ${selectedStudent.assessments.map((a, i) => `
-          <tr>
-            <td><strong>${a.subject}</strong></td>
-            <td><input class="grade-input remark-input" id="q1_${i}" type="text" placeholder="Remarks" value="${a.q1 || ''}"></td>
-            <td><input class="grade-input remark-input" id="q2_${i}" type="text" placeholder="Remarks" value="${a.q2 || ''}"></td>
-            <td><input class="grade-input remark-input" id="q3_${i}" type="text" placeholder="Remarks" value="${a.q3 || ''}"></td>
-            <td><input class="grade-input remark-input" id="q4_${i}" type="text" placeholder="Remarks" value="${a.q4 || ''}"></td>
-            <td><button class="btn-remove-subject" onclick="removeSubject(${i})">✕</button></td>
-          </tr>
-        `).join('')}
-      </tbody>
-    </table>
+    <div class="assessments-list">
+      ${selectedStudent.assessments.map((a, i) => `
+        <div class="assessment-card">
+          <div class="assessment-card-header">
+            <strong>${a.subject}</strong>
+            <button class="btn-remove-subject" onclick="removeSubject(${i})">✕</button>
+          </div>
+          <div class="assessment-grid">
+            <div class="assessment-quarter">
+              <label>Q1 Remarks</label>
+              <textarea id="q1_${i}" placeholder="Enter remarks for Q1...">${a.q1 || ''}</textarea>
+            </div>
+            <div class="assessment-quarter">
+              <label>Q2 Remarks</label>
+              <textarea id="q2_${i}" placeholder="Enter remarks for Q2...">${a.q2 || ''}</textarea>
+            </div>
+            <div class="assessment-quarter">
+              <label>Q3 Remarks</label>
+              <textarea id="q3_${i}" placeholder="Enter remarks for Q3...">${a.q3 || ''}</textarea>
+            </div>
+            <div class="assessment-quarter">
+              <label>Q4 Remarks</label>
+              <textarea id="q4_${i}" placeholder="Enter remarks for Q4...">${a.q4 || ''}</textarea>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
     <div class="add-subject-row">
       <select id="newSubjectName">
         <option value="">Select Subject</option>
@@ -414,20 +428,46 @@ function addSubject() {
     if (!name) return;
     selectedStudent.assessments.push({ subject: name, q1: null, q2: null, q3: null, q4: null });
     renderGrades();
+    enableAssessmentEdit();
 }
 
 function removeSubject(index) {
     selectedStudent.assessments.splice(index, 1);
     renderGrades();
+    enableAssessmentEdit();
+}
+
+function enableAssessmentEdit() {
+    document.querySelectorAll('#gradesForm textarea').forEach(t => t.disabled = false);
+    document.querySelectorAll('#gradesForm .btn-remove-subject').forEach(b => b.style.display = 'inline-block');
+    document.querySelector('.add-subject-row').style.display = 'flex';
+    document.getElementById('btnEditAssessment').style.display = 'none';
+    document.getElementById('btnSaveAssessment').style.display = 'inline-block';
+    document.getElementById('btnCancelAssessment').style.display = 'inline-block';
+}
+
+function cancelAssessmentEdit() {
+    renderGrades();
+    setAssessmentReadOnly();
+}
+
+function setAssessmentReadOnly() {
+    document.querySelectorAll('#gradesForm textarea').forEach(t => t.disabled = true);
+    document.querySelectorAll('#gradesForm .btn-remove-subject').forEach(b => b.style.display = 'none');
+    const addRow = document.querySelector('.add-subject-row');
+    if (addRow) addRow.style.display = 'none';
+    document.getElementById('btnEditAssessment').style.display = 'inline-block';
+    document.getElementById('btnSaveAssessment').style.display = 'none';
+    document.getElementById('btnCancelAssessment').style.display = 'none';
 }
 
 async function saveGrades() {
     const assessments = selectedStudent.assessments.map((a, i) => ({
         subject: a.subject,
-        q1: document.getElementById(`q1_${i}`).value || null,
-        q2: document.getElementById(`q2_${i}`).value || null,
-        q3: document.getElementById(`q3_${i}`).value || null,
-        q4: document.getElementById(`q4_${i}`).value || null
+        q1: document.getElementById(`q1_${i}`).value.trim() || null,
+        q2: document.getElementById(`q2_${i}`).value.trim() || null,
+        q3: document.getElementById(`q3_${i}`).value.trim() || null,
+        q4: document.getElementById(`q4_${i}`).value.trim() || null
     }));
 
     const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/assessments`, {
@@ -441,6 +481,7 @@ async function saveGrades() {
         const data = await res.json();
         selectedStudent.assessments = data.assessments;
         renderGrades();
+        setAssessmentReadOnly();
     }
 }
 

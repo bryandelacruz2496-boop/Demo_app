@@ -1541,7 +1541,66 @@ h4 {
 }
 
 /* Remark Inputs */
-.remark-input {
-    min-width: 120px;
-    font-size: 0.85rem;
+.assessments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    margin-bottom: 1.5rem;
+}
+
+.assessment-card {
+    background: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 1.2rem;
+    border-left: 4px solid #b71c1c;
+}
+
+.assessment-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.assessment-card-header strong {
+    font-size: 1.05rem;
+    color: #333;
+}
+
+.assessment-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+}
+
+.assessment-quarter label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #b71c1c;
+    margin-bottom: 0.3rem;
+}
+
+.assessment-quarter textarea {
+    width: 100%;
+    min-height: 70px;
+    padding: 0.6rem 0.8rem;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    resize: vertical;
+    transition: border-color 0.3s;
+}
+
+.assessment-quarter textarea:focus {
+    outline: none;
+    border-color: #b71c1c;
+}
+
+@media (max-width: 768px) {
+    .assessment-grid {
+        grid-template-columns: 1fr;
+    }
 }
