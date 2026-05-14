@@ -2,6 +2,7 @@ const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:500
 let adminToken = localStorage.getItem('adminToken');
 let students = [];
 let selectedStudent = null;
+let lastReplyCount = 0;
 
 // Check if already logged in
 window.addEventListener('DOMContentLoaded', () => {
@@ -10,6 +11,7 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('adminDashboard').style.display = 'block';
         document.getElementById('adminName').textContent = localStorage.getItem('adminName') || 'Admin';
         loadStudents();
+        startReplyNotificationCheck();
     }
 });
 
@@ -36,6 +38,7 @@ async function handleAdminLogin(event) {
             document.getElementById('loginWrapper').style.display = 'none';
             document.getElementById('adminDashboard').style.display = 'block';
             loadStudents();
+            startReplyNotificationCheck();
         } else {
             errorEl.textContent = data.message;
         }
@@ -897,4 +900,50 @@ function adminLogout() {
     document.getElementById('loginWrapper').style.display = 'flex';
     document.getElementById('adminUsername').value = '';
     document.getElementById('adminPassword').value = '';
+}
+
+// Reply notification check
+function startReplyNotificationCheck() {
+    // Get initial count
+    fetchReplyCount().then(count => { lastReplyCount = count; });
+
+    setInterval(async () => {
+        const newCount = await fetchReplyCount();
+        if (newCount > lastReplyCount) {
+            const diff = newCount - lastReplyCount;
+            showNotification(`💬 ${diff} new reply${diff > 1 ? 's' : ''} on announcements`);
+            lastReplyCount = newCount;
+            loadAnnouncements();
+        }
+    }, 5000);
+}
+
+async function fetchReplyCount() {
+    try {
+        const res = await fetch(`${API_URL}/announcements`);
+        if (!res.ok) return lastReplyCount;
+        const announcements = await res.json();
+        let total = 0;
+        announcements.forEach(a => {
+            total += (a.replies || []).filter(r => r.role === 'student').length;
+        });
+        return total;
+    } catch (e) {
+        return lastReplyCount;
+    }
+}
+
+function showNotification(message) {
+    // Remove existing notification if any
+    const existing = document.querySelector('.admin-notification');
+    if (existing) existing.remove();
+
+    const notif = document.createElement('div');
+    notif.className = 'admin-notification';
+    notif.innerHTML = `
+        <span>${message}</span>
+        <button onclick="this.parentElement.remove()">✕</button>
+    `;
+    document.body.appendChild(notif);
+    setTimeout(() => { if (notif.parentElement) notif.remove(); }, 8000);
 }
