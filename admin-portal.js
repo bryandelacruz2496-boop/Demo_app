@@ -758,6 +758,7 @@ function switchAdminView(viewId) {
     // Load data for the view
     if (viewId === 'messagesView') loadInquiries();
     if (viewId === 'announcementsView') loadAnnouncements();
+    if (viewId === 'projectsView') loadGlobalProjects();
 }
 
 // Toast notification
@@ -1486,4 +1487,89 @@ function selectOldStudent(id) {
         }
     }
     updateTuitionDisplay();
+}
+
+// Global Projects
+function showGlobalProjectForm() {
+    const form = document.getElementById('globalProjectForm');
+    form.style.display = form.style.display === 'block' ? 'none' : 'block';
+}
+
+function hideGlobalProjectForm() {
+    document.getElementById('globalProjectForm').style.display = 'none';
+}
+
+async function createGlobalProject() {
+    const title = document.getElementById('globalProjTitle').value;
+    const subject = document.getElementById('globalProjSubject').value;
+    const dueDate = getDatePickerValue('globalProjDue');
+    const description = document.getElementById('globalProjDesc').value;
+    const targetGrade = document.getElementById('globalProjGrade').value;
+
+    if (!title || !subject || !dueDate || !description) {
+        showToast('Please fill in all required fields');
+        return;
+    }
+
+    showConfirmPopup('Are you sure you want to post this project?', async () => {
+        const res = await fetch(`${API_URL}/projects`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+            body: JSON.stringify({ title, subject, dueDate, description, targetGrade })
+        });
+
+        if (res.ok) {
+            showToast('Project posted!');
+            document.getElementById('globalProjTitle').value = '';
+            document.getElementById('globalProjSubject').value = '';
+            document.getElementById('globalProjDue').value = '';
+            document.getElementById('globalProjDue').dataset.value = '';
+            document.getElementById('globalProjDesc').value = '';
+            document.getElementById('globalProjGrade').value = 'all';
+            hideGlobalProjectForm();
+            loadGlobalProjects();
+        }
+    });
+}
+
+async function loadGlobalProjects() {
+    const res = await fetch(`${API_URL}/projects`, {
+        headers: { 'Authorization': `Bearer ${adminToken}` }
+    });
+    if (!res.ok) return;
+    const projects = await res.json();
+    const list = document.getElementById('globalProjectsList');
+
+    if (projects.length === 0) {
+        list.innerHTML = '<p style="text-align:center;color:#888;padding:2rem;">No projects yet.</p>';
+        return;
+    }
+
+    list.innerHTML = projects.map(p => `
+        <div class="announcement-card">
+            <div class="announcement-header">
+                <h4>${p.title}</h4>
+                <div>
+                    <span class="announcement-badge">${p.targetGrade === 'all' ? 'All Grades' : p.targetGrade}</span>
+                    <button class="btn-remove-subject" onclick="deleteGlobalProject('${p._id}')">🗑️</button>
+                </div>
+            </div>
+            <p><strong>${p.subject}</strong> • Due: ${p.dueDate}</p>
+            <p>${p.description}</p>
+            <span class="announcement-date">Posted: ${new Date(p.createdAt).toLocaleDateString()}</span>
+        </div>
+    `).join('');
+}
+
+async function deleteGlobalProject(id) {
+    showConfirmPopup('Delete this project?', async () => {
+        const res = await fetch(`${API_URL}/projects/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+        if (res.ok) {
+            showToast('Project deleted');
+            loadGlobalProjects();
+        }
+    });
 }

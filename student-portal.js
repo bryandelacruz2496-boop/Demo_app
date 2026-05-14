@@ -124,15 +124,8 @@ function populateDashboard() {
     </div>
   `).join('');
 
-  // Projects
-  const projectList = document.getElementById('projectList');
-  projectList.innerHTML = currentStudent.projects.map(p => `
-    <div class="project-card">
-      <h4>${p.title} ${p.grade ? '<span class="grade-badge">' + p.grade + '</span>' : '<span class="grade-badge" style="background:#ff9800">Pending</span>'}</h4>
-      <div class="meta">${p.subject} • Due: ${p.dueDate}</div>
-      <p>${p.description}</p>
-    </div>
-  `).join('');
+  // Projects - load from global projects
+  loadStudentProjects();
 
   // Assessments
   const assessmentsList = document.getElementById('assessmentsList');
@@ -183,6 +176,26 @@ function switchDashTab(event, tabId) {
   document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
   document.getElementById(tabId).classList.add('active');
   event.target.classList.add('active');
+}
+
+async function loadStudentProjects() {
+  const grade = currentStudent.grade || '';
+  const res = await fetch(`${API_URL}/projects?grade=${encodeURIComponent(grade)}`);
+  if (!res.ok) return;
+  const projects = await res.json();
+  const projectList = document.getElementById('projectList');
+  if (projects.length === 0) {
+    projectList.innerHTML = '<p style="color:#888;text-align:center;">No projects yet.</p>';
+    return;
+  }
+  projectList.innerHTML = projects.map(p => `
+        <div class="project-card">
+            <h4>${p.title}</h4>
+            <div class="meta">${p.subject} • Due: ${p.dueDate}</div>
+            <p>${p.description}</p>
+            <span class="meta">${p.targetGrade === 'all' ? 'All Grades' : p.targetGrade}</span>
+        </div>
+    `).join('');
 }
 
 function logout() {

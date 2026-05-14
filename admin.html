@@ -58,6 +58,7 @@
                 <button class="admin-nav-btn active" onclick="switchAdminView('studentsView')">📋 Students</button>
                 <button class="admin-nav-btn" onclick="switchAdminView('announcementsView')">📢 Announcements</button>
                 <button class="admin-nav-btn" onclick="switchAdminView('messagesView')">📩 Messages</button>
+                <button class="admin-nav-btn" onclick="switchAdminView('projectsView')">📁 Projects</button>
             </div>
 
             <!-- Student List -->
@@ -310,6 +311,63 @@
                 </div>
                 <!-- End Messages View -->
 
+                <!-- Projects View -->
+                <div class="admin-view" id="projectsView">
+                    <div class="dashboard-header">
+                        <h2>📁 Projects</h2>
+                        <div class="top-actions">
+                            <button class="btn-add-student" onclick="showGlobalProjectForm()">+ Add Project</button>
+                        </div>
+                    </div>
+
+                    <div id="globalProjectForm" class="expandable-panel" style="display:none;">
+                        <h3>📁 Add New Project</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Title *</label>
+                                <input type="text" id="globalProjTitle" placeholder="e.g. Science Fair Project"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label>Subject *</label>
+                                <input type="text" id="globalProjSubject" placeholder="e.g. Science" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Due Date *</label>
+                                <input type="text" id="globalProjDue" class="datepicker-input" placeholder="Pick a date"
+                                    readonly required>
+                            </div>
+                            <div class="form-group">
+                                <label>Target Grade</label>
+                                <select id="globalProjGrade">
+                                    <option value="all">All Grades</option>
+                                    <option value="Palaruan 1">Palaruan 1</option>
+                                    <option value="Palaruan 2">Palaruan 2</option>
+                                    <option value="Kindergarten">Kindergarten</option>
+                                    <option value="Grade 1">Grade 1</option>
+                                    <option value="Grade 2">Grade 2</option>
+                                    <option value="Grade 3">Grade 3</option>
+                                    <option value="Grade 4">Grade 4</option>
+                                    <option value="Grade 5">Grade 5</option>
+                                    <option value="Grade 6">Grade 6</option>
+                                </select>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Description *</label>
+                                <textarea id="globalProjDesc" rows="3" placeholder="Project details..."
+                                    style="width:100%;padding:0.7rem 1rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.95rem;resize:vertical;"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn-save" onclick="createGlobalProject()">📁 Post Project</button>
+                            <button class="btn-cancel" onclick="hideGlobalProjectForm()">Cancel</button>
+                        </div>
+                    </div>
+
+                    <div id="globalProjectsList"></div>
+                </div>
+                <!-- End Projects View -->
+
             </div>
             <!-- End studentListPanel -->
 
@@ -335,7 +393,6 @@
                     <button class="admin-tab" onclick="switchAdminTab(event, 'paymentsPanel')">💰 Payments</button>
                     <button class="admin-tab" onclick="switchAdminTab(event, 'activitiesPanel')">📋
                         Activities</button>
-                    <button class="admin-tab" onclick="switchAdminTab(event, 'projectsPanel')">📁 Projects</button>
                 </div>
 
                 <!-- Profile Panel -->
@@ -524,25 +581,6 @@
                     <div id="activitiesList"></div>
                 </div>
 
-                <!-- Projects Panel -->
-                <div class="admin-panel" id="projectsPanel">
-                    <h3>Projects</h3>
-                    <div class="add-form">
-                        <h4>Add Project</h4>
-                        <div class="form-row">
-                            <input type="text" id="projTitle" placeholder="Title" required>
-                            <input type="text" id="projSubject" placeholder="Subject" required>
-                            <input type="text" id="projDue" class="datepicker-input" placeholder="Pick due date"
-                                readonly required>
-                        </div>
-                        <div class="form-row">
-                            <input type="text" id="projDesc" placeholder="Description" style="flex:2" required>
-                            <input type="text" id="projGrade" placeholder="Grade (optional)">
-                            <button class="btn-add" onclick="addProject()">+ Add</button>
-                        </div>
-                    </div>
-                    <div id="projectsList"></div>
-                </div>
             </div>
         </div>
     </div>

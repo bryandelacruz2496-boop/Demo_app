@@ -11,6 +11,7 @@ const adminStudentRoutes = require('./routes/admin-students');
 const announcementRoutes = require('./routes/announcements');
 const inquiryRoutes = require('./routes/inquiries');
 const eventRoutes = require('./routes/events');
+const projectRoutes = require('./routes/projects');
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use('/api/admin', adminStudentRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/inquiries', inquiryRoutes);
 app.use('/api/events', eventRoutes);
+app.use('/api/projects', projectRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
