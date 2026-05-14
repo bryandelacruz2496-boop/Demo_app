@@ -1,4 +1,4 @@
-const CACHE_NAME = 'beatasai-v2';
+const CACHE_NAME = 'beatasai-v3';
 const urlsToCache = [
     '/',
     '/index.html',
