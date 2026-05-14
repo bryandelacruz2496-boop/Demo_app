@@ -1484,6 +1484,18 @@ function handleEnrolleeTypeChange() {
         selectedOldStudent = null;
         document.getElementById('oldStudentSearch').value = '';
         document.getElementById('oldStudentResults').innerHTML = '';
+        // Clear all form fields
+        document.getElementById('newStudentFirstName').value = '';
+        document.getElementById('newStudentMiddleName').value = '';
+        document.getElementById('newStudentLastName').value = '';
+        document.getElementById('newStudentGuardian').value = '';
+        document.getElementById('newStudentContact').value = '';
+        document.getElementById('newStudentAddress').value = '';
+        document.getElementById('newStudentBirth').value = '';
+        document.getElementById('newStudentBirth').dataset.value = '';
+        document.getElementById('newStudentGender').value = '';
+        document.getElementById('newStudentGrade').value = '';
+        document.getElementById('newStudentPayOption').value = 'full';
     }
     updateTuitionDisplay();
 }

@@ -345,7 +345,15 @@ router.put('/students/:id/reenroll', authMiddleware, upload.single('profileImage
             const tuitionData = TUITION_TABLE[type] && TUITION_TABLE[type][grade];
             if (tuitionData) {
                 student.totalTuition = tuitionData.total;
-                student.payments = generatePayments(grade, paymentOption, type);
+                // Only regenerate payments if grade or payment option changed
+                const gradeChanged = student.grade !== grade;
+                const optionChanged = student.paymentOption !== paymentOption;
+                if (gradeChanged || optionChanged) {
+                    // Keep paid payments, replace pending ones
+                    const paidPayments = student.payments.filter(p => p.status === 'paid');
+                    const newPayments = generatePayments(grade, paymentOption, type);
+                    student.payments = [...paidPayments, ...newPayments];
+                }
             }
         }
 
