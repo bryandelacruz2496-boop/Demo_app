@@ -1,0 +1,21 @@
+{
+    "name": "Beata Sai Integrated School",
+    "short_name": "BeataSai",
+    "description": "Student and Admin Portal for Beata Sai Integrated School",
+    "start_url": "/index.html",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#b71c1c",
+    "icons": [
+        {
+            "src": "logo.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "logo.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
