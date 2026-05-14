@@ -726,3 +726,95 @@ h4 {
     font-size: 0.8rem;
     font-weight: 600;
 }
+
+
+/* Pay Now Section */
+.payment-options-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #eee;
+}
+
+.payment-options-section h4 {
+    color: #b71c1c;
+    margin-bottom: 0.5rem;
+}
+
+.pay-now-desc {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 1.2rem;
+}
+
+.pay-now-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.qr-code-box {
+    text-align: center;
+    background: #f9f9f9;
+    padding: 1.2rem;
+    border-radius: 12px;
+    border: 1px solid #eee;
+}
+
+.qr-code-box canvas {
+    border-radius: 8px;
+}
+
+.qr-label {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: #888;
+    font-weight: 600;
+}
+
+.bank-details-box {
+    background: #f9f9f9;
+    padding: 1.2rem;
+    border-radius: 12px;
+    border: 1px solid #eee;
+}
+
+.bank-details-box h5 {
+    color: #333;
+    margin-bottom: 0.8rem;
+    font-size: 1rem;
+}
+
+.bank-detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+}
+
+.bank-detail-row span {
+    color: #666;
+}
+
+.bank-detail-row strong {
+    color: #333;
+}
+
+.bank-note {
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    color: #888;
+    font-style: italic;
+}
+
+@media (max-width: 600px) {
+    .pay-now-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .qr-code-box {
+        max-width: 220px;
+        margin: 0 auto;
+    }
+}

@@ -81,7 +81,6 @@
                     <button class="dash-tab" onclick="switchDashTab(event, 'activities')">📋 Activities</button>
                     <button class="dash-tab" onclick="switchDashTab(event, 'projects')">📁 Projects</button>
                     <button class="dash-tab" onclick="switchDashTab(event, 'assessments')">📝 Assessments</button>
-                    <button class="dash-tab" onclick="switchDashTab(event, 'calendar')">📅 Calendar</button>
                 </div>
 
                 <!-- Announcements Tab -->
@@ -144,6 +143,27 @@
                             <tbody id="paymentTableBody"></tbody>
                         </table>
                     </div>
+                    <div class="payment-options-section">
+                        <h4>💳 Pay Now</h4>
+                        <p class="pay-now-desc">Scan the QR code or use the bank details below to make a payment.</p>
+                        <div class="pay-now-grid">
+                            <div class="qr-code-box">
+                                <div id="paymentQRCode"></div>
+                                <p class="qr-label">Scan to Pay</p>
+                            </div>
+                            <div class="bank-details-box">
+                                <h5>Bank Transfer Details</h5>
+                                <div class="bank-detail-row"><span>Bank:</span><strong>BDO (Banco de Oro)</strong></div>
+                                <div class="bank-detail-row"><span>Account Name:</span><strong>Beata Sai Integrated
+                                        School</strong></div>
+                                <div class="bank-detail-row"><span>Account Number:</span><strong>0012-3456-7890</strong>
+                                </div>
+                                <div class="bank-detail-row"><span>Branch:</span><strong>Quezon City Main</strong></div>
+                                <p class="bank-note">After payment, please send proof of payment to the school admin for
+                                    confirmation.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Activities Tab -->
@@ -164,15 +184,12 @@
                     <div id="assessmentsList"></div>
                 </div>
 
-                <!-- Calendar Tab -->
-                <div class="dash-panel" id="calendar">
-                    <h3>📅 School Calendar</h3>
-                    <div class="activity-list" id="calendarEventsList"></div>
-                </div>
+
             </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script src="student-portal.js"></script>
 </body>
 

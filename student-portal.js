@@ -24,9 +24,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     fetch(`${API_URL}/student/refresh`, {
       headers: { 'Authorization': `Bearer ${token}` }
     }).then(res => {
-      if (res.status === 401) {
-        // Session expired - logged in on another device
-        alert('Your session has ended because your account was logged in on another device.');
+      if (res.status === 401 || res.status === 404) {
+        // Session expired or student deleted
+        alert('Your session has ended. Your account may have been logged in on another device or removed.');
         logout();
         return null;
       }
@@ -164,8 +164,18 @@ function populateDashboard() {
     `).join('');
   }
 
-  // Calendar events
-  loadCalendarEvents();
+  // Generate QR Code for payment
+  const qrContainer = document.getElementById('paymentQRCode');
+  if (qrContainer && typeof QRCode !== 'undefined') {
+    qrContainer.innerHTML = '';
+    QRCode.toCanvas(document.createElement('canvas'),
+      `BEATASAI-PAY|${currentStudent.studentNo}|${currentStudent.fullName}|BAL:${(currentStudent.totalTuition || 0) - (currentStudent.totalPaid || 0)}`,
+      { width: 180, margin: 1, color: { dark: '#b71c1c' } },
+      function (error, canvas) {
+        if (!error) qrContainer.appendChild(canvas);
+      }
+    );
+  }
 }
 
 function switchDashTab(event, tabId) {
@@ -202,8 +212,8 @@ function startSessionCheck() {
       const res = await fetch(`${API_URL}/student/refresh`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      if (res.status === 401) {
-        alert('Your session has ended because your account was logged in on another device.');
+      if (res.status === 401 || res.status === 404) {
+        alert('Your session has ended. Your account may have been logged in on another device or removed.');
         logout();
       }
     } catch (e) { }
@@ -410,37 +420,7 @@ function showStudentNotification(message, isError) {
   setTimeout(() => { if (notif.parentElement) notif.remove(); }, 8000);
 }
 
-// Calendar Events
-async function loadCalendarEvents() {
-  try {
-    const res = await fetch(`${API_URL}/events`);
-    if (!res.ok) return;
-    const events = await res.json();
-    const list = document.getElementById('calendarEventsList');
 
-    if (!list) return;
-
-    if (events.length === 0) {
-      list.innerHTML = '<p style="color:#888;text-align:center;">No upcoming events.</p>';
-      return;
-    }
-
-    const typeColors = { Exam: '#b71c1c', Holiday: '#2e7d32', 'Field Trip': '#1565c0', Event: '#e65100', Meeting: '#6a1b9a' };
-
-    list.innerHTML = events.map(e => `
-      <div class="activity-card" style="cursor:default;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
-          <h4>${e.title}</h4>
-          <span class="event-type-badge" style="background:${typeColors[e.type] || '#b71c1c'}20;color:${typeColors[e.type] || '#b71c1c'};padding:0.2rem 0.8rem;border-radius:15px;font-size:0.8rem;font-weight:600;">${e.type}</span>
-        </div>
-        <div class="meta">📅 ${e.date}</div>
-        ${e.description ? `<p style="margin-top:0.5rem;">${e.description}</p>` : ''}
-      </div>
-    `).join('');
-  } catch (err) {
-    console.error('Error loading calendar events:', err);
-  }
-}
 
 // Student Profile Photo Upload
 async function uploadStudentPhoto(input) {
