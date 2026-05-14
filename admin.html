@@ -128,11 +128,13 @@
                         </div>
                         <div class="form-group">
                             <label>Full Name *</label>
-                            <input type="text" id="newStudentName" placeholder="e.g. Juan Dela Cruz" required>
+                            <input type="text" id="newStudentName" placeholder="e.g. Juan Dela Cruz" required
+                                oninput="this.value = this.value.replace(/[^a-zA-Z\s.,-]/g, '')">
                         </div>
                         <div class="form-group">
                             <label>Guardian Name *</label>
-                            <input type="text" id="newStudentGuardian" placeholder="e.g. Maria Dela Cruz" required>
+                            <input type="text" id="newStudentGuardian" placeholder="e.g. Maria Dela Cruz" required
+                                oninput="this.value = this.value.replace(/[^a-zA-Z\s.,-]/g, '')">
                         </div>
                         <div class="form-group">
                             <label>Guardian Contact</label>
@@ -281,7 +283,8 @@
                             <div class="profile-form-grid">
                                 <div class="form-group">
                                     <label>Full Name</label>
-                                    <input type="text" id="editFullName">
+                                    <input type="text" id="editFullName"
+                                        oninput="this.value = this.value.replace(/[^a-zA-Z\s.,-]/g, '')">
                                 </div>
                                 <div class="form-group">
                                     <label>Grade & Section</label>
@@ -289,11 +292,13 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Guardian Name</label>
-                                    <input type="text" id="editGuardian">
+                                    <input type="text" id="editGuardian"
+                                        oninput="this.value = this.value.replace(/[^a-zA-Z\s.,-]/g, '')">
                                 </div>
                                 <div class="form-group">
                                     <label>Guardian Contact</label>
-                                    <input type="text" id="editGuardianContact">
+                                    <input type="tel" id="editGuardianContact" inputmode="numeric"
+                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                 </div>
                                 <div class="form-group">
                                     <label>Address</label>
@@ -313,7 +318,8 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Total Tuition (₱)</label>
-                                    <input type="number" id="editTuition">
+                                    <input type="number" id="editTuition" inputmode="numeric" min="0"
+                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                 </div>
                                 <div class="form-group">
                                     <label>Payment Option</label>
@@ -384,7 +390,8 @@
                         <div class="form-row">
                             <input type="date" id="payDate" required>
                             <input type="text" id="payDesc" placeholder="Description" required>
-                            <input type="number" id="payAmount" placeholder="Amount" required>
+                            <input type="number" id="payAmount" placeholder="Amount" required inputmode="numeric"
+                                min="0" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                             <select id="payStatus">
                                 <option value="paid">Paid</option>
                                 <option value="pending">Pending</option>
@@ -417,7 +424,7 @@
                         <div class="form-row">
                             <input type="text" id="actTitle" placeholder="Title" required>
                             <input type="text" id="actSubject" placeholder="Subject" required>
-                            <input type="text" id="actDate" placeholder="Date (e.g. Oct 15, 2026)" required>
+                            <input type="date" id="actDate" required>
                         </div>
                         <div class="form-row">
                             <input type="text" id="actDesc" placeholder="Description" style="flex:3" required>
