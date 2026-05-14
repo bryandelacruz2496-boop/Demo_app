@@ -472,27 +472,28 @@ h4 {
 
 .toast {
     position: fixed;
-    top: 20px;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
-    background: #2e7d32;
+    transform: translate(-50%, -50%);
+    background: rgba(46, 125, 50, 0.85);
     color: #fff;
-    padding: 1rem 2rem;
-    border-radius: 10px;
+    padding: 1.5rem 3rem;
+    border-radius: 12px;
     font-weight: 600;
+    font-size: 1.2rem;
     z-index: 1000;
-    animation: slideDown 0.3s ease;
+    animation: fadeIn 0.3s ease;
 }
 
-@keyframes slideDown {
+@keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateX(-50%) translateY(-20px);
+        transform: translate(-50%, -50%) scale(0.9);
     }
 
     to {
         opacity: 1;
-        transform: translateX(-50%) translateY(0);
+        transform: translate(-50%, -50%) scale(1);
     }
 
     to {
