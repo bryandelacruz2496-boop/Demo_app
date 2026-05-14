@@ -23,11 +23,12 @@ router.post('/login', async (req, res) => {
         // Check if already logged in on another device
         if (student.activeToken) {
             try {
-                jwt.verify(student.activeToken, process.env.JWT_SECRET);
-                // Token is still valid - someone is already logged in
+                const decoded = jwt.verify(student.activeToken, process.env.JWT_SECRET);
+                // Token is still valid - check if it's been active recently
                 return res.status(403).json({ message: 'This account is already logged in on another device. Please log out from the other device first.' });
             } catch (e) {
-                // Token expired, allow login
+                // Token expired or invalid, clear it and allow login
+                student.activeToken = null;
             }
         }
 

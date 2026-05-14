@@ -296,4 +296,17 @@ router.delete('/students/:id/projects/:projectId', authMiddleware, async (req, r
     }
 });
 
+// PUT /api/admin/students/:id/force-logout - Clear student session
+router.put('/students/:id/force-logout', authMiddleware, async (req, res) => {
+    try {
+        const student = await Student.findById(req.params.id);
+        if (!student) return res.status(404).json({ message: 'Student not found' });
+        student.activeToken = null;
+        await student.save();
+        res.json({ message: 'Student session cleared' });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 module.exports = router;
