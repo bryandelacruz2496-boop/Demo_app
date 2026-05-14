@@ -178,7 +178,7 @@ function startSessionCheck() {
         logout();
       }
     } catch (e) { }
-  }, 30000);
+  }, 10000);
 }
 
 
