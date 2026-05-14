@@ -20,18 +20,6 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ message: 'Invalid student number or password' });
         }
 
-        // Check if already logged in on another device
-        if (student.activeToken) {
-            try {
-                const decoded = jwt.verify(student.activeToken, process.env.JWT_SECRET);
-                // Token is still valid - check if it's been active recently
-                return res.status(403).json({ message: 'This account is already logged in on another device. Please log out from the other device first.' });
-            } catch (e) {
-                // Token expired or invalid, clear it and allow login
-                student.activeToken = null;
-            }
-        }
-
         const token = jwt.sign(
             { id: student._id, studentNo: student.studentNo },
             process.env.JWT_SECRET,
