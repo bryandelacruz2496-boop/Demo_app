@@ -102,6 +102,7 @@ async function loadAnnouncements() {
 
 function showAnnouncementForm() {
     document.getElementById('announcementForm').style.display = 'block';
+    document.getElementById('addStudentForm').style.display = 'none';
 }
 
 function hideAnnouncementForm() {
@@ -694,6 +695,7 @@ function showToast(message) {
 // Add Student
 function showAddStudentForm() {
     document.getElementById('addStudentForm').style.display = 'block';
+    document.getElementById('announcementForm').style.display = 'none';
     document.getElementById('newStudentResult').style.display = 'none';
 }
 
