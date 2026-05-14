@@ -303,7 +303,7 @@ async function studentReply(announcementId) {
     loadStudentAnnouncements();
   } else {
     const data = await res.json();
-    showStudentNotification(data.message || 'Error sending reply');
+    showStudentNotification(data.message || 'Error sending reply', true);
   }
 }
 
@@ -340,12 +340,12 @@ async function fetchAdminReplyCount() {
   }
 }
 
-function showStudentNotification(message) {
+function showStudentNotification(message, isError) {
   const existing = document.querySelector('.student-notification');
   if (existing) existing.remove();
 
   const notif = document.createElement('div');
-  notif.className = 'student-notification';
+  notif.className = 'student-notification' + (isError ? ' student-notification-error' : '');
   notif.innerHTML = `
         <span>${message}</span>
         <button onclick="this.parentElement.remove()">✕</button>

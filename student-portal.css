@@ -635,3 +635,7 @@ h4 {
         transform: translateY(10px);
     }
 }
+
+.student-notification-error {
+    background: rgba(183, 28, 28, 0.85) !important;
+}
