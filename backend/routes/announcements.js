@@ -45,12 +45,6 @@ router.post('/', authMiddleware, async (req, res) => {
         });
         await announcement.save();
 
-        // Send push notification
-        const sendPushToAll = req.app.get('sendPushToAll');
-        if (sendPushToAll) {
-            sendPushToAll('📢 New Announcement', subject);
-        }
-
         res.status(201).json({ message: 'Announcement created', announcement });
     } catch (err) {
         res.status(500).json({ message: 'Server error' });

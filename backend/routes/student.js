@@ -32,6 +32,7 @@ const upload = multer({
 });
 
 // POST /api/student/login
+// POST /api/student/login
 router.post('/login', async (req, res) => {
     try {
         const { studentNo, password } = req.body;
@@ -46,15 +47,34 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ message: 'Invalid student number or password' });
         }
 
-        const token = jwt.sign(
+        const accessToken = jwt.sign(
             { id: student._id, studentNo: student.studentNo },
             process.env.JWT_SECRET,
-            { expiresIn: '8h' }
+            { expiresIn: '15m' }
         );
 
-        // Save active token - invalidates any previous session
-        student.activeToken = token;
+        const crypto = require('crypto');
+        const refreshToken = crypto.randomBytes(40).toString('hex');
+
+        // Save tokens - invalidates any previous session
+        student.activeToken = accessToken;
+        student.refreshToken = refreshToken;
         await student.save();
+
+        // Set httpOnly cookies
+        res.cookie('studentAccessToken', accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 15 * 60 * 1000
+        });
+        res.cookie('studentRefreshToken', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            path: '/api/student/refresh-token',
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        });
 
         // Calculate total paid
         const totalPaid = student.payments
@@ -62,7 +82,7 @@ router.post('/login', async (req, res) => {
             .reduce((sum, p) => sum + p.amount, 0);
 
         res.json({
-            token,
+            token: accessToken, // backward compatibility
             student: {
                 fullName: student.fullName,
                 studentNo: student.studentNo,
@@ -87,25 +107,76 @@ router.post('/login', async (req, res) => {
 // POST /api/student/logout
 router.post('/logout', async (req, res) => {
     try {
-        const token = req.header('Authorization')?.replace('Bearer ', '');
+        const token = req.cookies?.studentAccessToken || req.header('Authorization')?.replace('Bearer ', '');
         if (!token) return res.status(401).json({ message: 'No token' });
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const student = await Student.findById(decoded.id);
-        if (student && student.activeToken === token) {
+        if (student) {
             student.activeToken = null;
+            student.refreshToken = null;
             await student.save();
         }
+
+        res.clearCookie('studentAccessToken');
+        res.clearCookie('studentRefreshToken', { path: '/api/student/refresh-token' });
         res.json({ message: 'Logged out successfully' });
     } catch (err) {
         res.json({ message: 'Logged out' });
     }
 });
 
+// POST /api/student/refresh-token - Token refresh rotation
+router.post('/refresh-token', async (req, res) => {
+    try {
+        const refreshToken = req.cookies?.studentRefreshToken;
+        if (!refreshToken) {
+            return res.status(401).json({ message: 'No refresh token' });
+        }
+
+        const student = await Student.findOne({ refreshToken });
+        if (!student) {
+            return res.status(401).json({ message: 'Invalid refresh token' });
+        }
+
+        // Generate new token pair
+        const newAccessToken = jwt.sign(
+            { id: student._id, studentNo: student.studentNo },
+            process.env.JWT_SECRET,
+            { expiresIn: '15m' }
+        );
+        const crypto = require('crypto');
+        const newRefreshToken = crypto.randomBytes(40).toString('hex');
+
+        // Rotate tokens
+        student.activeToken = newAccessToken;
+        student.refreshToken = newRefreshToken;
+        await student.save();
+
+        res.cookie('studentAccessToken', newAccessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 15 * 60 * 1000
+        });
+        res.cookie('studentRefreshToken', newRefreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            path: '/api/student/refresh-token',
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        });
+
+        res.json({ token: newAccessToken });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 // GET /api/student/refresh - Get fresh student data using token
 router.get('/refresh', async (req, res) => {
     try {
-        const token = req.header('Authorization')?.replace('Bearer ', '');
+        const token = req.cookies?.studentAccessToken || req.header('Authorization')?.replace('Bearer ', '');
         if (!token) return res.status(401).json({ message: 'No token' });
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);

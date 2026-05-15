@@ -6,6 +6,8 @@ const authMiddleware = require('../middleware/auth');
 const { TUITION_TABLE, generatePayments } = require('../config/tuition');
 const { clearCache } = require('../middleware/cache');
 const { logAction } = require('../middleware/auditLogger');
+const { validatePassword } = require('../middleware/passwordPolicy');
+const { encryptUploadedFile } = require('../middleware/fileEncryption');
 
 const router = express.Router();
 
@@ -134,6 +136,7 @@ router.get('/students/:id', authMiddleware, async (req, res) => {
     try {
         const student = await Student.findById(req.params.id).select('-password');
         if (!student) return res.status(404).json({ message: 'Student not found' });
+        logAction('VIEW_STUDENT', req.admin.username, `Viewed student ${student.fullName}`, student.studentNo, req.ip);
         res.json(student);
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
@@ -280,14 +283,22 @@ router.post('/students/:id/projects', authMiddleware, async (req, res) => {
 router.put('/students/:id/password', authMiddleware, async (req, res) => {
     try {
         const { password } = req.body;
-        if (!password || password.length < 6) {
-            return res.status(400).json({ message: 'Password must be at least 6 characters' });
+
+        // Enforce password policy
+        const policyResult = validatePassword(password);
+        if (!policyResult.valid) {
+            return res.status(400).json({
+                message: 'Password does not meet requirements',
+                errors: policyResult.errors
+            });
         }
+
         const student = await Student.findById(req.params.id);
         if (!student) return res.status(404).json({ message: 'Student not found' });
 
         student.password = password;
         await student.save();
+        logAction('CHANGE_PASSWORD', req.admin.username, `Changed password for ${student.fullName}`, student.studentNo, req.ip);
         res.json({ message: 'Password updated successfully' });
     } catch (err) {
         res.status(500).json({ message: 'Server error' });

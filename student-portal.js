@@ -1,4 +1,5 @@
-const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : 'https://beata-backend.onrender.com/api';
+const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : '/api';
+const UPLOADS_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
 let currentStudent = null;
 
 // Prevent browser back/forward button from navigating away
@@ -25,7 +26,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     populateDashboard();
     startSessionCheck();
     startStudentNotificationCheck();
-    subscribeToPush();
 
     // Then try to refresh in background
     fetch(`${API_URL}/student/refresh`, {
@@ -74,7 +74,6 @@ async function handleStudentLogin(event) {
       showDashboard();
       startSessionCheck();
       startStudentNotificationCheck();
-      subscribeToPush();
     } else {
       errorEl.textContent = data.message;
     }
@@ -103,7 +102,7 @@ function populateDashboard() {
   // Set profile image
   const avatarEl = document.querySelector('.info-avatar');
   if (currentStudent.profileImage) {
-    avatarEl.innerHTML = `<img src="http://localhost:5000${currentStudent.profileImage}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">
+    avatarEl.innerHTML = `<img src="${UPLOADS_URL}${currentStudent.profileImage}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">
     <label class="avatar-upload-btn" title="Change photo">
       📷
       <input type="file" id="studentPhotoUpload" accept="image/*" onchange="uploadStudentPhoto(this)" style="display:none;">
@@ -128,7 +127,7 @@ function populateDashboard() {
       <h4>${a.title}</h4>
       <div class="meta">${a.subject} • ${a.date}</div>
       <p>${a.description}</p>
-      ${a.imageUrl ? `<div class="activity-photo-wrapper" style="display:none;"><img src="http://localhost:5000${a.imageUrl}" class="activity-photo" onclick="event.stopPropagation(); openActivityImage('http://localhost:5000${a.imageUrl}')"><p class="photo-hint">Click image to enlarge</p></div>` : ''}
+      ${a.imageUrl ? `<div class="activity-photo-wrapper" style="display:none;"><img src="${UPLOADS_URL}${a.imageUrl}" class="activity-photo" onclick="event.stopPropagation(); openActivityImage('${UPLOADS_URL}${a.imageUrl}')"><p class="photo-hint">Click image to enlarge</p></div>` : ''}
     </div>
   `).join('');
 
@@ -503,7 +502,7 @@ async function uploadStudentPhoto(input) {
 
       // Update avatar display
       const avatarEl = document.querySelector('.info-avatar');
-      avatarEl.innerHTML = `<img src="http://localhost:5000${data.profileImage}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">
+      avatarEl.innerHTML = `<img src="${UPLOADS_URL}${data.profileImage}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">
       <label class="avatar-upload-btn" title="Change photo">
         📷
         <input type="file" id="studentPhotoUpload" accept="image/*" onchange="uploadStudentPhoto(this)" style="display:none;">
@@ -572,39 +571,4 @@ async function markAllRead() {
   renderNotifCenter();
 }
 
-// ============================================
-// FEATURE: Push Notifications (Web Push)
-// ============================================
-async function subscribeToPush() {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-  try {
-    const reg = await navigator.serviceWorker.ready;
-    const existing = await reg.pushManager.getSubscription();
-    if (existing) return;
 
-    const res = await fetch(`${API_URL}/push/vapid-public`);
-    const { key } = await res.json();
-
-    const subscription = await reg.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(key)
-    });
-
-    await fetch(`${API_URL}/push/subscribe`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(subscription)
-    });
-  } catch (e) {
-    console.log('Push subscription failed:', e);
-  }
-}
-
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-  for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
-  return outputArray;
-}

@@ -1,4 +1,5 @@
-const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : 'https://beata-backend.onrender.com/api';
+const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : '/api';
+const UPLOADS_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
 let adminToken = localStorage.getItem('adminToken');
 let students = [];
 let selectedStudent = null;
@@ -269,7 +270,7 @@ function renderProfile() {
     // Photo
     const photoWrapper = document.getElementById('profilePhotoWrapper');
     if (selectedStudent.profileImage) {
-        photoWrapper.innerHTML = `<img src="http://localhost:5000${selectedStudent.profileImage}" class="profile-img">`;
+        photoWrapper.innerHTML = `<img src="${UPLOADS_URL}${selectedStudent.profileImage}" class="profile-img">`;
     } else {
         photoWrapper.innerHTML = `<span class="no-photo">No Photo</span>`;
     }
@@ -604,7 +605,7 @@ function renderActivities() {
       </div>
       <div class="meta">${a.subject} • ${a.date}</div>
       <p>${a.description}</p>
-      ${a.imageUrl ? `<img src="http://localhost:5000${a.imageUrl}" class="activity-image" onclick="viewImage('http://localhost:5000${a.imageUrl}')">` : ''}
+      ${a.imageUrl ? `<img src="${UPLOADS_URL}${a.imageUrl}" class="activity-image" onclick="viewImage('${UPLOADS_URL}${a.imageUrl}')">` : ''}
     </div>
   `).join('');
 }

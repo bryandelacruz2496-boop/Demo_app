@@ -90,7 +90,7 @@ function scrollToTop() {
 // Inquiry form
 function handleInquiry(event) {
     event.preventDefault();
-    const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : 'https://beata-backend.onrender.com/api';
+    const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : '/api';
 
     const data = {
         childName: document.getElementById('inqName').value,

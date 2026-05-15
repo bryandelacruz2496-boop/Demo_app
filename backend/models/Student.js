@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const { encryptionPlugin } = require('../middleware/encryption');
 
 const paymentSchema = new mongoose.Schema({
     date: String,
@@ -47,6 +48,7 @@ const studentSchema = new mongoose.Schema({
     totalTuition: { type: Number, default: 0 },
     paymentOption: { type: String, enum: ['monthly', 'quarterly', 'full', 'two_payments'], default: 'monthly' },
     activeToken: { type: String, default: null },
+    refreshToken: { type: String, default: null },
     status: { type: String, enum: ['active', 'archived'], default: 'active' },
     payments: [paymentSchema],
     activities: [activitySchema],
@@ -59,6 +61,11 @@ const studentSchema = new mongoose.Schema({
         createdAt: { type: Date, default: Date.now }
     }]
 }, { timestamps: true });
+
+// Encrypt sensitive PII fields
+studentSchema.plugin(encryptionPlugin, {
+    fields: ['guardianContact', 'address', 'birthDate']
+});
 
 studentSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
