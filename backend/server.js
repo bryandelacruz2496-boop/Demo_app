@@ -113,7 +113,7 @@ app.use('/api/student/login', loginLimiter);
 // General API rate limiter
 const apiLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 100, // 100 requests per minute
+  max: 500, // 500 requests per minute
   message: { message: 'Too many requests. Please slow down.' }
 });
 app.use('/api/', apiLimiter);
