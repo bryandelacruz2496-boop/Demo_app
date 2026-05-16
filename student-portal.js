@@ -296,11 +296,12 @@ function renderStudentPayments() {
       <td>${p.description}</td>
       <td>₱${p.amount.toLocaleString()}</td>
       <td><span class="status-${p.status}">${p.status === 'paid' ? '✓ Paid' : '⏳ Pending'}</span></td>
+      <td>${p.paidDate ? p.paidDate : '-'}</td>
     </tr>
   `).join('');
 
   if (payments.length === 0) {
-    paymentBody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#888;padding:2rem;">No payments found</td></tr>';
+    paymentBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#888;padding:2rem;">No payments found</td></tr>';
   }
 }
 
