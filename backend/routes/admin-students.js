@@ -1,5 +1,4 @@
 const express = require('express');
-const multer = require('multer');
 const path = require('path');
 const Student = require('../models/Student');
 const authMiddleware = require('../middleware/auth');
@@ -8,32 +7,9 @@ const { clearCache } = require('../middleware/cache');
 const { logAction } = require('../middleware/auditLogger');
 const { validatePassword } = require('../middleware/passwordPolicy');
 const { encryptUploadedFile } = require('../middleware/fileEncryption');
+const { cloudinary, upload } = require('../config/cloudinary');
 
 const router = express.Router();
-
-// Configure multer for image uploads
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const dir = path.join(__dirname, '..', 'uploads');
-        cb(null, dir);
-    },
-    filename: (req, file, cb) => {
-        const uniqueName = Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(file.originalname);
-        cb(null, uniqueName);
-    }
-});
-
-const upload = multer({
-    storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
-    fileFilter: (req, file, cb) => {
-        const allowed = /jpeg|jpg|png|gif|webp/;
-        const ext = allowed.test(path.extname(file.originalname).toLowerCase());
-        const mime = allowed.test(file.mimetype);
-        if (ext && mime) cb(null, true);
-        else cb(new Error('Only image files are allowed'));
-    }
-});
 
 // GET /api/admin/students - List all students (excludes archived by default)
 router.get('/students', authMiddleware, async (req, res) => {
@@ -109,7 +85,7 @@ router.post('/students', authMiddleware, upload.single('profileImage'), async (r
             address,
             birthDate,
             gender,
-            profileImage: req.file ? `/uploads/${req.file.filename}` : null,
+            profileImage: req.file ? req.file.path : null,
             totalTuition: finalTotal,
             paymentOption: option,
             payments,
@@ -159,7 +135,7 @@ router.put('/students/:id/profile', authMiddleware, upload.single('profileImage'
         if (gender !== undefined) student.gender = gender;
         if (totalTuition !== undefined) student.totalTuition = Number(totalTuition);
         if (paymentOption) student.paymentOption = paymentOption;
-        if (req.file) student.profileImage = `/uploads/${req.file.filename}`;
+        if (req.file) student.profileImage = req.file.path;
 
         await student.save();
         clearCache(`student_${req.params.id}`);
@@ -253,7 +229,7 @@ router.post('/students/:id/activities', authMiddleware, upload.single('image'), 
             date,
             subject,
             description,
-            imageUrl: req.file ? `/uploads/${req.file.filename}` : null
+            imageUrl: req.file ? req.file.path : null
         };
 
         student.activities.push(activity);
@@ -350,7 +326,7 @@ router.put('/students/:id/reenroll', authMiddleware, upload.single('profileImage
         if (birthDate) student.birthDate = birthDate;
         if (gender) student.gender = gender;
         if (paymentOption) student.paymentOption = paymentOption;
-        if (req.file) student.profileImage = '/uploads/' + req.file.filename;
+        if (req.file) student.profileImage = req.file.path;
 
         // Update tuition and generate new payments based on new grade/payment option
         if (grade && paymentOption) {

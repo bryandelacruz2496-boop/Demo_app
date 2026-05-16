@@ -2,6 +2,13 @@ const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:500
 const UPLOADS_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
 let currentStudent = null;
 
+// Helper: resolve image URL (handles both Cloudinary full URLs and local /uploads/ paths)
+function imgUrl(path) {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+  return UPLOADS_URL + path;
+}
+
 // Prevent browser back/forward button from navigating away
 history.pushState(null, null, location.href);
 window.addEventListener('popstate', function () {
@@ -102,7 +109,7 @@ function populateDashboard() {
   // Set profile image
   const avatarEl = document.querySelector('.info-avatar');
   if (currentStudent.profileImage) {
-    avatarEl.innerHTML = `<img src="${UPLOADS_URL}${currentStudent.profileImage}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">
+    avatarEl.innerHTML = `<img src="${imgUrl(currentStudent.profileImage)}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">
     <label class="avatar-upload-btn" title="Change photo">
       📷
       <input type="file" id="studentPhotoUpload" accept="image/*" onchange="uploadStudentPhoto(this)" style="display:none;">
@@ -127,7 +134,7 @@ function populateDashboard() {
       <h4>${a.title}</h4>
       <div class="meta">${a.subject} • ${a.date}</div>
       <p>${a.description}</p>
-      ${a.imageUrl ? `<div class="activity-photo-wrapper" style="display:none;"><img src="${UPLOADS_URL}${a.imageUrl}" class="activity-photo" onclick="event.stopPropagation(); openActivityImage('${UPLOADS_URL}${a.imageUrl}')"><p class="photo-hint">Click image to enlarge</p></div>` : ''}
+      ${a.imageUrl ? `<div class="activity-photo-wrapper" style="display:none;"><img src="${imgUrl(a.imageUrl)}" class="activity-photo" onclick="event.stopPropagation(); openActivityImage('${imgUrl(a.imageUrl)}')"><p class="photo-hint">Click image to enlarge</p></div>` : ''}
     </div>
   `).join('');
 
@@ -502,7 +509,7 @@ async function uploadStudentPhoto(input) {
 
       // Update avatar display
       const avatarEl = document.querySelector('.info-avatar');
-      avatarEl.innerHTML = `<img src="${UPLOADS_URL}${data.profileImage}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">
+      avatarEl.innerHTML = `<img src="${imgUrl(data.profileImage)}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">
       <label class="avatar-upload-btn" title="Change photo">
         📷
         <input type="file" id="studentPhotoUpload" accept="image/*" onchange="uploadStudentPhoto(this)" style="display:none;">

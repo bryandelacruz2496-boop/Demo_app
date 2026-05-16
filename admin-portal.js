@@ -1,6 +1,13 @@
 const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : '/api';
 const UPLOADS_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
 let adminToken = localStorage.getItem('adminToken');
+
+// Helper: resolve image URL (handles both Cloudinary full URLs and local /uploads/ paths)
+function imgUrl(path) {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return UPLOADS_URL + path;
+}
 let students = [];
 let selectedStudent = null;
 let lastReplyCount = 0;
@@ -270,7 +277,7 @@ function renderProfile() {
     // Photo
     const photoWrapper = document.getElementById('profilePhotoWrapper');
     if (selectedStudent.profileImage) {
-        photoWrapper.innerHTML = `<img src="${UPLOADS_URL}${selectedStudent.profileImage}" class="profile-img">`;
+        photoWrapper.innerHTML = `<img src="${imgUrl(selectedStudent.profileImage)}" class="profile-img">`;
     } else {
         photoWrapper.innerHTML = `<span class="no-photo">No Photo</span>`;
     }
@@ -605,7 +612,7 @@ function renderActivities() {
       </div>
       <div class="meta">${a.subject} • ${a.date}</div>
       <p>${a.description}</p>
-      ${a.imageUrl ? `<img src="${UPLOADS_URL}${a.imageUrl}" class="activity-image" onclick="viewImage('${UPLOADS_URL}${a.imageUrl}')">` : ''}
+      ${a.imageUrl ? `<img src="${imgUrl(a.imageUrl)}" class="activity-image" onclick="viewImage('${imgUrl(a.imageUrl)}')">` : ''}
     </div>
   `).join('');
 }
