@@ -1652,6 +1652,8 @@ function getAuditIcon(action) {
 // ATTENDANCE MANAGEMENT
 // ============================================
 
+let attendanceEditMode = false;
+
 async function loadAttendance() {
     const date = document.getElementById('attendanceDate').value;
     const grade = document.getElementById('attendanceGradeFilter').value;
@@ -1661,6 +1663,10 @@ async function loadAttendance() {
     }
 
     const selectedDate = document.getElementById('attendanceDate').value;
+    attendanceEditMode = false;
+    document.getElementById('btnEditAttendance').style.display = '';
+    document.getElementById('btnSaveAttendance').style.display = 'none';
+    document.getElementById('btnCancelAttendance').style.display = 'none';
 
     try {
         const res = await fetch(`${API_URL}/admin/attendance?grade=${encodeURIComponent(grade)}`, {
@@ -1685,10 +1691,10 @@ async function loadAttendance() {
                     <td>${s.grade}</td>
                     <td>
                         <div class="attendance-btn-group" data-student-id="${s._id}">
-                            <button type="button" class="att-btn att-p ${currentStatus === 'P' ? 'active' : ''}" onclick="selectAttendance(this, 'P')" title="Present">P</button>
-                            <button type="button" class="att-btn att-l ${currentStatus === 'L' ? 'active' : ''}" onclick="selectAttendance(this, 'L')" title="Late">L</button>
-                            <button type="button" class="att-btn att-e ${currentStatus === 'E' ? 'active' : ''}" onclick="selectAttendance(this, 'E')" title="Excused">E</button>
-                            <button type="button" class="att-btn att-u ${currentStatus === 'U' ? 'active' : ''}" onclick="selectAttendance(this, 'U')" title="Unexcused">U</button>
+                            <button type="button" class="att-btn att-p ${currentStatus === 'P' ? 'active' : ''}" onclick="selectAttendance(this, 'P')" title="Present" disabled>P</button>
+                            <button type="button" class="att-btn att-l ${currentStatus === 'L' ? 'active' : ''}" onclick="selectAttendance(this, 'L')" title="Late" disabled>L</button>
+                            <button type="button" class="att-btn att-e ${currentStatus === 'E' ? 'active' : ''}" onclick="selectAttendance(this, 'E')" title="Excused" disabled>E</button>
+                            <button type="button" class="att-btn att-u ${currentStatus === 'U' ? 'active' : ''}" onclick="selectAttendance(this, 'U')" title="Unexcused" disabled>U</button>
                         </div>
                     </td>
                 </tr>
@@ -1699,7 +1705,20 @@ async function loadAttendance() {
     }
 }
 
+function enableAttendanceEdit() {
+    attendanceEditMode = true;
+    document.getElementById('btnEditAttendance').style.display = 'none';
+    document.getElementById('btnSaveAttendance').style.display = '';
+    document.getElementById('btnCancelAttendance').style.display = '';
+    document.querySelectorAll('.att-btn').forEach(btn => btn.disabled = false);
+}
+
+function cancelAttendanceEdit() {
+    loadAttendance();
+}
+
 function selectAttendance(btn, status) {
+    if (!attendanceEditMode) return;
     const group = btn.parentElement;
     group.querySelectorAll('.att-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -1734,6 +1753,7 @@ async function saveAllAttendance() {
 
         if (res.ok) {
             showToast('Attendance saved successfully');
+            loadAttendance();
         } else {
             const data = await res.json();
             showToast(data.message || 'Error saving attendance');

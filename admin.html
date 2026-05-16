@@ -280,7 +280,12 @@
                                 <option value="Grade 6">Grade 6</option>
                             </select>
                         </div>
-                        <button class="btn-add-student" onclick="saveAllAttendance()">💾 Save Attendance</button>
+                        <button class="btn-edit" id="btnEditAttendance" onclick="enableAttendanceEdit()">✏️ Edit
+                            Attendance</button>
+                        <button class="btn-add-student" id="btnSaveAttendance" onclick="saveAllAttendance()"
+                            style="display:none;">💾 Save Attendance</button>
+                        <button class="btn-cancel" id="btnCancelAttendance" onclick="cancelAttendanceEdit()"
+                            style="display:none;">Cancel</button>
                     </div>
                     <div class="attendance-legend" style="margin-bottom:1rem;font-size:0.85rem;color:#555;">
                         <span style="margin-right:1rem;"><strong>P</strong> = Present</span>
