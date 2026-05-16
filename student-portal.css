@@ -1068,3 +1068,201 @@ h4 {
         right: 20px;
     }
 }
+
+
+/* ============================================
+   UI ENHANCEMENTS - ANIMATIONS & POLISH
+   ============================================ */
+
+/* Smooth tab transitions */
+.dash-panel {
+    animation: fadeSlideIn 0.3s ease;
+}
+
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Card hover effects */
+.activity-card,
+.project-card,
+.assessment-view-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.activity-card:hover,
+.project-card:hover,
+.assessment-view-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(183, 28, 28, 0.12);
+}
+
+/* Button press feedback */
+.btn-login,
+.btn-logout,
+.dash-tab {
+    transition: all 0.2s ease;
+}
+
+.btn-login:active,
+.dash-tab:active {
+    transform: scale(0.95);
+}
+
+/* Softer page background */
+.dashboard {
+    background: #f8f9fa;
+}
+
+/* Tab underline animation */
+.dash-tab {
+    position: relative;
+    overflow: hidden;
+}
+
+.dash-tab::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 3px;
+    background: #b71c1c;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+    border-radius: 3px;
+}
+
+.dash-tab:hover::after,
+.dash-tab.active::after {
+    width: 70%;
+}
+
+/* Sticky table headers */
+.table-wrapper {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.data-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* Payment summary cards hover */
+.summary-item {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.summary-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Info card avatar ring */
+.info-avatar img {
+    border: 3px solid #b71c1c;
+    box-shadow: 0 4px 15px rgba(183, 28, 28, 0.2);
+}
+
+/* Notification toast animation */
+.student-notification {
+    animation: toastSlideIn 0.4s ease;
+}
+
+@keyframes toastSlideIn {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Notification badge pulse */
+.notif-badge {
+    animation: pulse 2s infinite;
+}
+
+/* Improved scrollbar */
+.table-wrapper::-webkit-scrollbar {
+    width: 6px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: #e0e0e0;
+    border-radius: 3px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #bdbdbd;
+}
+
+/* Status badges */
+.status-paid {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-pending {
+    background: #fff3e0;
+    color: #e65100;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* Attendance row color coding */
+.data-table tr:has(.status-paid) {
+    background: rgba(46, 125, 50, 0.03);
+}
+
+/* QR code section polish */
+.qr-code-box {
+    transition: transform 0.2s ease;
+}
+
+.qr-code-box:hover {
+    transform: scale(1.02);
+}
+
+/* Login card entrance */
+.login-card {
+    animation: cardEntrance 0.5s ease;
+}
+
+/* Section headings gradient */
+.dash-panel h3 {
+    background: linear-gradient(135deg, #b71c1c, #d32f2f);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Empty state */
+.dash-panel p[style*="color:#888"] {
+    font-size: 1rem;
+    padding: 2rem;
+}

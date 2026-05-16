@@ -1024,3 +1024,136 @@ footer {
         flex-direction: column;
     }
 }
+
+
+/* ============================================
+   UI ENHANCEMENTS - HOMEPAGE
+   ============================================ */
+
+/* Smooth scroll behavior */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Card hover effects */
+.program-card,
+.news-card,
+.contact-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.program-card:hover,
+.news-card:hover,
+.contact-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* Gallery items hover */
+.gallery-item {
+    transition: transform 0.3s ease;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.gallery-item:hover {
+    transform: scale(1.03);
+}
+
+.gallery-item img {
+    transition: transform 0.4s ease;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.1);
+}
+
+/* Button hover effects */
+.btn {
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(183, 28, 28, 0.3);
+}
+
+.btn:active {
+    transform: scale(0.95);
+}
+
+/* Stats counter animation enhancement */
+.stat {
+    transition: transform 0.3s ease;
+}
+
+.stat:hover {
+    transform: scale(1.05);
+}
+
+/* Back to top button animation */
+#backToTop {
+    transition: all 0.3s ease;
+}
+
+#backToTop:hover {
+    transform: translateY(-3px) scale(1.1);
+}
+
+/* Header nav links underline animation */
+nav a {
+    position: relative;
+}
+
+nav a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: #fff;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+nav a:hover::after {
+    width: 80%;
+}
+
+/* Form input focus glow */
+.inquiry-form input:focus,
+.inquiry-form textarea:focus,
+.inquiry-form select:focus {
+    box-shadow: 0 0 0 3px rgba(183, 28, 28, 0.15);
+    border-color: #b71c1c;
+}
+
+/* Footer links hover */
+.footer-section a {
+    transition: color 0.2s ease, padding-left 0.2s ease;
+}
+
+.footer-section a:hover {
+    padding-left: 5px;
+    color: #ffcdd2;
+}
+
+/* Lightbox fade in */
+#lightbox {
+    transition: opacity 0.3s ease;
+}
+
+#lightbox.active {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

@@ -2240,3 +2240,260 @@ h4 {
 .att-btn:disabled.active {
     opacity: 1;
 }
+
+
+/* ============================================
+   UI ENHANCEMENTS - ANIMATIONS & POLISH
+   ============================================ */
+
+/* Smooth tab/view transitions */
+.admin-view {
+    animation: fadeSlideIn 0.3s ease;
+}
+
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Skeleton loading placeholder */
+@keyframes skeletonPulse {
+    0% {
+        background-color: #e8eaf6;
+    }
+
+    50% {
+        background-color: #c5cae9;
+    }
+
+    100% {
+        background-color: #e8eaf6;
+    }
+}
+
+.skeleton-row {
+    height: 60px;
+    border-radius: 8px;
+    animation: skeletonPulse 1.5s infinite;
+    margin-bottom: 0.5rem;
+}
+
+/* Card hover lift effect */
+.student-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.student-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(26, 35, 126, 0.15);
+}
+
+/* Button press feedback */
+.btn-add-student,
+.btn-edit,
+.btn-save,
+.btn-add,
+.btn-export,
+.admin-nav-btn {
+    transition: all 0.2s ease;
+}
+
+.btn-add-student:active,
+.btn-edit:active,
+.btn-save:active,
+.btn-add:active,
+.btn-export:active {
+    transform: scale(0.95);
+}
+
+/* Toast slide animation */
+.toast {
+    animation: toastSlideIn 0.4s ease;
+}
+
+@keyframes toastSlideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Softer page background */
+body {
+    background: #f4f6fa !important;
+}
+
+/* Sticky table headers */
+.table-wrapper {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.admin-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* Color-coded attendance rows */
+.admin-table tr:has(.att-btn.att-p.active) {
+    background: rgba(46, 125, 50, 0.04);
+}
+
+.admin-table tr:has(.att-btn.att-u.active) {
+    background: rgba(198, 40, 40, 0.04);
+}
+
+.admin-table tr:has(.att-btn.att-l.active) {
+    background: rgba(230, 81, 0, 0.04);
+}
+
+/* Enhanced nav buttons */
+.admin-nav-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-nav-btn::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 3px;
+    background: #1a237e;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+    border-radius: 3px;
+}
+
+.admin-nav-btn:hover::after,
+.admin-nav-btn.active::after {
+    width: 60%;
+}
+
+/* Panel entrance animation */
+.admin-panel {
+    animation: cardEntrance 0.3s ease;
+}
+
+/* Improved form inputs */
+input[type="text"],
+input[type="password"],
+input[type="number"],
+input[type="date"],
+input[type="email"],
+select,
+textarea {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+input[type="email"]:focus,
+select:focus,
+textarea:focus {
+    box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
+}
+
+/* Empty state styling */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #9e9e9e;
+    font-size: 1.1rem;
+}
+
+.empty-state::before {
+    content: '📋';
+    display: block;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+/* Notification badge pulse */
+.notif-badge {
+    animation: pulse 2s infinite;
+}
+
+/* Save success checkmark animation */
+@keyframes checkmark {
+    0% {
+        transform: scale(0);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.save-success {
+    animation: checkmark 0.4s ease;
+    color: #2e7d32;
+    font-size: 1.2rem;
+}
+
+/* Improved scrollbar */
+.table-wrapper::-webkit-scrollbar {
+    width: 6px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 3px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: #bdbdbd;
+    border-radius: 3px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #9e9e9e;
+}
+
+/* Dashboard header gradient accent */
+.dashboard-header h2 {
+    background: linear-gradient(135deg, #1a237e, #3949ab);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Collection summary cards hover */
+.collection-summary .summary-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.collection-summary .summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Status badges pill shape */
+.status-paid,
+.status-pending {
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+}
