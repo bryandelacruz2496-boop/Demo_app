@@ -2131,3 +2131,65 @@ h4 {
     font-size: 0.75rem;
     color: #999;
 }
+
+
+/* ============================================
+   ATTENDANCE BUTTON STYLES
+   ============================================ */
+.attendance-btn-group {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.att-btn {
+    width: 36px;
+    height: 36px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fff;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.att-btn:hover {
+    transform: scale(1.1);
+}
+
+.att-btn.att-p { color: #2e7d32; border-color: #c8e6c9; }
+.att-btn.att-p:hover, .att-btn.att-p.active { background: #2e7d32; color: #fff; border-color: #2e7d32; }
+
+.att-btn.att-l { color: #e65100; border-color: #ffe0b2; }
+.att-btn.att-l:hover, .att-btn.att-l.active { background: #e65100; color: #fff; border-color: #e65100; }
+
+.att-btn.att-e { color: #1565c0; border-color: #bbdefb; }
+.att-btn.att-e:hover, .att-btn.att-e.active { background: #1565c0; color: #fff; border-color: #1565c0; }
+
+.att-btn.att-u { color: #c62828; border-color: #ffcdd2; }
+.att-btn.att-u:hover, .att-btn.att-u.active { background: #c62828; color: #fff; border-color: #c62828; }
+
+.attendance-controls label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.attendance-controls input[type="date"],
+.attendance-controls select {
+    padding: 0.5rem 0.8rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+}
+
+.attendance-controls input[type="date"]:focus,
+.attendance-controls select:focus {
+    border-color: #1a237e;
+    outline: none;
+}

@@ -1657,7 +1657,6 @@ async function loadAttendance() {
     const grade = document.getElementById('attendanceGradeFilter').value;
 
     if (!date) {
-        // Set today's date as default
         document.getElementById('attendanceDate').value = new Date().toISOString().split('T')[0];
     }
 
@@ -1678,19 +1677,19 @@ async function loadAttendance() {
 
         body.innerHTML = studentsData.map(s => {
             const record = s.attendance.find(a => a.date === selectedDate);
-            const currentStatus = record ? record.status : 'P';
+            const currentStatus = record ? record.status : '';
             return `
                 <tr>
                     <td>${s.studentNo}</td>
-                    <td>${s.fullName}</td>
+                    <td><strong>${s.fullName}</strong></td>
                     <td>${s.grade}</td>
                     <td>
-                        <select class="attendance-select" data-student-id="${s._id}" data-status="${currentStatus}">
-                            <option value="P" ${currentStatus === 'P' ? 'selected' : ''}>P - Present</option>
-                            <option value="L" ${currentStatus === 'L' ? 'selected' : ''}>L - Late</option>
-                            <option value="E" ${currentStatus === 'E' ? 'selected' : ''}>E - Excused</option>
-                            <option value="U" ${currentStatus === 'U' ? 'selected' : ''}>U - Unexcused</option>
-                        </select>
+                        <div class="attendance-btn-group" data-student-id="${s._id}">
+                            <button type="button" class="att-btn att-p ${currentStatus === 'P' ? 'active' : ''}" onclick="selectAttendance(this, 'P')" title="Present">P</button>
+                            <button type="button" class="att-btn att-l ${currentStatus === 'L' ? 'active' : ''}" onclick="selectAttendance(this, 'L')" title="Late">L</button>
+                            <button type="button" class="att-btn att-e ${currentStatus === 'E' ? 'active' : ''}" onclick="selectAttendance(this, 'E')" title="Excused">E</button>
+                            <button type="button" class="att-btn att-u ${currentStatus === 'U' ? 'active' : ''}" onclick="selectAttendance(this, 'U')" title="Unexcused">U</button>
+                        </div>
                     </td>
                 </tr>
             `;
@@ -1700,6 +1699,13 @@ async function loadAttendance() {
     }
 }
 
+function selectAttendance(btn, status) {
+    const group = btn.parentElement;
+    group.querySelectorAll('.att-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    group.dataset.selectedStatus = status;
+}
+
 async function saveAllAttendance() {
     const date = document.getElementById('attendanceDate').value;
     if (!date) {
@@ -1707,11 +1713,14 @@ async function saveAllAttendance() {
         return;
     }
 
-    const selects = document.querySelectorAll('.attendance-select');
-    const records = Array.from(selects).map(select => ({
-        studentId: select.dataset.studentId,
-        status: select.value
-    }));
+    const groups = document.querySelectorAll('.attendance-btn-group');
+    const records = Array.from(groups).map(group => {
+        const activeBtn = group.querySelector('.att-btn.active');
+        return {
+            studentId: group.dataset.studentId,
+            status: activeBtn ? activeBtn.textContent.trim() : 'P'
+        };
+    }).filter(r => r.status);
 
     try {
         const res = await fetch(`${API_URL}/admin/attendance/bulk`, {
