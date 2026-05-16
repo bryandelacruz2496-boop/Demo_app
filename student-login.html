@@ -56,6 +56,29 @@
             </div>
         </div>
 
+        <!-- Change Password Modal (First Login) -->
+        <div class="change-pw-overlay" id="changePwOverlay" style="display:none;">
+            <div class="change-pw-modal">
+                <div class="change-pw-header">
+                    <h2>🔒 Change Your Password</h2>
+                    <p>For your security, please set a new password before continuing.</p>
+                </div>
+                <form onsubmit="handleFirstPasswordChange(event)">
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" id="newPw" placeholder="Enter new password (min 6 characters)" required
+                            minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input type="password" id="confirmPw" placeholder="Confirm new password" required minlength="6">
+                    </div>
+                    <p class="error-msg" id="changePwError"></p>
+                    <button type="submit" class="btn-login">Set New Password</button>
+                </form>
+            </div>
+        </div>
+
         <!-- Student Dashboard -->
         <div class="dashboard" id="dashboard" style="display:none;">
             <header class="dash-header">

@@ -72,7 +72,8 @@ router.post('/login', async (req, res) => {
                 projects: student.projects,
                 assessments: student.assessments,
                 attendance: student.attendance || [],
-                notifications: student.notifications || []
+                notifications: student.notifications || [],
+                mustChangePassword: student.mustChangePassword || false
             }
         });
     } catch (err) {
@@ -183,7 +184,8 @@ router.get('/refresh', async (req, res) => {
             projects: student.projects,
             assessments: student.assessments,
             attendance: student.attendance || [],
-            notifications: student.notifications || []
+            notifications: student.notifications || [],
+            mustChangePassword: student.mustChangePassword || false
         };
 
         res.json({ student: studentData });
@@ -204,6 +206,32 @@ router.put('/notifications/read', async (req, res) => {
         await student.save();
         res.json({ message: 'All marked as read' });
     } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// POST /api/student/change-password - Force change password on first login
+router.post('/change-password', async (req, res) => {
+    try {
+        const token = req.header('Authorization')?.replace('Bearer ', '');
+        if (!token) return res.status(401).json({ message: 'No token' });
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const student = await Student.findById(decoded.id);
+        if (!student) return res.status(404).json({ message: 'Student not found' });
+
+        const { newPassword } = req.body;
+        if (!newPassword || newPassword.length < 6) {
+            return res.status(400).json({ message: 'Password must be at least 6 characters' });
+        }
+
+        student.password = newPassword;
+        student.mustChangePassword = false;
+        await student.save();
+
+        res.json({ message: 'Password changed successfully' });
+    } catch (err) {
+        console.error(err);
         res.status(500).json({ message: 'Server error' });
     }
 });

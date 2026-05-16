@@ -28,6 +28,14 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     // Show dashboard immediately with cached data
     currentStudent = parsed;
+
+    // Check if must change password
+    if (parsed.mustChangePassword) {
+      document.getElementById('loginWrapper').style.display = 'none';
+      document.getElementById('changePwOverlay').style.display = 'flex';
+      return;
+    }
+
     document.getElementById('loginWrapper').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
     populateDashboard();
@@ -78,9 +86,16 @@ async function handleStudentLogin(event) {
       localStorage.setItem('studentToken', data.token);
       localStorage.setItem('studentData', JSON.stringify(data.student));
       errorEl.textContent = '';
-      showDashboard();
-      startSessionCheck();
-      startStudentNotificationCheck();
+
+      // Check if student must change password on first login
+      if (data.student.mustChangePassword) {
+        document.getElementById('loginWrapper').style.display = 'none';
+        document.getElementById('changePwOverlay').style.display = 'flex';
+      } else {
+        showDashboard();
+        startSessionCheck();
+        startStudentNotificationCheck();
+      }
     } else {
       errorEl.textContent = data.message;
     }
@@ -637,5 +652,59 @@ function renderStudentAttendance() {
 
   if (records.length === 0) {
     tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#888;padding:2rem;">No attendance records found</td></tr>';
+  }
+}
+
+
+// ============================================
+// FIRST LOGIN - FORCE PASSWORD CHANGE
+// ============================================
+
+async function handleFirstPasswordChange(event) {
+  event.preventDefault();
+  const newPw = document.getElementById('newPw').value;
+  const confirmPw = document.getElementById('confirmPw').value;
+  const errorEl = document.getElementById('changePwError');
+
+  if (newPw !== confirmPw) {
+    errorEl.textContent = 'Passwords do not match';
+    return;
+  }
+
+  if (newPw.length < 6) {
+    errorEl.textContent = 'Password must be at least 6 characters';
+    return;
+  }
+
+  if (newPw === 'student123') {
+    errorEl.textContent = 'Please choose a different password than the default';
+    return;
+  }
+
+  const token = localStorage.getItem('studentToken');
+  try {
+    const res = await fetch(`${API_URL}/student/change-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ newPassword: newPw })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      currentStudent.mustChangePassword = false;
+      localStorage.setItem('studentData', JSON.stringify(currentStudent));
+      document.getElementById('changePwOverlay').style.display = 'none';
+      showDashboard();
+      startSessionCheck();
+      startStudentNotificationCheck();
+    } else {
+      errorEl.textContent = data.message || 'Error changing password';
+    }
+  } catch (err) {
+    errorEl.textContent = 'Cannot connect to server';
   }
 }

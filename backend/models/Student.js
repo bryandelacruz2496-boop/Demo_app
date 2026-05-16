@@ -55,6 +55,7 @@ const studentSchema = new mongoose.Schema({
     paymentOption: { type: String, enum: ['monthly', 'quarterly', 'full', 'two_payments'], default: 'monthly' },
     activeToken: { type: String, default: null },
     refreshToken: { type: String, default: null },
+    mustChangePassword: { type: Boolean, default: true },
     status: { type: String, enum: ['active', 'archived'], default: 'active' },
     payments: [paymentSchema],
     activities: [activitySchema],

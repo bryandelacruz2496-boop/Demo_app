@@ -276,6 +276,7 @@ router.put('/students/:id/password', authMiddleware, async (req, res) => {
         if (!student) return res.status(404).json({ message: 'Student not found' });
 
         student.password = password;
+        student.mustChangePassword = true;
         await student.save();
         logAction('CHANGE_PASSWORD', req.admin.username, `Changed password for ${student.fullName}`, student.studentNo, req.ip);
         res.json({ message: 'Password updated successfully' });
