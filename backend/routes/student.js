@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const path = require('path');
 const Student = require('../models/Student');
 const { getCache, setCache, clearCache } = require('../middleware/cache');
-const { cloudinary, upload } = require('../config/cloudinary');
+const { cloudinary, upload, uploadToCloudinary } = require('../config/cloudinary');
 
 const router = express.Router();
 
@@ -224,11 +224,13 @@ router.post('/profile-photo', upload.single('profileImage'), async (req, res) =>
 
         // Delete old image from Cloudinary if exists
         if (student.profileImage && student.profileImage.includes('cloudinary')) {
-            const publicId = student.profileImage.split('/').slice(-2).join('/').split('.')[0];
-            await cloudinary.uploader.destroy(publicId).catch(() => { });
+            const parts = student.profileImage.split('/');
+            const folderAndFile = parts.slice(parts.indexOf('beatasai')).join('/').split('.')[0];
+            await cloudinary.uploader.destroy(folderAndFile).catch(() => { });
         }
 
-        student.profileImage = req.file.path;
+        const result = await uploadToCloudinary(req.file.buffer);
+        student.profileImage = result.secure_url;
         await student.save();
         clearCache(`student_${decoded.id}`);
 

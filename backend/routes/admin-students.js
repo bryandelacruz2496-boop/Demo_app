@@ -7,7 +7,7 @@ const { clearCache } = require('../middleware/cache');
 const { logAction } = require('../middleware/auditLogger');
 const { validatePassword } = require('../middleware/passwordPolicy');
 const { encryptUploadedFile } = require('../middleware/fileEncryption');
-const { cloudinary, upload } = require('../config/cloudinary');
+const { cloudinary, upload, uploadToCloudinary } = require('../config/cloudinary');
 
 const router = express.Router();
 
@@ -85,7 +85,7 @@ router.post('/students', authMiddleware, upload.single('profileImage'), async (r
             address,
             birthDate,
             gender,
-            profileImage: req.file ? req.file.path : null,
+            profileImage: req.file ? (await uploadToCloudinary(req.file.buffer)).secure_url : null,
             totalTuition: finalTotal,
             paymentOption: option,
             payments,
@@ -135,7 +135,10 @@ router.put('/students/:id/profile', authMiddleware, upload.single('profileImage'
         if (gender !== undefined) student.gender = gender;
         if (totalTuition !== undefined) student.totalTuition = Number(totalTuition);
         if (paymentOption) student.paymentOption = paymentOption;
-        if (req.file) student.profileImage = req.file.path;
+        if (req.file) {
+            const result = await uploadToCloudinary(req.file.buffer);
+            student.profileImage = result.secure_url;
+        }
 
         await student.save();
         clearCache(`student_${req.params.id}`);
@@ -229,7 +232,7 @@ router.post('/students/:id/activities', authMiddleware, upload.single('image'), 
             date,
             subject,
             description,
-            imageUrl: req.file ? req.file.path : null
+            imageUrl: req.file ? (await uploadToCloudinary(req.file.buffer)).secure_url : null
         };
 
         student.activities.push(activity);
@@ -326,7 +329,10 @@ router.put('/students/:id/reenroll', authMiddleware, upload.single('profileImage
         if (birthDate) student.birthDate = birthDate;
         if (gender) student.gender = gender;
         if (paymentOption) student.paymentOption = paymentOption;
-        if (req.file) student.profileImage = req.file.path;
+        if (req.file) {
+            const result = await uploadToCloudinary(req.file.buffer);
+            student.profileImage = result.secure_url;
+        }
 
         // Update tuition and generate new payments based on new grade/payment option
         if (grade && paymentOption) {

@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Copy backend package files and install dependencies
 COPY backend/package.json backend/package-lock.json ./
-RUN npm install --production
+RUN npm install --production --legacy-peer-deps
 
 # Copy backend source
 COPY backend/ .
