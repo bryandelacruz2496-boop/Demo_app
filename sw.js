@@ -10,7 +10,7 @@ const urlsToCache = [
     '/script.js',
     '/admin-portal.js',
     '/student-portal.js',
-    '/logo.png'
+    '/logo.jpg'
 ];
 
 // Install - cache files

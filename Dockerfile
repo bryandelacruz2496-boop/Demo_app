@@ -20,7 +20,7 @@ COPY student-portal.css /app/public/
 COPY student-portal.js /app/public/
 COPY admin-portal.css /app/public/
 COPY admin-portal.js /app/public/
-COPY logo.png /app/public/
+COPY logo.jpg /app/public/
 COPY datepicker.css /app/public/
 COPY datepicker.js /app/public/
 COPY manifest.json /app/public/
