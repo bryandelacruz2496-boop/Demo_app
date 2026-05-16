@@ -161,11 +161,17 @@ app.get('/api/health', (req, res) => {
 const frontendPath = path.join(__dirname, 'public');
 if (fs.existsSync(frontendPath)) {
   app.use(express.static(frontendPath));
-  // Serve index.html for any non-API route (SPA fallback)
-  app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api') && !req.path.startsWith('/uploads')) {
-      res.sendFile(path.join(frontendPath, 'index.html'));
+  // Fallback: serve index.html only for routes that don't match a file
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
     }
+    // If the request has a file extension, it's a missing static file - 404
+    if (path.extname(req.path)) {
+      return res.status(404).send('Not Found');
+    }
+    // Otherwise serve index.html (SPA fallback for clean URLs)
+    res.sendFile(path.join(frontendPath, 'index.html'));
   });
 }
 
