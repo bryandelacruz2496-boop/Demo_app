@@ -141,6 +141,9 @@ function populateDashboard() {
   // Projects - load from global projects
   loadStudentProjects();
 
+  // Attendance
+  renderStudentAttendance();
+
   // Assessments
   const assessmentsList = document.getElementById('assessmentsList');
   if (currentStudent.assessments.length === 0) {
@@ -580,3 +583,59 @@ async function markAllRead() {
 }
 
 
+
+
+// ============================================
+// ATTENDANCE - Student View
+// ============================================
+
+function renderStudentAttendance() {
+  const month = document.getElementById('attendMonth') ? document.getElementById('attendMonth').value : 'all';
+  const year = document.getElementById('attendYear') ? document.getElementById('attendYear').value : 'all';
+  const tbody = document.getElementById('attendanceTableBody');
+
+  let records = [...(currentStudent.attendance || [])];
+
+  // Filter by month
+  if (month !== 'all') {
+    records = records.filter(a => a.date && a.date.substring(5, 7) === month);
+  }
+
+  // Filter by year
+  if (year !== 'all') {
+    records = records.filter(a => a.date && a.date.substring(0, 4) === year);
+  }
+
+  // Sort by date (newest first)
+  records.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  // Update summary
+  const total = records.length;
+  const present = records.filter(r => r.status === 'P').length;
+  const late = records.filter(r => r.status === 'L').length;
+  const absent = records.filter(r => r.status === 'U' || r.status === 'E').length;
+
+  document.getElementById('attendTotalDays').textContent = total;
+  document.getElementById('attendPresent').textContent = present;
+  document.getElementById('attendLate').textContent = late;
+  document.getElementById('attendAbsent').textContent = absent;
+
+  const statusLabels = { P: '✓ Present', L: '⏰ Late', E: '📋 Excused', U: '✗ Absent' };
+  const statusClasses = { P: 'paid', L: 'status-late', E: 'status-excused', U: 'pending' };
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+  tbody.innerHTML = records.map(r => {
+    const dayName = days[new Date(r.date).getDay()];
+    return `
+            <tr>
+                <td>${r.date}</td>
+                <td>${dayName}</td>
+                <td><span class="status-${r.status === 'P' ? 'paid' : r.status === 'U' ? 'pending' : r.status === 'L' ? 'paid' : 'paid'}" style="${r.status === 'L' ? 'background:#fff3e0;color:#e65100;' : r.status === 'E' ? 'background:#e3f2fd;color:#1565c0;' : ''}">${statusLabels[r.status] || r.status}</span></td>
+            </tr>
+        `;
+  }).join('');
+
+  if (records.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#888;padding:2rem;">No attendance records found</td></tr>';
+  }
+}

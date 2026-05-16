@@ -71,6 +71,7 @@ router.post('/login', async (req, res) => {
                 activities: student.activities,
                 projects: student.projects,
                 assessments: student.assessments,
+                attendance: student.attendance || [],
                 notifications: student.notifications || []
             }
         });
@@ -181,6 +182,7 @@ router.get('/refresh', async (req, res) => {
             activities: student.activities,
             projects: student.projects,
             assessments: student.assessments,
+            attendance: student.attendance || [],
             notifications: student.notifications || []
         };
 

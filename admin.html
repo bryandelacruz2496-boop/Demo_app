@@ -56,6 +56,7 @@
             <!-- Admin Navigation -->
             <div class="admin-nav">
                 <button class="admin-nav-btn active" onclick="switchAdminView('studentsView')">📋 Students</button>
+                <button class="admin-nav-btn" onclick="switchAdminView('attendanceView')">📅 Attendance</button>
                 <button class="admin-nav-btn" onclick="switchAdminView('announcementsView')">📢 Announcements</button>
                 <button class="admin-nav-btn" onclick="switchAdminView('messagesView')">📩 Messages</button>
                 <button class="admin-nav-btn" onclick="switchAdminView('projectsView')">📁 Projects</button>
@@ -254,6 +255,54 @@
                     </div>
                 </div>
                 <!-- End Students View -->
+
+                <!-- Attendance View -->
+                <div class="admin-view" id="attendanceView">
+                    <div class="dashboard-header">
+                        <h2>📅 Attendance</h2>
+                    </div>
+                    <div class="attendance-controls"
+                        style="display:flex;gap:1rem;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;">
+                        <div>
+                            <label>Date:</label>
+                            <input type="date" id="attendanceDate" onchange="loadAttendance()">
+                        </div>
+                        <div>
+                            <label>Grade:</label>
+                            <select id="attendanceGradeFilter" onchange="loadAttendance()">
+                                <option value="all">All Grades</option>
+                                <option value="Kindergarten">Kindergarten</option>
+                                <option value="Grade 1">Grade 1</option>
+                                <option value="Grade 2">Grade 2</option>
+                                <option value="Grade 3">Grade 3</option>
+                                <option value="Grade 4">Grade 4</option>
+                                <option value="Grade 5">Grade 5</option>
+                                <option value="Grade 6">Grade 6</option>
+                            </select>
+                        </div>
+                        <button class="btn-add-student" onclick="saveAllAttendance()">💾 Save Attendance</button>
+                    </div>
+                    <div class="attendance-legend" style="margin-bottom:1rem;font-size:0.85rem;color:#555;">
+                        <span style="margin-right:1rem;"><strong>P</strong> = Present</span>
+                        <span style="margin-right:1rem;"><strong>L</strong> = Late</span>
+                        <span style="margin-right:1rem;"><strong>E</strong> = Excused</span>
+                        <span><strong>U</strong> = Unexcused Absence</span>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="admin-table" id="attendanceTable">
+                            <thead>
+                                <tr>
+                                    <th>Student No</th>
+                                    <th>Name</th>
+                                    <th>Grade</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendanceBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- End Attendance View -->
 
                 <!-- Announcements View -->
                 <div class="admin-view" id="announcementsView">

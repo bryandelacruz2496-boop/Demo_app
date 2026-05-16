@@ -425,4 +425,107 @@ router.put('/students/:id/unarchive', authMiddleware, async (req, res) => {
     }
 });
 
+// ============================================
+// ATTENDANCE ROUTES
+// ============================================
+
+// GET /api/admin/attendance - Get attendance for all students (filterable by grade and date range)
+router.get('/attendance', authMiddleware, async (req, res) => {
+    try {
+        const { grade, month, year } = req.query;
+        const filter = { status: { $ne: 'archived' } };
+        if (grade && grade !== 'all') filter.grade = grade;
+
+        const students = await Student.find(filter).select('fullName studentNo grade attendance');
+
+        // Filter attendance by month/year if provided
+        const result = students.map(s => {
+            let records = s.attendance || [];
+            if (month && month !== 'all') {
+                records = records.filter(a => a.date && a.date.substring(5, 7) === month);
+            }
+            if (year && year !== 'all') {
+                records = records.filter(a => a.date && a.date.substring(0, 4) === year);
+            }
+            return {
+                _id: s._id,
+                fullName: s.fullName,
+                studentNo: s.studentNo,
+                grade: s.grade,
+                attendance: records
+            };
+        });
+
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// POST /api/admin/students/:id/attendance - Add/update attendance for a student
+router.post('/students/:id/attendance', authMiddleware, async (req, res) => {
+    try {
+        const { date, status } = req.body;
+        if (!date || !status) return res.status(400).json({ message: 'Date and status required' });
+
+        const student = await Student.findById(req.params.id);
+        if (!student) return res.status(404).json({ message: 'Student not found' });
+
+        // Check if attendance for this date already exists
+        const existing = student.attendance.find(a => a.date === date);
+        if (existing) {
+            existing.status = status;
+        } else {
+            student.attendance.push({ date, status });
+        }
+
+        await student.save();
+        res.json({ message: 'Attendance updated', attendance: student.attendance });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// POST /api/admin/attendance/bulk - Bulk update attendance for multiple students
+router.post('/attendance/bulk', authMiddleware, async (req, res) => {
+    try {
+        const { date, records } = req.body;
+        // records = [{ studentId, status }]
+        if (!date || !records || !Array.isArray(records)) {
+            return res.status(400).json({ message: 'Date and records array required' });
+        }
+
+        for (const record of records) {
+            const student = await Student.findById(record.studentId);
+            if (!student) continue;
+
+            const existing = student.attendance.find(a => a.date === date);
+            if (existing) {
+                existing.status = record.status;
+            } else {
+                student.attendance.push({ date, status: record.status });
+            }
+            await student.save();
+        }
+
+        res.json({ message: 'Bulk attendance updated' });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// DELETE /api/admin/students/:id/attendance/:date - Remove attendance record
+router.delete('/students/:id/attendance/:date', authMiddleware, async (req, res) => {
+    try {
+        const student = await Student.findById(req.params.id);
+        if (!student) return res.status(404).json({ message: 'Student not found' });
+
+        student.attendance = student.attendance.filter(a => a.date !== req.params.date);
+        await student.save();
+        res.json({ message: 'Attendance record removed', attendance: student.attendance });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 module.exports = router;

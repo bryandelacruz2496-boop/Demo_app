@@ -774,6 +774,7 @@ function switchAdminView(viewId) {
     if (viewId === 'announcementsView') loadAnnouncements();
     if (viewId === 'projectsView') loadGlobalProjects();
     if (viewId === 'auditView') loadAuditLog();
+    if (viewId === 'attendanceView') loadAttendance();
 }
 
 // Toast notification
@@ -1644,4 +1645,91 @@ async function loadAuditLog() {
 function getAuditIcon(action) {
     const icons = { ADMIN_LOGIN: '🔑', CREATE_STUDENT: '👤', UPDATE_PAYMENT: '💰', DELETE_STUDENT: '🗑️', ARCHIVE_STUDENT: '📦' };
     return icons[action] || '📝';
+}
+
+
+// ============================================
+// ATTENDANCE MANAGEMENT
+// ============================================
+
+async function loadAttendance() {
+    const date = document.getElementById('attendanceDate').value;
+    const grade = document.getElementById('attendanceGradeFilter').value;
+
+    if (!date) {
+        // Set today's date as default
+        document.getElementById('attendanceDate').value = new Date().toISOString().split('T')[0];
+    }
+
+    const selectedDate = document.getElementById('attendanceDate').value;
+
+    try {
+        const res = await fetch(`${API_URL}/admin/attendance?grade=${encodeURIComponent(grade)}`, {
+            headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+        if (!res.ok) return;
+        const studentsData = await res.json();
+
+        const body = document.getElementById('attendanceBody');
+        if (studentsData.length === 0) {
+            body.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#888;padding:2rem;">No students found</td></tr>';
+            return;
+        }
+
+        body.innerHTML = studentsData.map(s => {
+            const record = s.attendance.find(a => a.date === selectedDate);
+            const currentStatus = record ? record.status : 'P';
+            return `
+                <tr>
+                    <td>${s.studentNo}</td>
+                    <td>${s.fullName}</td>
+                    <td>${s.grade}</td>
+                    <td>
+                        <select class="attendance-select" data-student-id="${s._id}" data-status="${currentStatus}">
+                            <option value="P" ${currentStatus === 'P' ? 'selected' : ''}>P - Present</option>
+                            <option value="L" ${currentStatus === 'L' ? 'selected' : ''}>L - Late</option>
+                            <option value="E" ${currentStatus === 'E' ? 'selected' : ''}>E - Excused</option>
+                            <option value="U" ${currentStatus === 'U' ? 'selected' : ''}>U - Unexcused</option>
+                        </select>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    } catch (err) {
+        console.error('Error loading attendance:', err);
+    }
+}
+
+async function saveAllAttendance() {
+    const date = document.getElementById('attendanceDate').value;
+    if (!date) {
+        showToast('Please select a date first');
+        return;
+    }
+
+    const selects = document.querySelectorAll('.attendance-select');
+    const records = Array.from(selects).map(select => ({
+        studentId: select.dataset.studentId,
+        status: select.value
+    }));
+
+    try {
+        const res = await fetch(`${API_URL}/admin/attendance/bulk`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${adminToken}`
+            },
+            body: JSON.stringify({ date, records })
+        });
+
+        if (res.ok) {
+            showToast('Attendance saved successfully');
+        } else {
+            const data = await res.json();
+            showToast(data.message || 'Error saving attendance');
+        }
+    } catch (err) {
+        showToast('Error saving attendance');
+    }
 }

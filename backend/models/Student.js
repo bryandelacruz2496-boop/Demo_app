@@ -34,6 +34,12 @@ const assessmentSchema = new mongoose.Schema({
     q4: { type: String, default: null }
 });
 
+const attendanceSchema = new mongoose.Schema({
+    date: { type: String, required: true },
+    status: { type: String, enum: ['P', 'L', 'E', 'U'], default: 'P' }
+    // P = Present, L = Late, E = Excused, U = Unexcused
+});
+
 const studentSchema = new mongoose.Schema({
     studentNo: { type: String, required: true, unique: true },
     password: { type: String, required: true },
@@ -54,6 +60,7 @@ const studentSchema = new mongoose.Schema({
     activities: [activitySchema],
     projects: [projectSchema],
     assessments: [assessmentSchema],
+    attendance: [attendanceSchema],
     notifications: [{
         message: String,
         type: { type: String, default: 'general' },
