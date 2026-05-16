@@ -178,4 +178,10 @@ if (fs.existsSync(frontendPath)) {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+
+  // Self-ping to prevent Render free tier sleep
+  setInterval(() => {
+    fetch('https://beatasaiintegratedschool.onrender.com/api/health')
+      .catch(() => { });
+  }, 10 * 60 * 1000); // every 10 minutes
 });
