@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
-require('dotenv').config();
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
+// Also try local .env as fallback
+if (!process.env.MONGO_URI) {
+    require('dotenv').config();
+}
 const Admin = require('./models/Admin');
 
 async function seed() {

@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
-require('dotenv').config();
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
+if (!process.env.MONGO_URI) {
+    require('dotenv').config();
+}
 const Student = require('./models/Student');
 
 const students = [

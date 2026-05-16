@@ -7,7 +7,10 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const rateLimit = require('express-rate-limit');
 const cookieParser = require('cookie-parser');
-require('dotenv').config();
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+if (!process.env.MONGO_URI) {
+  require('dotenv').config();
+}
 
 const authRoutes = require('./routes/auth');
 const studentRoutes = require('./routes/student');
@@ -47,7 +50,7 @@ if (process.env.NODE_ENV === 'production') {
 // ============================================
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',')
-  : ['http://localhost:8080', 'http://localhost:3000', 'http://localhost:5000'];
+  : ['http://localhost:8080', 'http://localhost:3000', 'http://localhost:5000', 'https://beatasaiintegratedschool.onrender.com'];
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -127,13 +130,9 @@ if (!fs.existsSync(uploadsDir)) {
 app.get('/uploads/*', serveEncryptedFile);
 
 // ============================================
-// Database connection (with TLS in production)
+// Database connection
 // ============================================
 const mongoOptions = {};
-if (process.env.NODE_ENV === 'production') {
-  mongoOptions.tls = true;
-  mongoOptions.tlsAllowInvalidCertificates = false;
-}
 
 mongoose.connect(process.env.MONGO_URI, mongoOptions)
   .then(() => console.log('MongoDB connected'))
@@ -155,6 +154,20 @@ app.use('/api/audit', auditRoutes);
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
+
+// ============================================
+// Serve frontend static files (production)
+// ============================================
+const frontendPath = path.join(__dirname, 'public');
+if (fs.existsSync(frontendPath)) {
+  app.use(express.static(frontendPath));
+  // Serve index.html for any non-API route (SPA fallback)
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api') && !req.path.startsWith('/uploads')) {
+      res.sendFile(path.join(frontendPath, 'index.html'));
+    }
+  });
+}
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
