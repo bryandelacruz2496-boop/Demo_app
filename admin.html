@@ -17,25 +17,38 @@
 <body>
     <!-- Login -->
     <div class="login-wrapper" id="loginWrapper">
-        <div class="login-card">
-            <div class="login-header">
-                <img src="logo.jpg" alt="Logo" class="login-logo" onerror="this.style.display='none'">
-                <h1>Admin Portal</h1>
-                <p>Beata Sai Integrated School</p>
+        <div class="login-card login-split">
+            <div class="login-left">
+                <div class="login-header">
+                    <img src="logo.jpg" alt="Logo" class="login-logo" onerror="this.style.display='none'">
+                    <h1>Admin Portal</h1>
+                    <p>Beata Sai Integrated School</p>
+                </div>
+                <h2 class="login-title">Login to your account</h2>
+                <form onsubmit="handleAdminLogin(event)">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <div class="input-icon-wrap">
+                            <span class="input-icon">👤</span>
+                            <input type="text" id="adminUsername" placeholder="Enter username" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <div class="input-icon-wrap">
+                            <span class="input-icon">🔒</span>
+                            <input type="password" id="adminPassword" placeholder="Enter password" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-login">Login</button>
+                    <p class="error-msg" id="loginError"></p>
+                </form>
+                <a href="index.html" class="back-link">← Back to Homepage</a>
             </div>
-            <form onsubmit="handleAdminLogin(event)">
-                <div class="form-group">
-                    <label>Username</label>
-                    <input type="text" id="adminUsername" placeholder="Enter username" required>
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" id="adminPassword" placeholder="Enter password" required>
-                </div>
-                <button type="submit" class="btn-login">Login</button>
-                <p class="error-msg" id="loginError"></p>
-            </form>
-            <a href="index.html" class="back-link">← Back to Homepage</a>
+            <div class="login-right">
+                <img src="https://images.unsplash.com/photo-1577896851231-70ef18881754?w=600&h=800&fit=crop"
+                    alt="School classroom" class="login-illustration">
+            </div>
         </div>
     </div>
 
