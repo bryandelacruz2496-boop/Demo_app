@@ -23,7 +23,7 @@ COPY admin-portal.js /app/public/
 COPY logo.jpg /app/public/
 COPY slide1.JPEG /app/public/
 COPY slide2.jpeg /app/public/
-COPY slide3.jpeg /app/public/
+COPY slide3.jpg /app/public/
 COPY slide4.JPEG /app/public/
 COPY news1.jpg /app/public/
 COPY news2.jpg /app/public/
