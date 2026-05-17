@@ -1157,3 +1157,142 @@ nav a:hover::after {
         opacity: 1;
     }
 }
+
+
+/* ============================================
+   NEWS CARDS - IMAGE FIRST DESIGN
+   ============================================ */
+.news-card {
+    cursor: pointer;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.news-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.news-card-img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+}
+
+.news-card-body {
+    padding: 1.2rem 1.5rem 1.5rem;
+}
+
+.news-card-body h3 {
+    color: #333;
+    font-size: 1.1rem;
+    margin-bottom: 0.4rem;
+    font-weight: 700;
+}
+
+.news-card-body .news-date {
+    color: #e65100;
+    font-size: 0.85rem;
+    display: block;
+    margin-bottom: 0.4rem;
+}
+
+.news-card-body .news-desc {
+    color: #e65100;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+/* ============================================
+   NEWS MODAL
+   ============================================ */
+.news-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+    padding: 2rem;
+}
+
+.news-modal-overlay.active {
+    display: flex;
+}
+
+.news-modal {
+    background: #fff;
+    border-radius: 20px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: cardEntrance 0.3s ease;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+}
+
+.news-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 1;
+    transition: background 0.2s;
+}
+
+.news-modal-close:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.news-modal-img {
+    width: 100%;
+    max-height: 350px;
+    object-fit: cover;
+    border-radius: 20px 20px 0 0;
+}
+
+.news-modal-body {
+    padding: 1.5rem 2rem 2rem;
+}
+
+.news-modal-body h2 {
+    color: #b71c1c;
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+}
+
+.news-modal-body .news-date {
+    color: #e65100;
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.news-modal-body p {
+    color: #444;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    white-space: pre-line;
+}
+
+@keyframes cardEntrance {
+    from { opacity: 0; transform: translateY(15px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}

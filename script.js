@@ -152,3 +152,44 @@ revealElements.forEach(el => {
     el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
     revealObserver.observe(el);
 });
+
+
+// ============================================
+// NEWS MODAL
+// ============================================
+const newsData = {
+    news1: {
+        img: 'news1.jpg',
+        title: 'ENROLL NOW! Beata Sai Integrated School 2026-2027',
+        date: 'May 2026',
+        desc: `Beata Sai Integrated School 2026-2027 Admissions are still open!\n\nOur curriculum is Waldorf-inspired.\n• Air-conditioned Classrooms\n• School Service\n\nWe offer kindergarten to elementary.\n\nJust bring the following:\n• PSA\n• Form 138 (if transferee)\n• Report card (if transferee)\n\nFeel free to message us directly here on our page.\n\nContact us: 09272445030\nVisit us: Narra St. Brgy. Magsaysay Lopez Quezon\n\n#BeataSaiIntegratedSchool #WaldorfInspired #HolisticEducation #NowEnrolling #FutureReady`
+    },
+    news2: {
+        img: 'news2.jpg',
+        title: 'CONGRATULATIONS! John David R. Argente',
+        date: 'March 2026',
+        desc: `TOP 8 – LEPT MARCH 2026\n\nBeata Sai Integrated School proudly celebrates your outstanding achievement and success!\n\nYour excellence brings pride and honor to our institution.\n\nWe are proud of you!`
+    },
+    news3: {
+        img: 'news3.jpg',
+        title: 'CONGRATULATIONS! Mae Angelie P. Villapando',
+        date: 'March 2026',
+        desc: `LEPT MARCH 2026\n\nBeata Sai Integrated School proudly celebrates your outstanding achievement and success!\n\nYour excellence brings pride and honor to our institution.\n\nWe are proud of you!`
+    }
+};
+
+function openNewsModal(newsId) {
+    const news = newsData[newsId];
+    if (!news) return;
+    document.getElementById('newsModalImg').src = news.img;
+    document.getElementById('newsModalTitle').textContent = news.title;
+    document.getElementById('newsModalDate').textContent = news.date;
+    document.getElementById('newsModalDesc').textContent = news.desc;
+    document.getElementById('newsModalOverlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeNewsModal() {
+    document.getElementById('newsModalOverlay').classList.remove('active');
+    document.body.style.overflow = '';
+}

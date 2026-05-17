@@ -25,6 +25,9 @@ COPY slide1.JPEG /app/public/
 COPY slide2.jpeg /app/public/
 COPY slide3.jpeg /app/public/
 COPY slide4.JPEG /app/public/
+COPY news1.jpg /app/public/
+COPY news2.jpg /app/public/
+COPY news3.jpg /app/public/
 COPY datepicker.css /app/public/
 COPY datepicker.js /app/public/
 COPY manifest.json /app/public/

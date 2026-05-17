@@ -253,26 +253,49 @@
         <div class="container">
             <div class="section-header">
                 <span class="emoji-badge">📢</span>
-                <h2>School News</h2>
+                <h2>Recent News and Updates</h2>
                 <p class="subtitle">Stay updated with what's happening</p>
             </div>
             <div class="news-cards">
-                <div class="news-card">
-                    <div class="news-badge new">New!</div>
-                    <span class="news-date">May 2026</span>
-                    <h3>🎉 Enrollment Open for SY 2026-2027!</h3>
-                    <p>Secure your slot early. Limited slots available for all grade levels. Early bird discount
-                        available!</p>
+                <div class="news-card" onclick="openNewsModal('news1')">
+                    <img src="news1.jpg" alt="Enrollment Open" class="news-card-img">
+                    <div class="news-card-body">
+                        <h3>ENROLL NOW! Admissions 2026-2027</h3>
+                        <span class="news-date">May 2026</span>
+                        <p class="news-desc">Beata Sai Integrated School 2026-2027 Admissions are still open!
+                            Waldorf-inspired curriculum, air-conditioned classrooms, school service available.</p>
+                    </div>
                 </div>
-                <div class="news-card">
-                    <span class="news-date">April 2026</span>
-                    <h3>🏆 Recognition Day Ceremony</h3>
-                    <p>Congratulations to all our honor students and awardees! We're so proud of you!</p>
+                <div class="news-card" onclick="openNewsModal('news2')">
+                    <img src="news2.jpg" alt="John David Argente" class="news-card-img">
+                    <div class="news-card-body">
+                        <h3>CONGRATULATIONS! John David R. Argente</h3>
+                        <span class="news-date">March 2026</span>
+                        <p class="news-desc">TOP 8 – LEPT March 2026. Beata Sai Integrated School proudly celebrates
+                            your outstanding achievement!</p>
+                    </div>
                 </div>
-                <div class="news-card">
-                    <span class="news-date">March 2026</span>
-                    <h3>🥇 Science Fair Champions!</h3>
-                    <p>Our students won 1st place in the Regional Science Fair. Way to go, future scientists!</p>
+                <div class="news-card" onclick="openNewsModal('news3')">
+                    <img src="news3.jpg" alt="Mae Angelie Villapando" class="news-card-img">
+                    <div class="news-card-body">
+                        <h3>CONGRATULATIONS! Mae Angelie P. Villapando</h3>
+                        <span class="news-date">March 2026</span>
+                        <p class="news-desc">LEPT March 2026. Beata Sai Integrated School proudly celebrates your
+                            outstanding achievement and success!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- News Modal -->
+            <div class="news-modal-overlay" id="newsModalOverlay" onclick="closeNewsModal()">
+                <div class="news-modal" onclick="event.stopPropagation()">
+                    <button class="news-modal-close" onclick="closeNewsModal()">✕</button>
+                    <img id="newsModalImg" src="" alt="" class="news-modal-img">
+                    <div class="news-modal-body">
+                        <h2 id="newsModalTitle"></h2>
+                        <span class="news-date" id="newsModalDate"></span>
+                        <p id="newsModalDesc"></p>
+                    </div>
                 </div>
             </div>
         </div>
