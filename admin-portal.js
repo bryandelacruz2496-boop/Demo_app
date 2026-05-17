@@ -552,6 +552,24 @@ function renderPayments() {
     }
 }
 
+function onPayTypeChange() {
+    const payType = document.getElementById('payType').value;
+    const descInput = document.getElementById('payDesc');
+    const amountInput = document.getElementById('payAmount');
+
+    if (payType === 'referral') {
+        descInput.value = 'Referral Fee Discount';
+        descInput.readOnly = true;
+        amountInput.value = '-250';
+        amountInput.readOnly = true;
+    } else {
+        descInput.value = '';
+        descInput.readOnly = false;
+        amountInput.value = '';
+        amountInput.readOnly = false;
+    }
+}
+
 async function addPayment() {
     const date = getDatePickerValue('payDate');
     const description = document.getElementById('payDesc').value;
@@ -575,6 +593,9 @@ async function addPayment() {
         document.getElementById('payDate').dataset.value = '';
         document.getElementById('payDesc').value = '';
         document.getElementById('payAmount').value = '';
+        document.getElementById('payType').value = 'custom';
+        document.getElementById('payDesc').readOnly = false;
+        document.getElementById('payAmount').readOnly = false;
     }
 }
 

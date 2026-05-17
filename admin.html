@@ -631,6 +631,10 @@
                         <div class="form-row">
                             <input type="text" id="payDate" class="datepicker-input" placeholder="Pick a date" readonly
                                 required>
+                            <select id="payType" onchange="onPayTypeChange()">
+                                <option value="custom">Custom Payment</option>
+                                <option value="referral">Referral Discount (-₱250)</option>
+                            </select>
                             <input type="text" id="payDesc" placeholder="Description" required>
                             <input type="number" id="payAmount" placeholder="Amount" required inputmode="numeric"
                                 oninput="this.value = this.value.replace(/[^0-9\-]/g, '')">

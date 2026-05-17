@@ -190,6 +190,12 @@ router.post('/students/:id/payments', authMiddleware, async (req, res) => {
         if (!student) return res.status(404).json({ message: 'Student not found' });
 
         student.payments.push({ date, description, amount, status });
+
+        // If negative amount (discount), deduct from totalTuition
+        if (amount < 0) {
+            student.totalTuition = (student.totalTuition || 0) + amount;
+        }
+
         await student.save();
         res.json({ message: 'Payment added', payments: student.payments });
     } catch (err) {
