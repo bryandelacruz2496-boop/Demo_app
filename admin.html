@@ -210,6 +210,18 @@
                                     <option value="monthly">Option 3: Monthly - 7 months (7% interest)</option>
                                 </select>
                             </div>
+                            <div class="form-group">
+                                <label>Discount</label>
+                                <select id="newStudentDiscount" onchange="updateTuitionDisplay()">
+                                    <option value="none">No Discount</option>
+                                    <option value="siblings">Siblings Discount (-10%)</option>
+                                    <option value="friends_family">Friends & Family Discount (-10%)</option>
+                                    <option value="employee">Employee Discount (-30%)</option>
+                                    <option value="early_bird">Early Bird (-5%)</option>
+                                    <option value="referral">Referral Fee (-₱250)</option>
+                                    <option value="late_enrollment">Late Enrollment (+₱1,000)</option>
+                                </select>
+                            </div>
                             <div class="form-group full-width" id="tuitionBreakdown" style="display:none;">
                                 <div class="tuition-breakdown">
                                     <div class="breakdown-row"><span>Tuition:</span><strong id="bdTuition">₱0</strong>

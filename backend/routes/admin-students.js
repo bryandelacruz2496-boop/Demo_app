@@ -51,7 +51,7 @@ router.get('/students-next-number', authMiddleware, async (req, res) => {
 // POST /api/admin/students - Create new student
 router.post('/students', authMiddleware, upload.single('profileImage'), async (req, res) => {
     try {
-        const { fullName, grade, guardian, guardianContact, address, birthDate, gender, paymentOption, enrolleeType } = req.body;
+        const { fullName, grade, guardian, guardianContact, address, birthDate, gender, paymentOption, enrolleeType, discount } = req.body;
 
         // Generate student number
         const currentYear = new Date().getFullYear();
@@ -73,7 +73,22 @@ router.post('/students', authMiddleware, upload.single('profileImage'), async (r
 
         const table = TUITION_TABLE[enrolleeType || 'old'];
         const gradeData = table ? table[grade] : null;
-        const finalTotal = computedTotal || (gradeData ? gradeData.grandTotal : 0);
+        let finalTotal = computedTotal || (gradeData ? gradeData.grandTotal : 0);
+
+        // Apply discount
+        if (discount && discount !== 'none') {
+            if (discount === 'siblings' || discount === 'friends_family') {
+                finalTotal = Math.round(finalTotal * 0.90);
+            } else if (discount === 'employee') {
+                finalTotal = Math.round(finalTotal * 0.70);
+            } else if (discount === 'early_bird') {
+                finalTotal = Math.round(finalTotal * 0.95);
+            } else if (discount === 'referral') {
+                finalTotal = finalTotal - 250;
+            } else if (discount === 'late_enrollment') {
+                finalTotal = finalTotal + 1000;
+            }
+        }
 
         const student = new Student({
             studentNo,
@@ -88,7 +103,7 @@ router.post('/students', authMiddleware, upload.single('profileImage'), async (r
             profileImage: req.file ? (await uploadToCloudinary(req.file.buffer)).secure_url : null,
             totalTuition: finalTotal,
             paymentOption: option,
-            payments,
+            payments: discount === 'late_enrollment' ? [...payments, { date: new Date().toISOString().split('T')[0], description: 'Late Enrollment Fee', amount: 1000, status: 'pending' }] : payments,
             activities: [],
             projects: [],
             assessments: []

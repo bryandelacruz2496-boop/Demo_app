@@ -852,6 +852,7 @@ function updateTuitionDisplay() {
     const enrolleeType = document.getElementById('newStudentEnrolleeType').value;
     const grade = document.getElementById('newStudentGrade').value;
     const option = document.getElementById('newStudentPayOption').value;
+    const discountType = document.getElementById('newStudentDiscount') ? document.getElementById('newStudentDiscount').value : 'none';
     const breakdown = document.getElementById('tuitionBreakdown');
 
     const table = TUITION_DATA[enrolleeType];
@@ -884,9 +885,57 @@ function updateTuitionDisplay() {
         schedule = `₱${amounts[0].toLocaleString()} (June) + ₱${amounts[1].toLocaleString()} x 6 months (July-December)`;
     }
 
+    // Apply discount
+    let discountAmount = 0;
+    let discountLabel = '';
+    if (discountType === 'siblings') {
+        discountAmount = Math.round(totalPayment * 0.10);
+        discountLabel = 'Siblings Discount (-10%)';
+    } else if (discountType === 'friends_family') {
+        discountAmount = Math.round(totalPayment * 0.10);
+        discountLabel = 'Friends & Family (-10%)';
+    } else if (discountType === 'employee') {
+        discountAmount = Math.round(totalPayment * 0.30);
+        discountLabel = 'Employee Discount (-30%)';
+    } else if (discountType === 'early_bird') {
+        discountAmount = Math.round(totalPayment * 0.05);
+        discountLabel = 'Early Bird (-5%)';
+    } else if (discountType === 'referral') {
+        discountAmount = 250;
+        discountLabel = 'Referral Fee (-₱250)';
+    } else if (discountType === 'late_enrollment') {
+        discountAmount = -1000;
+        discountLabel = 'Late Enrollment (+₱1,000)';
+    }
+
+    totalPayment = totalPayment - discountAmount;
+
     document.getElementById('bdTuition').textContent = '₱' + data.tuition.toLocaleString();
     document.getElementById('bdMisc').textContent = '₱' + data.misc.toLocaleString();
     document.getElementById('bdAdjust').textContent = (adjustAmount >= 0 ? '+' : '-') + '₱' + Math.abs(adjustAmount).toLocaleString() + ` (${adjustLabel})`;
+
+    // Show discount row
+    let discountDisplay = '';
+    if (discountType !== 'none') {
+        discountDisplay = `<div class="breakdown-row" style="color:${discountAmount > 0 ? '#2e7d32' : '#c62828'};"><span>${discountLabel}:</span><strong>${discountAmount > 0 ? '-' : '+'}₱${Math.abs(discountAmount).toLocaleString()}</strong></div>`;
+    }
+
+    const bdContainer = document.querySelector('.tuition-breakdown');
+    // Remove old discount row if exists
+    const oldDiscount = document.getElementById('bdDiscountRow');
+    if (oldDiscount) oldDiscount.remove();
+
+    // Insert discount row before total
+    if (discountType !== 'none') {
+        const discountRow = document.createElement('div');
+        discountRow.id = 'bdDiscountRow';
+        discountRow.className = 'breakdown-row';
+        discountRow.style.color = discountAmount > 0 ? '#2e7d32' : '#c62828';
+        discountRow.innerHTML = `<span>${discountLabel}:</span><strong>${discountAmount > 0 ? '-' : '+'}₱${Math.abs(discountAmount).toLocaleString()}</strong>`;
+        const totalRow = bdContainer.querySelector('.breakdown-row.total');
+        bdContainer.insertBefore(discountRow, totalRow);
+    }
+
     document.getElementById('bdTotal').textContent = '₱' + totalPayment.toLocaleString();
     document.getElementById('bdSchedule').textContent = schedule;
     breakdown.style.display = 'block';
@@ -1040,6 +1089,7 @@ async function doCreateStudent(btn, originalText, fullName, grade, guardian) {
         formData.append('gender', document.getElementById('newStudentGender').value);
         formData.append('paymentOption', document.getElementById('newStudentPayOption').value);
         formData.append('enrolleeType', document.getElementById('newStudentEnrolleeType').value);
+        formData.append('discount', document.getElementById('newStudentDiscount') ? document.getElementById('newStudentDiscount').value : 'none');
 
         const photoFile = document.getElementById('newStudentPhoto').files[0];
         if (photoFile) formData.append('profileImage', photoFile);
