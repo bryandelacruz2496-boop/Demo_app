@@ -193,3 +193,25 @@ function closeNewsModal() {
     document.getElementById('newsModalOverlay').classList.remove('active');
     document.body.style.overflow = '';
 }
+
+
+// ============================================
+// WELCOME POPUP
+// ============================================
+function closeWelcomePopup() {
+    const popup = document.getElementById('welcomePopup');
+    popup.style.animation = 'popupFadeOut 0.3s ease forwards';
+    setTimeout(() => {
+        popup.classList.add('hidden');
+    }, 300);
+}
+
+// Close popup with Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeWelcomePopup();
+});
+
+// Close popup when clicking outside the image
+document.getElementById('welcomePopup')?.addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeWelcomePopup();
+});
