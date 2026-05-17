@@ -880,9 +880,6 @@ function updateTuitionDisplay() {
     } else if (discountType === 'early_bird') {
         discountAmount = Math.round(baseTuition * 0.05);
         discountLabel = 'Early Bird (-5%)';
-    } else if (discountType === 'referral') {
-        discountAmount = 250;
-        discountLabel = 'Referral Fee (-₱250)';
     } else if (discountType === 'late_enrollment') {
         discountAmount = -1000;
         discountLabel = 'Late Enrollment (+₱1,000)';
@@ -891,27 +888,27 @@ function updateTuitionDisplay() {
     // Tuition after discount
     const discountedTuition = baseTuition - discountAmount;
 
-    // Then apply payment scheme on discounted tuition
+    // Apply payment scheme on BASE tuition (not discounted)
     let adjustLabel, adjustAmount, totalPayment, schedule;
 
     if (option === 'full') {
-        const less3 = Math.round(discountedTuition * 0.03);
+        const less3 = Math.round(baseTuition * 0.03);
         adjustAmount = -less3;
         adjustLabel = 'Less 3%';
-        totalPayment = discountedTuition - less3 + misc;
+        totalPayment = baseTuition - less3 - discountAmount + misc;
         schedule = '1 payment upon enrollment';
     } else if (option === 'two_payments') {
-        const interest = Math.round(discountedTuition * 0.05);
+        const interest = Math.round(baseTuition * 0.05);
         adjustAmount = interest;
         adjustLabel = '5% interest';
-        totalPayment = discountedTuition + interest + misc;
+        totalPayment = baseTuition + interest - discountAmount + misc;
         const half = Math.round(totalPayment / 2);
         schedule = `₱${half.toLocaleString()} x 2 (June & December)`;
     } else {
-        const interest = Math.round(discountedTuition * 0.07);
+        const interest = Math.round(baseTuition * 0.07);
         adjustAmount = interest;
         adjustLabel = '7% interest';
-        totalPayment = discountedTuition + interest + misc;
+        totalPayment = baseTuition + interest - discountAmount + misc;
         const monthly = Math.round((totalPayment - 3000) / 6);
         schedule = `₱3,000 (June) + ₱${monthly.toLocaleString()} x 6 months (July-December)`;
     }

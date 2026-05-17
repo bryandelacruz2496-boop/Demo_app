@@ -86,8 +86,6 @@ router.post('/students', authMiddleware, upload.single('profileImage'), async (r
                 discountAmount = Math.round(tuition * 0.30);
             } else if (discount === 'early_bird') {
                 discountAmount = Math.round(tuition * 0.05);
-            } else if (discount === 'referral') {
-                discountAmount = 250;
             } else if (discount === 'late_enrollment') {
                 discountAmount = -1000;
             }
