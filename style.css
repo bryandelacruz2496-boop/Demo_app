@@ -1340,7 +1340,7 @@ nav a:hover::after {
 
 .welcome-popup {
     position: relative;
-    max-width: 500px;
+    max-width: 900px;
     width: 100%;
     border-radius: 20px;
     overflow: hidden;
