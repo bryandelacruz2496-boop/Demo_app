@@ -862,43 +862,23 @@ function updateTuitionDisplay() {
     }
 
     const data = table[grade];
-    let adjustLabel, adjustAmount, totalPayment, schedule;
+    let baseTuition = data.tuition;
+    const misc = data.misc;
 
-    if (option === 'full') {
-        const discount = Math.round(data.tuition * 0.03);
-        adjustAmount = -discount;
-        adjustLabel = 'Less 3%';
-        totalPayment = Math.round(data.tuition * 0.97) + data.misc;
-        schedule = '1 payment upon enrollment';
-    } else if (option === 'two_payments') {
-        const interest = Math.round(data.tuition * 0.05);
-        adjustAmount = interest;
-        adjustLabel = '5% interest';
-        totalPayment = Math.round(data.tuition * 1.05) + data.misc;
-        const half = Math.round(totalPayment / 2);
-        schedule = `₱${half.toLocaleString()} x 2 (June & December)`;
-    } else {
-        const amounts = MONTHLY_AMOUNTS[enrolleeType][grade];
-        adjustAmount = Math.round(data.tuition * 0.07);
-        adjustLabel = '7% interest';
-        totalPayment = amounts.reduce((a, b) => a + b, 0);
-        schedule = `₱${amounts[0].toLocaleString()} (June) + ₱${amounts[1].toLocaleString()} x 6 months (July-December)`;
-    }
-
-    // Apply discount
+    // Apply discount on tuition FIRST
     let discountAmount = 0;
     let discountLabel = '';
     if (discountType === 'siblings') {
-        discountAmount = Math.round(totalPayment * 0.10);
+        discountAmount = Math.round(baseTuition * 0.10);
         discountLabel = 'Siblings Discount (-10%)';
     } else if (discountType === 'friends_family') {
-        discountAmount = Math.round(totalPayment * 0.10);
+        discountAmount = Math.round(baseTuition * 0.10);
         discountLabel = 'Friends & Family (-10%)';
     } else if (discountType === 'employee') {
-        discountAmount = Math.round(totalPayment * 0.30);
+        discountAmount = Math.round(baseTuition * 0.30);
         discountLabel = 'Employee Discount (-30%)';
     } else if (discountType === 'early_bird') {
-        discountAmount = Math.round(totalPayment * 0.05);
+        discountAmount = Math.round(baseTuition * 0.05);
         discountLabel = 'Early Bird (-5%)';
     } else if (discountType === 'referral') {
         discountAmount = 250;
@@ -908,25 +888,45 @@ function updateTuitionDisplay() {
         discountLabel = 'Late Enrollment (+₱1,000)';
     }
 
-    totalPayment = totalPayment - discountAmount;
+    // Tuition after discount
+    const discountedTuition = baseTuition - discountAmount;
 
-    document.getElementById('bdTuition').textContent = '₱' + data.tuition.toLocaleString();
-    document.getElementById('bdMisc').textContent = '₱' + data.misc.toLocaleString();
-    document.getElementById('bdAdjust').textContent = (adjustAmount >= 0 ? '+' : '-') + '₱' + Math.abs(adjustAmount).toLocaleString() + ` (${adjustLabel})`;
+    // Then apply payment scheme on discounted tuition
+    let adjustLabel, adjustAmount, totalPayment, schedule;
 
-    // Show discount row
-    let discountDisplay = '';
-    if (discountType !== 'none') {
-        discountDisplay = `<div class="breakdown-row" style="color:${discountAmount > 0 ? '#2e7d32' : '#c62828'};"><span>${discountLabel}:</span><strong>${discountAmount > 0 ? '-' : '+'}₱${Math.abs(discountAmount).toLocaleString()}</strong></div>`;
+    if (option === 'full') {
+        const less3 = Math.round(discountedTuition * 0.03);
+        adjustAmount = -less3;
+        adjustLabel = 'Less 3%';
+        totalPayment = discountedTuition - less3 + misc;
+        schedule = '1 payment upon enrollment';
+    } else if (option === 'two_payments') {
+        const interest = Math.round(discountedTuition * 0.05);
+        adjustAmount = interest;
+        adjustLabel = '5% interest';
+        totalPayment = discountedTuition + interest + misc;
+        const half = Math.round(totalPayment / 2);
+        schedule = `₱${half.toLocaleString()} x 2 (June & December)`;
+    } else {
+        const interest = Math.round(discountedTuition * 0.07);
+        adjustAmount = interest;
+        adjustLabel = '7% interest';
+        totalPayment = discountedTuition + interest + misc;
+        const monthly = Math.round((totalPayment - 3000) / 6);
+        schedule = `₱3,000 (June) + ₱${monthly.toLocaleString()} x 6 months (July-December)`;
     }
 
-    const bdContainer = document.querySelector('.tuition-breakdown');
+    document.getElementById('bdTuition').textContent = '₱' + baseTuition.toLocaleString();
+    document.getElementById('bdMisc').textContent = '₱' + misc.toLocaleString();
+    document.getElementById('bdAdjust').textContent = (adjustAmount >= 0 ? '+' : '-') + '₱' + Math.abs(adjustAmount).toLocaleString() + ` (${adjustLabel})`;
+
     // Remove old discount row if exists
     const oldDiscount = document.getElementById('bdDiscountRow');
     if (oldDiscount) oldDiscount.remove();
 
     // Insert discount row before total
     if (discountType !== 'none') {
+        const bdContainer = document.querySelector('.tuition-breakdown');
         const discountRow = document.createElement('div');
         discountRow.id = 'bdDiscountRow';
         discountRow.className = 'breakdown-row';

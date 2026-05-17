@@ -75,19 +75,24 @@ router.post('/students', authMiddleware, upload.single('profileImage'), async (r
         const gradeData = table ? table[grade] : null;
         let finalTotal = computedTotal || (gradeData ? gradeData.grandTotal : 0);
 
-        // Apply discount
-        if (discount && discount !== 'none') {
+        // Apply discount on TUITION only (not misc), then recalculate total
+        if (discount && discount !== 'none' && gradeData) {
+            let tuition = gradeData.tuition || 0;
+            let discountAmount = 0;
+
             if (discount === 'siblings' || discount === 'friends_family') {
-                finalTotal = Math.round(finalTotal * 0.90);
+                discountAmount = Math.round(tuition * 0.10);
             } else if (discount === 'employee') {
-                finalTotal = Math.round(finalTotal * 0.70);
+                discountAmount = Math.round(tuition * 0.30);
             } else if (discount === 'early_bird') {
-                finalTotal = Math.round(finalTotal * 0.95);
+                discountAmount = Math.round(tuition * 0.05);
             } else if (discount === 'referral') {
-                finalTotal = finalTotal - 250;
+                discountAmount = 250;
             } else if (discount === 'late_enrollment') {
-                finalTotal = finalTotal + 1000;
+                discountAmount = -1000;
             }
+
+            finalTotal = finalTotal - discountAmount;
         }
 
         const student = new Student({
