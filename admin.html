@@ -633,7 +633,7 @@
                                 required>
                             <input type="text" id="payDesc" placeholder="Description" required>
                             <input type="number" id="payAmount" placeholder="Amount" required inputmode="numeric"
-                                min="0" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                oninput="this.value = this.value.replace(/[^0-9\-]/g, '')">
                             <select id="payStatus">
                                 <option value="paid">Paid</option>
                                 <option value="pending">Pending</option>
