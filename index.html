@@ -151,8 +151,7 @@
                     </div>
                 </div>
                 <div class="about-image">
-                    <img src="https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=600&h=450&fit=crop"
-                        alt="Happy students">
+                    <img src="about1.jpg" alt="Happy students">
                     <div class="image-badge">15+ Years of Excellence 🏆</div>
                 </div>
             </div>
@@ -269,43 +268,41 @@
                 <p class="subtitle">See what makes our school special</p>
             </div>
             <div class="gallery-grid">
-                <div class="gallery-item" onclick="openLightbox(this)">
-                    <img src="https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=400&h=300&fit=crop"
-                        alt="Classroom">
-                    <div class="gallery-label">📖 Classroom</div>
+                <div class="gallery-item" onclick="openGalleryModal('daily')">
+                    <img src="daily1.jpg" alt="Daily">
+                    <div class="gallery-label">📖 Daily</div>
                 </div>
-                <div class="gallery-item" onclick="openLightbox(this)">
-                    <img src="https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=400&h=300&fit=crop"
-                        alt="Library">
-                    <div class="gallery-label">📚 Library</div>
-                </div>
-                <div class="gallery-item" onclick="openLightbox(this)">
-                    <img src="https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=400&h=300&fit=crop"
-                        alt="Science Lab">
-                    <div class="gallery-label">🔬 Science Lab</div>
-                </div>
-                <div class="gallery-item" onclick="openLightbox(this)">
-                    <img src="https://images.unsplash.com/photo-1576495199011-eb94736d05d6?w=400&h=300&fit=crop"
-                        alt="Sports">
-                    <div class="gallery-label">⚽ Sports</div>
-                </div>
-                <div class="gallery-item" onclick="openLightbox(this)">
-                    <img src="https://images.unsplash.com/photo-1588072432836-e10032774350?w=400&h=300&fit=crop"
-                        alt="Events">
+                <div class="gallery-item" onclick="openGalleryModal('events')">
+                    <img src="event1.jpg" alt="Events">
                     <div class="gallery-label">🎉 Events</div>
                 </div>
-                <div class="gallery-item" onclick="openLightbox(this)">
-                    <img src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=400&h=300&fit=crop"
-                        alt="Campus">
-                    <div class="gallery-label">🏫 Campus</div>
+                <div class="gallery-item" onclick="openGalleryModal('crossingover')">
+                    <img src="crossingover1.png" alt="Crossing Over">
+                    <div class="gallery-label">🎓 Crossing Over</div>
+                </div>
+                <div class="gallery-item" onclick="openGalleryModal('riteofpassage')">
+                    <img src="riteofpassage1.JPEG" alt="Rite of Passage">
+                    <div class="gallery-label">🕯️ Rite of Passage</div>
+                </div>
+                <div class="gallery-item" onclick="openGalleryModal('camping')">
+                    <img src="camping1.png" alt="Camping">
+                    <div class="gallery-label">⛺ Camping</div>
+                </div>
+                <div class="gallery-item" onclick="openGalleryModal('fieldlearning')">
+                    <img src="fieldlearning1.jpeg" alt="Field Learning">
+                    <div class="gallery-label">🌿 Field Learning</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-        <span class="lightbox-close">&times;</span>
-        <img id="lightbox-img" src="" alt="">
+    <!-- Gallery Modal -->
+    <div class="gallery-modal-overlay" id="galleryModalOverlay" onclick="closeGalleryModal()">
+        <div class="gallery-modal" onclick="event.stopPropagation()">
+            <button class="gallery-modal-close" onclick="closeGalleryModal()">✕</button>
+            <h3 id="galleryModalTitle"></h3>
+            <div class="gallery-modal-grid" id="galleryModalGrid"></div>
+        </div>
     </div>
 
     <section id="admissions" class="admissions">

@@ -215,3 +215,60 @@ document.addEventListener('keydown', (e) => {
 document.getElementById('welcomePopup')?.addEventListener('click', (e) => {
     if (e.target === e.currentTarget) closeWelcomePopup();
 });
+
+
+// ============================================
+// GALLERY MODAL - Multiple images per category
+// ============================================
+const galleryData = {
+    daily: {
+        title: '📖 Daily',
+        images: ['daily1.jpg', 'daily2.jpg', 'daily3.jpeg', 'daily4.jpg', 'daily5.jpg']
+    },
+    events: {
+        title: '🎉 Events',
+        images: ['event1.jpg', 'event2.jpeg', 'event3.jpg', 'event4.jpg', 'event5.jpg']
+    },
+    crossingover: {
+        title: '🎓 Crossing Over',
+        images: ['crossingover1.png', 'crossingover2.jpg', 'crossingover3.png']
+    },
+    riteofpassage: {
+        title: '🕯️ Rite of Passage',
+        images: ['riteofpassage1.JPEG', 'riteofpassage2.JPEG']
+    },
+    camping: {
+        title: '⛺ Camping',
+        images: ['camping1.png', 'camping2.jpg', 'camping3.jpg', 'camping4.JPEG', 'camping5.png']
+    },
+    fieldlearning: {
+        title: '🌿 Field Learning',
+        images: ['fieldlearning1.jpeg', 'fieldlearning2.jpeg', 'fieldlearning3.jpg', 'fieldlearning4.jpeg', 'fieldlearning5.jpg']
+    }
+};
+
+function openGalleryModal(category) {
+    const data = galleryData[category];
+    if (!data) return;
+    document.getElementById('galleryModalTitle').textContent = data.title;
+    document.getElementById('galleryModalGrid').innerHTML = data.images.map(img => `
+        <div class="gallery-modal-item" onclick="openFullImage('${img}')">
+            <img src="${img}" alt="${data.title}" loading="lazy">
+        </div>
+    `).join('');
+    document.getElementById('galleryModalOverlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeGalleryModal() {
+    document.getElementById('galleryModalOverlay').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function openFullImage(src) {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);display:flex;justify-content:center;align-items:center;z-index:100000;cursor:pointer;padding:1rem;';
+    overlay.innerHTML = `<img src="${src}" style="max-width:95%;max-height:95%;border-radius:12px;object-fit:contain;"><span style="position:absolute;top:20px;right:30px;color:#fff;font-size:2rem;cursor:pointer;">✕</span>`;
+    overlay.onclick = () => overlay.remove();
+    document.body.appendChild(overlay);
+}
