@@ -1,9 +1,32 @@
-// Mobile menu toggle
+// ============================================
+// MOBILE MENU
+// ============================================
 function toggleMenu() {
     document.querySelector('nav ul').classList.toggle('active');
 }
 
-// Hero Image Slider
+// Close menu when clicking a link
+document.querySelectorAll('nav ul li a').forEach(link => {
+    link.addEventListener('click', () => {
+        document.querySelector('nav ul').classList.remove('active');
+    });
+});
+
+// ============================================
+// HEADER SCROLL EFFECT
+// ============================================
+const header = document.getElementById('mainHeader');
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 80) {
+        header.classList.add('scrolled');
+    } else {
+        header.classList.remove('scrolled');
+    }
+});
+
+// ============================================
+// HERO SLIDER
+// ============================================
 let currentSlide = 0;
 const slides = document.querySelectorAll('.slide');
 const sliderDots = document.querySelectorAll('.slider-dot');
@@ -24,22 +47,12 @@ function prevSlide() {
     goToSlide((currentSlide - 1 + slides.length) % slides.length);
 }
 
-// Auto-advance slider every 4 seconds
-setInterval(nextSlide, 4000);
-// Gallery lightbox
-function openLightbox(element) {
-    const img = element.querySelector('img');
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    lightboxImg.src = img.src.replace('w=400&h=300', 'w=1200&h=800');
-    lightbox.classList.add('active');
-}
+// Auto-advance slider
+setInterval(nextSlide, 5000);
 
-function closeLightbox() {
-    document.getElementById('lightbox').classList.remove('active');
-}
-
-// Counter animation
+// ============================================
+// COUNTER ANIMATION
+// ============================================
 function animateCounters() {
     const stats = document.querySelectorAll('.stat');
     stats.forEach(stat => {
@@ -47,7 +60,8 @@ function animateCounters() {
         const numberEl = stat.querySelector('.stat-number');
         if (!numberEl) return;
         let current = 0;
-        const increment = target / 60;
+        const duration = 2000;
+        const increment = target / (duration / 16);
         const timer = setInterval(() => {
             current += increment;
             if (current >= target) {
@@ -55,25 +69,53 @@ function animateCounters() {
                 clearInterval(timer);
             }
             numberEl.textContent = Math.floor(current);
-        }, 25);
+        }, 16);
     });
 }
 
-// Intersection Observer for counter animation
+// Observe stats section
 const aboutSection = document.querySelector('.about');
 if (aboutSection) {
-    const observer = new IntersectionObserver((entries) => {
+    const counterObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 animateCounters();
-                observer.unobserve(entry.target);
+                counterObserver.unobserve(entry.target);
             }
         });
     }, { threshold: 0.3 });
-    observer.observe(aboutSection);
+    counterObserver.observe(aboutSection);
 }
 
-// Back to top button
+// ============================================
+// SCROLL REVEAL
+// ============================================
+const revealElements = document.querySelectorAll(
+    '.news-card, .program-card, .gallery-item, .contact-card, .value-card, .stat, .requirements-card, .inquiry-form'
+);
+
+const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+            setTimeout(() => {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }, index * 80);
+            revealObserver.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+revealElements.forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(25px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    revealObserver.observe(el);
+});
+
+// ============================================
+// BACK TO TOP
+// ============================================
 const backToTop = document.getElementById('backToTop');
 window.addEventListener('scroll', () => {
     if (window.scrollY > 500) {
@@ -87,7 +129,25 @@ function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Inquiry form
+// ============================================
+// SMOOTH SCROLL FOR NAV LINKS
+// ============================================
+document.querySelectorAll('nav a[href^="#"]').forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) {
+            const headerOffset = 80;
+            const elementPosition = target.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+            window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+        }
+    });
+});
+
+// ============================================
+// INQUIRY FORM
+// ============================================
 function handleInquiry(event) {
     event.preventDefault();
     const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : '/api';
@@ -112,47 +172,6 @@ function handleInquiry(event) {
         document.getElementById('formSuccess').style.display = 'none';
     }, 6000);
 }
-
-// Smooth scroll for nav links
-document.querySelectorAll('nav a[href^="#"]').forEach(link => {
-    link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const target = document.querySelector(link.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            document.querySelector('nav ul').classList.remove('active');
-        }
-    });
-});
-
-// Header scroll effect
-window.addEventListener('scroll', () => {
-    const header = document.querySelector('header');
-    if (window.scrollY > 50) {
-        header.style.boxShadow = '0 4px 30px rgba(183, 28, 28, 0.4)';
-    } else {
-        header.style.boxShadow = '0 4px 20px rgba(183, 28, 28, 0.3)';
-    }
-});
-
-// Scroll reveal animation
-const revealElements = document.querySelectorAll('.program-card, .gallery-item, .news-card, .contact-card');
-const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
-        }
-    });
-}, { threshold: 0.1 });
-
-revealElements.forEach(el => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(20px)';
-    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-    revealObserver.observe(el);
-});
-
 
 // ============================================
 // NEWS MODAL
@@ -194,7 +213,6 @@ function closeNewsModal() {
     document.body.style.overflow = '';
 }
 
-
 // ============================================
 // WELCOME POPUP
 // ============================================
@@ -206,43 +224,44 @@ function closeWelcomePopup() {
     }, 300);
 }
 
-// Close popup with Escape key
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeWelcomePopup();
+    if (e.key === 'Escape') {
+        closeWelcomePopup();
+        closeNewsModal();
+        closeGalleryModal();
+    }
 });
 
-// Close popup when clicking outside the image
 document.getElementById('welcomePopup')?.addEventListener('click', (e) => {
     if (e.target === e.currentTarget) closeWelcomePopup();
 });
 
-
 // ============================================
-// GALLERY MODAL - Multiple images per category
+// GALLERY MODAL
 // ============================================
 const galleryData = {
     daily: {
-        title: '📖 Daily',
+        title: 'Daily',
         images: ['daily1.jpg', 'daily2.jpg', 'daily3.jpeg', 'daily4.jpg', 'daily5.jpg']
     },
     events: {
-        title: '🎉 Events',
+        title: 'Events',
         images: ['event1.jpg', 'event2.jpeg', 'event3.jpg', 'event4.jpg', 'event5.jpg']
     },
     crossingover: {
-        title: '🎓 Crossing Over',
+        title: 'Crossing Over',
         images: ['crossingover1.png', 'crossingover2.jpg', 'crossingover3.png']
     },
     riteofpassage: {
-        title: '🕯️ Rite of Passage',
+        title: 'Rite of Passage',
         images: ['riteofpassage1.JPEG', 'riteofpassage2.JPEG']
     },
     camping: {
-        title: '⛺ Camping',
+        title: 'Camping',
         images: ['camping1.png', 'camping2.jpg', 'camping3.jpg', 'camping4.JPEG', 'camping5.png']
     },
     fieldlearning: {
-        title: '🌿 Field Learning',
+        title: 'Field Learning',
         images: ['fieldlearning1.jpeg', 'fieldlearning2.jpeg', 'fieldlearning3.jpg', 'fieldlearning4.jpeg', 'fieldlearning5.jpg']
     }
 };
@@ -267,8 +286,8 @@ function closeGalleryModal() {
 
 function openFullImage(src) {
     const overlay = document.createElement('div');
-    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);display:flex;justify-content:center;align-items:center;z-index:100000;cursor:pointer;padding:1rem;';
-    overlay.innerHTML = `<img src="${src}" style="max-width:95%;max-height:95%;border-radius:12px;object-fit:contain;"><span style="position:absolute;top:20px;right:30px;color:#fff;font-size:2rem;cursor:pointer;">✕</span>`;
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);display:flex;justify-content:center;align-items:center;z-index:100000;cursor:pointer;padding:1rem;animation:fadeIn 0.3s ease;';
+    overlay.innerHTML = `<img src="${src}" style="max-width:95%;max-height:95%;border-radius:12px;object-fit:contain;box-shadow:0 20px 60px rgba(0,0,0,0.5);"><span style="position:absolute;top:20px;right:30px;color:#fff;font-size:2rem;cursor:pointer;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.1);border-radius:50%;">✕</span>`;
     overlay.onclick = () => overlay.remove();
     document.body.appendChild(overlay);
 }
