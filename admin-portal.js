@@ -1128,6 +1128,7 @@ async function doCreateStudent(btn, originalText, fullName, grade, guardian) {
                     <p><strong>Student Number:</strong> ${data.credentials.studentNo}</p>
                     <p><strong>Default Password:</strong> ${data.credentials.password}</p>
                     <p class="note">Share these credentials with the student/guardian for portal access.</p>
+                    <button class="btn-save" onclick="hideAddStudentForm(); document.getElementById('newStudentResult').style.display='none';" style="margin-top:1rem;">✓ Done</button>
                 </div>
             `;
 
@@ -1149,6 +1150,12 @@ async function doCreateStudent(btn, originalText, fullName, grade, guardian) {
 
             showToast('Student registered!');
             loadStudents();
+
+            // Auto-hide form after 5 seconds so the updated list is visible
+            setTimeout(() => {
+                hideAddStudentForm();
+                resultEl.style.display = 'none';
+            }, 5000);
         } else {
             const data = await res.json();
             showToast(data.message || 'Error creating student');
