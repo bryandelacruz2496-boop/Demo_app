@@ -11,7 +11,7 @@
     <link rel="apple-touch-icon" href="logo.jpg">
     <link rel="stylesheet" href="style.css">
     <link
-        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 </head>
 
@@ -19,13 +19,17 @@
     <!-- Welcome Popup -->
     <div class="welcome-popup-overlay" id="welcomePopup">
         <div class="welcome-popup">
-            <button class="welcome-popup-close" onclick="closeWelcomePopup()">✕</button>
+            <button class="welcome-popup-close" onclick="closeWelcomePopup()" aria-label="Close popup">✕</button>
             <img src="news1.jpg" alt="Enrollment Open - Beata Sai Integrated School" class="welcome-popup-img">
         </div>
     </div>
-    <header>
+
+    <!-- Navigation -->
+    <header id="mainHeader">
         <nav>
-            <div class="logo"><img src="logo.jpg" alt="Beata Sai Logo" class="logo-img"> Beata Sai Integrated School
+            <div class="logo">
+                <img src="logo.jpg" alt="Beata Sai Logo" class="logo-img">
+                <span class="logo-text">Beata Sai</span>
             </div>
             <ul>
                 <li><a href="#home">Home</a></li>
@@ -34,12 +38,17 @@
                 <li><a href="#gallery">Gallery</a></li>
                 <li><a href="#announcements">News</a></li>
                 <li><a href="#contact">Contact</a></li>
-                <li><a href="student-login.html" class="portal-link">🎓 Student Portal</a></li>
+                <li><a href="student-login.html" class="portal-link">Student Portal</a></li>
             </ul>
-            <div class="hamburger" onclick="toggleMenu()">☰</div>
+            <div class="hamburger" onclick="toggleMenu()" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </nav>
     </header>
 
+    <!-- Hero Section -->
     <section id="home" class="hero">
         <div class="hero-slider">
             <div class="slide active" style="background-image: url('slide1.JPEG')">
@@ -56,54 +65,73 @@
             </div>
         </div>
         <div class="hero-content">
-            <h1>Welcome to Beata Sai Integrated School</h1>
-            <p>Where Learning is Fun and Every Child Shines! ✨</p>
-            <a href="#admissions" class="btn btn-primary">🎉 Enroll Now</a>
-            <a href="#programs" class="btn btn-secondary">Explore Programs</a>
+            <span class="hero-tag">Waldorf-Inspired Education</span>
+            <h1>Where Every Child <em>Shines</em></h1>
+            <p>Nurturing creativity, curiosity, and confidence since 2011</p>
+            <div class="hero-actions">
+                <a href="#admissions" class="btn btn-primary">Enroll Now</a>
+                <a href="#programs" class="btn btn-ghost">Explore Programs</a>
+            </div>
         </div>
-        <div class="slider-dots">
-            <span class="slider-dot active" onclick="goToSlide(0)"></span>
-            <span class="slider-dot" onclick="goToSlide(1)"></span>
-            <span class="slider-dot" onclick="goToSlide(2)"></span>
-            <span class="slider-dot" onclick="goToSlide(3)"></span>
+        <div class="slider-controls">
+            <div class="slider-dots">
+                <span class="slider-dot active" onclick="goToSlide(0)"></span>
+                <span class="slider-dot" onclick="goToSlide(1)"></span>
+                <span class="slider-dot" onclick="goToSlide(2)"></span>
+                <span class="slider-dot" onclick="goToSlide(3)"></span>
+            </div>
         </div>
-        <button class="slider-arrow left" onclick="prevSlide()">&#10094;</button>
-        <button class="slider-arrow right" onclick="nextSlide()">&#10095;</button>
+        <button class="slider-arrow left" onclick="prevSlide()" aria-label="Previous slide">&#10094;</button>
+        <button class="slider-arrow right" onclick="nextSlide()" aria-label="Next slide">&#10095;</button>
+        <div class="hero-scroll-indicator">
+            <span>Scroll</span>
+            <div class="scroll-line"></div>
+        </div>
     </section>
 
+    <!-- News & Updates -->
     <section id="announcements" class="announcements">
         <div class="container">
             <div class="section-header">
-                <span class="emoji-badge">📢</span>
-                <h2>Recent News and Updates</h2>
-                <p class="subtitle">Stay updated with what's happening</p>
+                <span class="section-tag">Latest Updates</span>
+                <h2>News & Announcements</h2>
+                <p class="subtitle">Stay connected with what's happening at Beata Sai</p>
             </div>
             <div class="news-cards">
                 <div class="news-card" onclick="openNewsModal('news1')">
-                    <img src="news1.jpg" alt="Enrollment Open" class="news-card-img">
+                    <div class="news-card-image">
+                        <img src="news1.jpg" alt="Enrollment Open" class="news-card-img">
+                        <span class="news-badge">New</span>
+                    </div>
                     <div class="news-card-body">
-                        <h3>ENROLL NOW! Admissions 2026-2027</h3>
                         <span class="news-date">May 2026</span>
-                        <p class="news-desc">Beata Sai Integrated School 2026-2027 Admissions are still open!
-                            Waldorf-inspired curriculum, air-conditioned classrooms, school service available.</p>
+                        <h3>ENROLL NOW! Admissions 2026-2027</h3>
+                        <p class="news-desc">Waldorf-inspired curriculum, air-conditioned classrooms, school service
+                            available.</p>
+                        <span class="news-read-more">Read more →</span>
                     </div>
                 </div>
                 <div class="news-card" onclick="openNewsModal('news2')">
-                    <img src="news2.jpg" alt="John David Argente" class="news-card-img">
+                    <div class="news-card-image">
+                        <img src="news2.jpg" alt="John David Argente" class="news-card-img">
+                    </div>
                     <div class="news-card-body">
-                        <h3>CONGRATULATIONS! John David R. Argente</h3>
                         <span class="news-date">March 2026</span>
-                        <p class="news-desc">TOP 8 – LEPT March 2026. Beata Sai Integrated School proudly celebrates
-                            your outstanding achievement!</p>
+                        <h3>CONGRATULATIONS! John David R. Argente</h3>
+                        <p class="news-desc">TOP 8 – LEPT March 2026. Proudly celebrating your outstanding achievement!
+                        </p>
+                        <span class="news-read-more">Read more →</span>
                     </div>
                 </div>
                 <div class="news-card" onclick="openNewsModal('news3')">
-                    <img src="news3.jpg" alt="Mae Angelie Villapando" class="news-card-img">
+                    <div class="news-card-image">
+                        <img src="news3.jpg" alt="Mae Angelie Villapando" class="news-card-img">
+                    </div>
                     <div class="news-card-body">
-                        <h3>CONGRATULATIONS! Mae Angelie P. Villapando</h3>
                         <span class="news-date">March 2026</span>
-                        <p class="news-desc">LEPT March 2026. Beata Sai Integrated School proudly celebrates your
-                            outstanding achievement and success!</p>
+                        <h3>CONGRATULATIONS! Mae Angelie P. Villapando</h3>
+                        <p class="news-desc">LEPT March 2026. Celebrating your outstanding achievement and success!</p>
+                        <span class="news-read-more">Read more →</span>
                     </div>
                 </div>
             </div>
@@ -111,7 +139,7 @@
             <!-- News Modal -->
             <div class="news-modal-overlay" id="newsModalOverlay" onclick="closeNewsModal()">
                 <div class="news-modal" onclick="event.stopPropagation()">
-                    <button class="news-modal-close" onclick="closeNewsModal()">✕</button>
+                    <button class="news-modal-close" onclick="closeNewsModal()" aria-label="Close">✕</button>
                     <img id="newsModalImg" src="" alt="" class="news-modal-img">
                     <div class="news-modal-body">
                         <h2 id="newsModalTitle"></h2>
@@ -123,69 +151,73 @@
         </div>
     </section>
 
+    <!-- About Section -->
     <section id="about" class="about">
         <div class="container">
-            <div class="section-header">
-                <span class="emoji-badge">🏫</span>
-                <h2>About Our School</h2>
-                <p class="subtitle">A happy place where kids grow, learn, and dream big!</p>
-            </div>
-            <div class="about-grid">
-                <div class="about-text">
+            <div class="about-layout">
+                <div class="about-image-col">
+                    <div class="about-image">
+                        <img src="about1.jpg" alt="Happy students at Beata Sai">
+                        <div class="about-image-accent"></div>
+                    </div>
+                    <div class="about-experience-badge">
+                        <span class="badge-number">15+</span>
+                        <span class="badge-text">Years of Excellence</span>
+                    </div>
+                </div>
+                <div class="about-content">
+                    <span class="section-tag">About Us</span>
+                    <h2>A Place Where Kids Grow, Learn & Dream Big</h2>
                     <p>At Beata Sai Integrated School, we believe every child is unique and special. Our caring teachers
                         create a fun and safe environment where students discover their talents, make lifelong friends,
                         and build confidence for the future.</p>
-                    <div class="values">
-                        <div class="value-item">
-                            <span>💡</span>
+                    <div class="about-values">
+                        <div class="value-card">
+                            <div class="value-icon">💡</div>
                             <h4>Creative Learning</h4>
+                            <p>Waldorf-inspired methods that spark imagination</p>
                         </div>
-                        <div class="value-item">
-                            <span>❤️</span>
+                        <div class="value-card">
+                            <div class="value-icon">❤️</div>
                             <h4>Caring Community</h4>
+                            <p>A family atmosphere where everyone belongs</p>
                         </div>
-                        <div class="value-item">
-                            <span>🌱</span>
+                        <div class="value-card">
+                            <div class="value-icon">🌱</div>
                             <h4>Growth Mindset</h4>
+                            <p>Encouraging resilience and lifelong curiosity</p>
                         </div>
                     </div>
-                </div>
-                <div class="about-image">
-                    <img src="about1.jpg" alt="Happy students">
-                    <div class="image-badge">15+ Years of Excellence 🏆</div>
                 </div>
             </div>
             <div class="stats-bar">
                 <div class="stat" data-target="500">
-                    <span class="stat-icon">👦👧</span>
-                    <span class="stat-number">0</span>+
+                    <span class="stat-number">0</span><span class="stat-suffix">+</span>
                     <p>Happy Students</p>
                 </div>
                 <div class="stat" data-target="50">
-                    <span class="stat-icon">👩‍🏫</span>
-                    <span class="stat-number">0</span>+
+                    <span class="stat-number">0</span><span class="stat-suffix">+</span>
                     <p>Loving Teachers</p>
                 </div>
                 <div class="stat" data-target="95">
-                    <span class="stat-icon">⭐</span>
-                    <span class="stat-number">0</span>%
+                    <span class="stat-number">0</span><span class="stat-suffix">%</span>
                     <p>Parent Satisfaction</p>
                 </div>
                 <div class="stat" data-target="20">
-                    <span class="stat-icon">🏅</span>
-                    <span class="stat-number">0</span>+
+                    <span class="stat-number">0</span><span class="stat-suffix">+</span>
                     <p>Awards Won</p>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Programs Section -->
     <section id="programs" class="programs">
         <div class="container">
             <div class="section-header">
-                <span class="emoji-badge">📖</span>
-                <h2>Our Programs</h2>
-                <p class="subtitle">Choose the perfect learning path for your child</p>
+                <span class="section-tag">Academic Programs</span>
+                <h2>The Right Path for Your Child</h2>
+                <p class="subtitle">From preschool to senior high, we guide every step of the journey</p>
             </div>
             <div class="program-cards">
                 <div class="program-card" onclick="this.classList.toggle('flipped')">
@@ -260,37 +292,56 @@
         </div>
     </section>
 
+    <!-- Gallery Section -->
     <section id="gallery" class="gallery">
         <div class="container">
             <div class="section-header">
-                <span class="emoji-badge">📸</span>
-                <h2>School Life</h2>
-                <p class="subtitle">See what makes our school special</p>
+                <span class="section-tag">School Life</span>
+                <h2>Moments That Matter</h2>
+                <p class="subtitle">A glimpse into the vibrant life at Beata Sai</p>
             </div>
             <div class="gallery-grid">
                 <div class="gallery-item" onclick="openGalleryModal('daily')">
-                    <img src="daily1.jpg" alt="Daily">
-                    <div class="gallery-label">📖 Daily</div>
+                    <img src="daily1.jpg" alt="Daily activities">
+                    <div class="gallery-overlay">
+                        <span class="gallery-label">Daily</span>
+                        <span class="gallery-count">5 photos</span>
+                    </div>
                 </div>
                 <div class="gallery-item" onclick="openGalleryModal('events')">
-                    <img src="event1.jpg" alt="Events">
-                    <div class="gallery-label">🎉 Events</div>
+                    <img src="event1.jpg" alt="School events">
+                    <div class="gallery-overlay">
+                        <span class="gallery-label">Events</span>
+                        <span class="gallery-count">5 photos</span>
+                    </div>
                 </div>
                 <div class="gallery-item" onclick="openGalleryModal('crossingover')">
-                    <img src="crossingover1.png" alt="Crossing Over">
-                    <div class="gallery-label">🎓 Crossing Over</div>
+                    <img src="crossingover1.png" alt="Crossing Over ceremony">
+                    <div class="gallery-overlay">
+                        <span class="gallery-label">Crossing Over</span>
+                        <span class="gallery-count">3 photos</span>
+                    </div>
                 </div>
                 <div class="gallery-item" onclick="openGalleryModal('riteofpassage')">
                     <img src="riteofpassage1.JPEG" alt="Rite of Passage">
-                    <div class="gallery-label">🕯️ Rite of Passage</div>
+                    <div class="gallery-overlay">
+                        <span class="gallery-label">Rite of Passage</span>
+                        <span class="gallery-count">2 photos</span>
+                    </div>
                 </div>
                 <div class="gallery-item" onclick="openGalleryModal('camping')">
-                    <img src="camping1.png" alt="Camping">
-                    <div class="gallery-label">⛺ Camping</div>
+                    <img src="camping1.png" alt="Camping activities">
+                    <div class="gallery-overlay">
+                        <span class="gallery-label">Camping</span>
+                        <span class="gallery-count">5 photos</span>
+                    </div>
                 </div>
                 <div class="gallery-item" onclick="openGalleryModal('fieldlearning')">
                     <img src="fieldlearning1.jpeg" alt="Field Learning">
-                    <div class="gallery-label">🌿 Field Learning</div>
+                    <div class="gallery-overlay">
+                        <span class="gallery-label">Field Learning</span>
+                        <span class="gallery-count">5 photos</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -299,136 +350,185 @@
     <!-- Gallery Modal -->
     <div class="gallery-modal-overlay" id="galleryModalOverlay" onclick="closeGalleryModal()">
         <div class="gallery-modal" onclick="event.stopPropagation()">
-            <button class="gallery-modal-close" onclick="closeGalleryModal()">✕</button>
+            <button class="gallery-modal-close" onclick="closeGalleryModal()" aria-label="Close gallery">✕</button>
             <h3 id="galleryModalTitle"></h3>
             <div class="gallery-modal-grid" id="galleryModalGrid"></div>
         </div>
     </div>
 
+    <!-- Admissions Section -->
     <section id="admissions" class="admissions">
         <div class="container">
             <div class="section-header">
-                <span class="emoji-badge">✍️</span>
+                <span class="section-tag">Admissions</span>
                 <h2>Join Our Family</h2>
                 <p class="subtitle">Enrollment for SY 2026-2027 is now open!</p>
             </div>
             <div class="admissions-grid">
                 <div class="requirements-card">
-                    <h3>📋 Requirements</h3>
+                    <h3>Requirements</h3>
                     <ul>
-                        <li><span>📄</span> Report Card (Form 138)</li>
-                        <li><span>📜</span> Birth Certificate (PSA)</li>
-                        <li><span>✅</span> Good Moral Certificate</li>
-                        <li><span>📷</span> 2x2 ID Photos (4 pcs)</li>
+                        <li>
+                            <span class="req-icon">📄</span>
+                            <span>Report Card (Form 138)</span>
+                        </li>
+                        <li>
+                            <span class="req-icon">📜</span>
+                            <span>Birth Certificate (PSA)</span>
+                        </li>
+                        <li>
+                            <span class="req-icon">✅</span>
+                            <span>Good Moral Certificate</span>
+                        </li>
+                        <li>
+                            <span class="req-icon">📷</span>
+                            <span>2x2 ID Photos (4 pcs)</span>
+                        </li>
                     </ul>
-                    <div class="steps">
-                        <h4>Steps to Enroll:</h4>
-                        <div class="step"><span class="step-num">1</span> Submit requirements</div>
-                        <div class="step"><span class="step-num">2</span> Take entrance assessment</div>
-                        <div class="step"><span class="step-num">3</span> Attend orientation</div>
-                        <div class="step"><span class="step-num">4</span> Welcome to the family! 🎊</div>
+                    <div class="enrollment-steps">
+                        <h4>How to Enroll</h4>
+                        <div class="step">
+                            <span class="step-num">1</span>
+                            <span>Submit requirements</span>
+                        </div>
+                        <div class="step">
+                            <span class="step-num">2</span>
+                            <span>Take entrance assessment</span>
+                        </div>
+                        <div class="step">
+                            <span class="step-num">3</span>
+                            <span>Attend orientation</span>
+                        </div>
+                        <div class="step">
+                            <span class="step-num">4</span>
+                            <span>Welcome to the family!</span>
+                        </div>
                     </div>
                 </div>
                 <div class="inquiry-form">
-                    <h3>💌 Send an Inquiry</h3>
+                    <h3>Send an Inquiry</h3>
+                    <p class="form-subtitle">We'd love to hear from you. Fill out the form and we'll get back to you
+                        shortly.</p>
                     <form onsubmit="handleInquiry(event)" id="inquiryForm">
-                        <input type="text" id="inqName" placeholder="👤 Child's Full Name" required>
-                        <input type="email" id="inqEmail" placeholder="📧 Parent's Email" required>
-                        <input type="tel" id="inqContact" placeholder="📞 Contact Number" required inputmode="numeric"
-                            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                        <select id="inqGrade" required>
-                            <option value="">📚 Select Grade Level</option>
-                            <option>Pre-School (Nursery/Kinder)</option>
-                            <option>Elementary (Grade 1-6)</option>
-                            <option>Junior High (Grade 7-10)</option>
-                            <option>Senior High (Grade 11-12)</option>
-                        </select>
-                        <textarea id="inqMessage" placeholder="💬 Any questions for us?" rows="3"></textarea>
-                        <button type="submit" class="btn btn-primary">Send Inquiry 🚀</button>
+                        <div class="form-group">
+                            <label for="inqName">Child's Full Name</label>
+                            <input type="text" id="inqName" placeholder="Enter full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inqEmail">Parent's Email</label>
+                            <input type="email" id="inqEmail" placeholder="Enter email address" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inqContact">Contact Number</label>
+                            <input type="tel" id="inqContact" placeholder="Enter phone number" required
+                                inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        </div>
+                        <div class="form-group">
+                            <label for="inqGrade">Grade Level</label>
+                            <select id="inqGrade" required>
+                                <option value="">Select grade level</option>
+                                <option>Pre-School (Nursery/Kinder)</option>
+                                <option>Elementary (Grade 1-6)</option>
+                                <option>Junior High (Grade 7-10)</option>
+                                <option>Senior High (Grade 11-12)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="inqMessage">Message (Optional)</label>
+                            <textarea id="inqMessage" placeholder="Any questions for us?" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">Send Inquiry</button>
                     </form>
-                    <p class="form-success" id="formSuccess">✅ Thank you! We will contact you on your contact number or
-                        email shortly.</p>
+                    <p class="form-success" id="formSuccess">✅ Thank you! We will contact you shortly.</p>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Contact Section -->
     <section id="contact" class="contact">
         <div class="container">
             <div class="section-header">
-                <span class="emoji-badge">📍</span>
+                <span class="section-tag">Get in Touch</span>
                 <h2>Find Us</h2>
                 <p class="subtitle">We'd love to hear from you!</p>
             </div>
             <div class="contact-grid">
-                <div class="contact-cards">
+                <div class="contact-info">
                     <div class="contact-card">
-                        <span class="contact-icon">📍</span>
-                        <h4>Visit Us</h4>
-                        <p>123 Education St., Quezon City, Philippines</p>
+                        <div class="contact-icon-wrap">📍</div>
+                        <div>
+                            <h4>Visit Us</h4>
+                            <p>123 Education St., Quezon City, Philippines</p>
+                        </div>
                     </div>
                     <div class="contact-card">
-                        <span class="contact-icon">📧</span>
-                        <h4>Email Us</h4>
-                        <p>info@beatasai.edu.ph</p>
+                        <div class="contact-icon-wrap">📧</div>
+                        <div>
+                            <h4>Email Us</h4>
+                            <p>info@beatasai.edu.ph</p>
+                        </div>
                     </div>
                     <div class="contact-card">
-                        <span class="contact-icon">📞</span>
-                        <h4>Call Us</h4>
-                        <p>(02) 8123-4567</p>
+                        <div class="contact-icon-wrap">📞</div>
+                        <div>
+                            <h4>Call Us</h4>
+                            <p>(02) 8123-4567</p>
+                        </div>
                     </div>
                     <div class="contact-card">
-                        <span class="contact-icon">🕐</span>
-                        <h4>Office Hours</h4>
-                        <p>Mon-Fri: 7:00 AM - 5:00 PM</p>
+                        <div class="contact-icon-wrap">🕐</div>
+                        <div>
+                            <h4>Office Hours</h4>
+                            <p>Mon-Fri: 7:00 AM - 5:00 PM</p>
+                        </div>
                     </div>
                 </div>
                 <div class="map">
                     <iframe
                         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3860.0!2d121.0!3d14.6!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTTCsDM2JzAwLjAiTiAxMjHCsDAwJzAwLjAiRQ!5e0!3m2!1sen!2sph!4v1"
-                        width="100%" height="350" style="border:0; border-radius:15px;" allowfullscreen=""
-                        loading="lazy"></iframe>
+                        width="100%" height="100%" style="border:0; border-radius:16px;" allowfullscreen=""
+                        loading="lazy" title="School location map"></iframe>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Footer -->
     <footer>
-        <div class="footer-wave">
-            <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
-                <path d="M0,50 C360,100 720,0 1080,50 C1260,75 1380,50 1440,50 L1440,100 L0,100 Z" fill="#b71c1c" />
-            </svg>
-        </div>
         <div class="footer-content">
-            <div class="footer-section">
-                <h3>🎓 Beata Sai Integrated School</h3>
-                <p>Nurturing Minds, Building Futures since 2011.</p>
-                <div class="social-links">
-                    <a href="#">📘 Facebook</a>
-                    <a href="#">📷 Instagram</a>
-                    <a href="#">▶️ YouTube</a>
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <img src="logo.jpg" alt="Beata Sai Logo" class="footer-logo">
+                    <h3>Beata Sai Integrated School</h3>
+                    <p>Nurturing Minds, Building Futures since 2011.</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Facebook">📘</a>
+                        <a href="#" aria-label="Instagram">📷</a>
+                        <a href="#" aria-label="YouTube">▶️</a>
+                    </div>
                 </div>
-            </div>
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <a href="#about">About Us</a>
-                <a href="#programs">Programs</a>
-                <a href="#admissions">Admissions</a>
-                <a href="#contact">Contact</a>
-            </div>
-            <div class="footer-section">
-                <h3>School Hours</h3>
-                <p>Monday - Friday</p>
-                <p>7:00 AM - 5:00 PM</p>
-                <p class="footer-note">🌟 Where every day is a new adventure!</p>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <a href="#about">About Us</a>
+                    <a href="#programs">Programs</a>
+                    <a href="#admissions">Admissions</a>
+                    <a href="#contact">Contact</a>
+                </div>
+                <div class="footer-hours">
+                    <h4>School Hours</h4>
+                    <p>Monday - Friday</p>
+                    <p>7:00 AM - 5:00 PM</p>
+                    <p class="footer-tagline">Where every day is a new adventure</p>
+                </div>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>© 2026 Beata Sai Integrated School. Made with ❤️ for our students.</p>
+            <p>© 2026 Beata Sai Integrated School. All rights reserved.</p>
         </div>
     </footer>
 
-    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">⬆️</button>
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()" aria-label="Back to top">↑</button>
 
     <script src="script.js"></script>
     <script>
