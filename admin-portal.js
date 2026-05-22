@@ -2322,23 +2322,29 @@ async function saveStaffDetail(id) {
         return;
     }
 
-    const body = { name, username, role, status };
-    if (password) body.password = password;
+    // Close the edit modal first
+    const editOverlay = document.querySelector('.confirm-overlay');
+    if (editOverlay) editOverlay.remove();
 
-    const res = await fetch(`${API_URL}/auth/staff/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
-        body: JSON.stringify(body)
+    // Ask for superadmin password
+    showPasswordPrompt(async (adminPassword) => {
+        const body = { name, username, role, status, adminPassword };
+        if (password) body.password = password;
+
+        const res = await fetch(`${API_URL}/auth/staff/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+            body: JSON.stringify(body)
+        });
+
+        if (res.ok) {
+            showToast('Account updated');
+            loadStaffList();
+        } else {
+            const data = await res.json();
+            showToast(data.message || 'Error updating account');
+        }
     });
-
-    if (res.ok) {
-        document.querySelector('.confirm-overlay').remove();
-        showToast('Account updated');
-        loadStaffList();
-    } else {
-        const data = await res.json();
-        showToast(data.message || 'Error updating account');
-    }
 }
 
 async function updateStaffRole(id, role) {

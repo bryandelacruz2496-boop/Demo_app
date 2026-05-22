@@ -205,7 +205,16 @@ router.put('/staff/:id', authMiddleware, async (req, res) => {
             return res.status(403).json({ message: 'Access denied' });
         }
 
-        const { name, username, password, role, status } = req.body;
+        const { name, username, password, role, status, adminPassword } = req.body;
+
+        // Verify superadmin password
+        if (adminPassword) {
+            const currentAdmin = await Admin.findById(req.admin.id);
+            if (!currentAdmin) return res.status(404).json({ message: 'Admin not found' });
+            const isMatch = await currentAdmin.comparePassword(adminPassword);
+            if (!isMatch) return res.status(401).json({ message: 'Incorrect password' });
+        }
+
         const staff = await Admin.findById(req.params.id);
         if (!staff) return res.status(404).json({ message: 'Account not found' });
 
