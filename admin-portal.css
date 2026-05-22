@@ -409,10 +409,10 @@ h4 {
     gap: 0.3rem;
     background: #fff;
     border-radius: 16px;
-    padding: 0.8rem;
+    padding: 1rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.04);
-    width: 200px;
-    min-width: 200px;
+    width: 240px;
+    min-width: 240px;
     height: fit-content;
     position: sticky;
     top: 1rem;
@@ -421,15 +421,15 @@ h4 {
 .admin-main {
     flex: 1;
     min-width: 0;
-    padding-left: 1.5rem;
+    padding-left: 2rem;
 }
 
 .admin-nav-btn {
-    padding: 0.75rem 1rem;
+    padding: 0.85rem 1.2rem;
     border: none;
     background: transparent;
     font-family: 'Fredoka', sans-serif;
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 600;
     color: #666;
     cursor: pointer;

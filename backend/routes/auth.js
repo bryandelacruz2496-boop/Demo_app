@@ -146,7 +146,7 @@ router.get('/me', authMiddleware, async (req, res) => {
 });
 
 // POST /api/auth/register (superadmin only - can create staff/admin accounts)
-router.post('/register', authMiddleware, passwordPolicyMiddleware, async (req, res) => {
+router.post('/register', authMiddleware, async (req, res) => {
     try {
         // Only superadmin can create accounts
         if (req.admin.role !== 'superadmin') {
@@ -161,6 +161,10 @@ router.post('/register', authMiddleware, passwordPolicyMiddleware, async (req, r
             if (!currentAdmin) return res.status(404).json({ message: 'Admin not found' });
             const isMatch = await currentAdmin.comparePassword(adminPassword);
             if (!isMatch) return res.status(401).json({ message: 'Incorrect admin password' });
+        }
+
+        if (!password || password.length < 6) {
+            return res.status(400).json({ message: 'Password must be at least 6 characters' });
         }
 
         const existing = await Admin.findOne({ username });
