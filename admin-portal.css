@@ -397,29 +397,47 @@ h4 {
 }
 
 /* Admin Navigation */
-.admin-nav {
+.admin-content {
     display: flex;
+    gap: 0;
+    flex: 1;
+}
+
+.admin-sidebar {
+    display: flex;
+    flex-direction: column;
     gap: 0.3rem;
     background: #fff;
     border-radius: 16px;
-    padding: 0.5rem;
-    margin-bottom: 2rem;
+    padding: 0.8rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.04);
+    width: 200px;
+    min-width: 200px;
+    height: fit-content;
+    position: sticky;
+    top: 1rem;
+}
+
+.admin-main {
+    flex: 1;
+    min-width: 0;
+    padding-left: 1.5rem;
 }
 
 .admin-nav-btn {
-    flex: 1;
-    padding: 0.9rem 1.5rem;
+    padding: 0.75rem 1rem;
     border: none;
     background: transparent;
     font-family: 'Fredoka', sans-serif;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 600;
     color: #666;
     cursor: pointer;
-    border-radius: 12px;
+    border-radius: 10px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform;
+    text-align: left;
+    white-space: nowrap;
 }
 
 .admin-nav-btn.active {
@@ -869,14 +887,26 @@ h4 {
         gap: 1rem;
     }
 
-    .admin-nav {
+    .admin-sidebar {
+        flex-direction: row;
         flex-wrap: wrap;
+        width: 100%;
+        min-width: unset;
+        position: static;
+    }
+
+    .admin-content {
+        flex-direction: column;
+    }
+
+    .admin-main {
+        padding-left: 0;
     }
 
     .admin-nav-btn {
         flex: none;
-        padding: 0.7rem 1.2rem;
-        font-size: 0.85rem;
+        padding: 0.6rem 1rem;
+        font-size: 0.8rem;
     }
 }
 

@@ -331,7 +331,7 @@ async function selectStudent(id) {
 
     document.getElementById('studentListPanel').style.display = 'none';
     document.getElementById('studentDetailPanel').style.display = 'block';
-    document.querySelector('.admin-nav').style.display = 'none';
+    document.querySelector('.admin-sidebar').style.display = 'none';
 
     document.getElementById('studentHeader').innerHTML = `
     <h2>${selectedStudent.fullName} ${selectedStudent.status === 'archived' ? '<span style="background:rgba(255,255,255,0.3);padding:0.2rem 0.8rem;border-radius:15px;font-size:0.8rem;">Archived</span>' : ''}</h2>
@@ -478,7 +478,7 @@ async function saveProfile() {
 function backToList() {
     document.getElementById('studentDetailPanel').style.display = 'none';
     document.getElementById('studentListPanel').style.display = 'block';
-    document.querySelector('.admin-nav').style.display = 'flex';
+    document.querySelector('.admin-sidebar').style.display = 'flex';
     loadStudents();
 }
 
@@ -2192,6 +2192,11 @@ function hideAddStaffForm() {
     document.getElementById('newStaffRole').value = 'staff';
 }
 
+function toggleStaffPwVisibility() {
+    const input = document.getElementById('newStaffPassword');
+    input.type = input.type === 'password' ? 'text' : 'password';
+}
+
 async function createStaffAccount() {
     const name = document.getElementById('newStaffName').value.trim();
     const username = document.getElementById('newStaffUsername').value.trim();
@@ -2208,20 +2213,22 @@ async function createStaffAccount() {
         return;
     }
 
-    const res = await fetch(`${API_URL}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
-        body: JSON.stringify({ name, username, password, role })
-    });
+    showPasswordPrompt(async (adminPassword) => {
+        const res = await fetch(`${API_URL}/auth/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+            body: JSON.stringify({ name, username, password, role, adminPassword })
+        });
 
-    const data = await res.json();
-    if (res.ok) {
-        showToast(data.message);
-        hideAddStaffForm();
-        loadStaffList();
-    } else {
-        showToast(data.message || 'Error creating account');
-    }
+        const data = await res.json();
+        if (res.ok) {
+            showToast(data.message);
+            hideAddStaffForm();
+            loadStaffList();
+        } else {
+            showToast(data.message || 'Error creating account');
+        }
+    });
 }
 
 async function loadStaffList() {

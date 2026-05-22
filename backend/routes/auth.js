@@ -153,7 +153,15 @@ router.post('/register', authMiddleware, passwordPolicyMiddleware, async (req, r
             return res.status(403).json({ message: 'Only Super Admin can create accounts' });
         }
 
-        const { username, password, name, role } = req.body;
+        const { username, password, name, role, adminPassword } = req.body;
+
+        // Verify superadmin password
+        if (adminPassword) {
+            const currentAdmin = await Admin.findById(req.admin.id);
+            if (!currentAdmin) return res.status(404).json({ message: 'Admin not found' });
+            const isMatch = await currentAdmin.comparePassword(adminPassword);
+            if (!isMatch) return res.status(401).json({ message: 'Incorrect admin password' });
+        }
 
         const existing = await Admin.findOne({ username });
         if (existing) {

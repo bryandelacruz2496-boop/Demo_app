@@ -68,8 +68,8 @@
         </header>
 
         <div class="admin-content">
-            <!-- Admin Navigation -->
-            <div class="admin-nav" id="adminNav">
+            <!-- Admin Sidebar Navigation -->
+            <div class="admin-sidebar" id="adminNav">
                 <button class="admin-nav-btn active" data-view="studentsView" data-roles="superadmin,admin,staff"
                     onclick="switchAdminView('studentsView')">📋 Students</button>
                 <button class="admin-nav-btn" data-view="collectionsView" data-roles="superadmin,admin"
@@ -90,181 +90,418 @@
                     onclick="switchAdminView('auditView')">📋 Audit Log</button>
             </div>
 
-            <!-- Student List -->
-            <div class="panel student-list-panel" id="studentListPanel">
+            <!-- Main Content Area -->
+            <div class="admin-main">
 
-                <!-- Students View -->
-                <div class="admin-view active" id="studentsView">
-                    <!-- Dashboard Header -->
-                    <div class="dashboard-header">
-                        <h2>📋 Student List</h2>
-                        <div class="top-actions">
-                            <button class="btn-add-student" onclick="showAddStudentForm()">+ Add New Student</button>
-                            <button class="btn-export" onclick="exportStudentList()">📥 Export Students</button>
+                <!-- Student List -->
+                <div class="panel student-list-panel" id="studentListPanel">
+
+                    <!-- Students View -->
+                    <div class="admin-view active" id="studentsView">
+                        <!-- Dashboard Header -->
+                        <div class="dashboard-header">
+                            <h2>📋 Student List</h2>
+                            <div class="top-actions">
+                                <button class="btn-add-student" onclick="showAddStudentForm()">+ Add New
+                                    Student</button>
+                                <button class="btn-export" onclick="exportStudentList()">📥 Export Students</button>
+                            </div>
                         </div>
-                    </div>
 
-                    <div id="addStudentForm" class="expandable-panel" style="display:none;">
-                        <h3>📝 Register New Student</h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Enrollee Type *</label>
-                                <select id="newStudentEnrolleeType" onchange="handleEnrolleeTypeChange()">
-                                    <option value="old">Old Student</option>
-                                    <option value="new">New Student</option>
-                                </select>
-                            </div>
-                            <div class="form-group full-width" id="oldStudentSearchBox" style="display:none;">
-                                <label>Search Existing Student</label>
-                                <input type="text" id="oldStudentSearch"
-                                    placeholder="Type student name or number to search..."
-                                    oninput="searchExistingStudent(this.value)">
-                                <div id="oldStudentResults" class="old-student-results"></div>
-                            </div>
-                            <div class="form-group">
-                                <label>Grade *</label>
-                                <select id="newStudentGrade" required onchange="updateTuitionDisplay()">
-                                    <option value="">Select Grade</option>
-                                    <option value="Palaruan 1">Palaruan 1</option>
-                                    <option value="Palaruan 2">Palaruan 2</option>
-                                    <option value="Kindergarten">Kindergarten</option>
-                                    <option value="Grade 1">Grade 1</option>
-                                    <option value="Grade 2">Grade 2</option>
-                                    <option value="Grade 3">Grade 3</option>
-                                    <option value="Grade 4">Grade 4</option>
-                                    <option value="Grade 5">Grade 5</option>
-                                    <option value="Grade 6">Grade 6</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>First Name *</label>
-                                <input type="text" id="newStudentFirstName" placeholder="e.g. Juan" required
-                                    oninput="this.value = this.value.replace(/[^a-zA-Z\s.,-]/g, '')">
-                            </div>
-                            <div class="form-group">
-                                <label>Middle Name</label>
-                                <input type="text" id="newStudentMiddleName" placeholder="e.g. Santos"
-                                    oninput="this.value = this.value.replace(/[^a-zA-Z\s.,-]/g, '')">
-                            </div>
-                            <div class="form-group">
-                                <label>Last Name *</label>
-                                <input type="text" id="newStudentLastName" placeholder="e.g. Dela Cruz" required
-                                    oninput="this.value = this.value.replace(/[^a-zA-Z\s.,-]/g, '')">
-                            </div>
-                            <div class="form-group">
-                                <label>Guardian Name *</label>
-                                <input type="text" id="newStudentGuardian" placeholder="e.g. Maria Dela Cruz" required
-                                    oninput="this.value = this.value.replace(/[^a-zA-Z\s.,-]/g, '')">
-                            </div>
-                            <div class="form-group">
-                                <label>Guardian Contact</label>
-                                <input type="tel" id="newStudentContact" placeholder="e.g. 09171234567" pattern="[0-9]*"
-                                    inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                            </div>
-                            <div class="form-group">
-                                <label>Address</label>
-                                <input type="text" id="newStudentAddress" placeholder="e.g. 123 Main St, Quezon City">
-                            </div>
-                            <div class="form-group">
-                                <label>Birth Date</label>
-                                <input type="text" id="newStudentBirth" class="datepicker-input"
-                                    placeholder="Pick a date" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label>Gender</label>
-                                <select id="newStudentGender">
-                                    <option value="">Select</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Payment Scheme *</label>
-                                <select id="newStudentPayOption" onchange="updateTuitionDisplay()">
-                                    <option value="full">Option 1: Full Payment (Less 3%)</option>
-                                    <option value="two_payments">Option 2: Two Equal Payments (5% interest)</option>
-                                    <option value="monthly">Option 3: Monthly - 7 months (7% interest)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Discount</label>
-                                <select id="newStudentDiscount" onchange="updateTuitionDisplay()">
-                                    <option value="none">No Discount</option>
-                                    <option value="siblings">Siblings Discount (-10%)</option>
-                                    <option value="friends_family">Friends & Family Discount (-10%)</option>
-                                    <option value="employee">Employee Discount (-30%)</option>
-                                    <option value="early_bird">Early Bird (-5%)</option>
-                                    <option value="late_enrollment">Late Enrollment (+₱1,000)</option>
-                                </select>
-                            </div>
-                            <div class="form-group full-width" id="tuitionBreakdown" style="display:none;">
-                                <div class="tuition-breakdown">
-                                    <div class="breakdown-row"><span>Tuition:</span><strong id="bdTuition">₱0</strong>
+                        <div id="addStudentForm" class="expandable-panel" style="display:none;">
+                            <h3>📝 Register New Student</h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Enrollee Type *</label>
+                                    <select id="newStudentEnrolleeType" onchange="handleEnrolleeTypeChange()">
+                                        <option value="old">Old Student</option>
+                                        <option value="new">New Student</option>
+                                    </select>
+                                </div>
+                                <div class="form-group full-width" id="oldStudentSearchBox" style="display:none;">
+                                    <label>Search Existing Student</label>
+                                    <input type="text" id="oldStudentSearch"
+                                        placeholder="Type student name or number to search..."
+                                        oninput="searchExistingStudent(this.value)">
+                                    <div id="oldStudentResults" class="old-student-results"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Grade *</label>
+                                    <select id="newStudentGrade" required onchange="updateTuitionDisplay()">
+                                        <option value="">Select Grade</option>
+                                        <option value="Palaruan 1">Palaruan 1</option>
+                                        <option value="Palaruan 2">Palaruan 2</option>
+                                        <option value="Kindergarten">Kindergarten</option>
+                                        <option value="Grade 1">Grade 1</option>
+                                        <option value="Grade 2">Grade 2</option>
+                                        <option value="Grade 3">Grade 3</option>
+                                        <option value="Grade 4">Grade 4</option>
+                                        <option value="Grade 5">Grade 5</option>
+                                        <option value="Grade 6">Grade 6</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>First Name *</label>
+                                    <input type="text" id="newStudentFirstName" placeholder="e.g. Juan" required
+                                        oninput="this.value = this.value.replace(/[^a-zA-Z\s.,-]/g, '')">
+                                </div>
+                                <div class="form-group">
+                                    <label>Middle Name</label>
+                                    <input type="text" id="newStudentMiddleName" placeholder="e.g. Santos"
+                                        oninput="this.value = this.value.replace(/[^a-zA-Z\s.,-]/g, '')">
+                                </div>
+                                <div class="form-group">
+                                    <label>Last Name *</label>
+                                    <input type="text" id="newStudentLastName" placeholder="e.g. Dela Cruz" required
+                                        oninput="this.value = this.value.replace(/[^a-zA-Z\s.,-]/g, '')">
+                                </div>
+                                <div class="form-group">
+                                    <label>Guardian Name *</label>
+                                    <input type="text" id="newStudentGuardian" placeholder="e.g. Maria Dela Cruz"
+                                        required oninput="this.value = this.value.replace(/[^a-zA-Z\s.,-]/g, '')">
+                                </div>
+                                <div class="form-group">
+                                    <label>Guardian Contact</label>
+                                    <input type="tel" id="newStudentContact" placeholder="e.g. 09171234567"
+                                        pattern="[0-9]*" inputmode="numeric"
+                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                </div>
+                                <div class="form-group">
+                                    <label>Address</label>
+                                    <input type="text" id="newStudentAddress"
+                                        placeholder="e.g. 123 Main St, Quezon City">
+                                </div>
+                                <div class="form-group">
+                                    <label>Birth Date</label>
+                                    <input type="text" id="newStudentBirth" class="datepicker-input"
+                                        placeholder="Pick a date" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label>Gender</label>
+                                    <select id="newStudentGender">
+                                        <option value="">Select</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Payment Scheme *</label>
+                                    <select id="newStudentPayOption" onchange="updateTuitionDisplay()">
+                                        <option value="full">Option 1: Full Payment (Less 3%)</option>
+                                        <option value="two_payments">Option 2: Two Equal Payments (5% interest)</option>
+                                        <option value="monthly">Option 3: Monthly - 7 months (7% interest)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Discount</label>
+                                    <select id="newStudentDiscount" onchange="updateTuitionDisplay()">
+                                        <option value="none">No Discount</option>
+                                        <option value="siblings">Siblings Discount (-10%)</option>
+                                        <option value="friends_family">Friends & Family Discount (-10%)</option>
+                                        <option value="employee">Employee Discount (-30%)</option>
+                                        <option value="early_bird">Early Bird (-5%)</option>
+                                        <option value="late_enrollment">Late Enrollment (+₱1,000)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group full-width" id="tuitionBreakdown" style="display:none;">
+                                    <div class="tuition-breakdown">
+                                        <div class="breakdown-row"><span>Tuition:</span><strong
+                                                id="bdTuition">₱0</strong>
+                                        </div>
+                                        <div class="breakdown-row"><span>Miscellaneous:</span><strong
+                                                id="bdMisc">₱0</strong>
+                                        </div>
+                                        <div class="breakdown-row"><span>Discount/Interest:</span><strong
+                                                id="bdAdjust">₱0</strong></div>
+                                        <div class="breakdown-row total"><span>Total Payment:</span><strong
+                                                id="bdTotal">₱0</strong></div>
+                                        <div class="breakdown-row"><span>Payment Schedule:</span><strong
+                                                id="bdSchedule"></strong></div>
                                     </div>
-                                    <div class="breakdown-row"><span>Miscellaneous:</span><strong
-                                            id="bdMisc">₱0</strong>
-                                    </div>
-                                    <div class="breakdown-row"><span>Discount/Interest:</span><strong
-                                            id="bdAdjust">₱0</strong></div>
-                                    <div class="breakdown-row total"><span>Total Payment:</span><strong
-                                            id="bdTotal">₱0</strong></div>
-                                    <div class="breakdown-row"><span>Payment Schedule:</span><strong
-                                            id="bdSchedule"></strong></div>
+                                </div>
+                                <div class="form-group full-width">
+                                    <label>Student Photo</label>
+                                    <label class="file-upload-label">
+                                        📷 Upload Photo
+                                        <input type="file" id="newStudentPhoto" accept="image/*"
+                                            onchange="previewNewStudentPhoto(this)">
+                                    </label>
+                                    <img id="newStudentPhotoPreview" class="image-preview" style="display:none;">
                                 </div>
                             </div>
-                            <div class="form-group full-width">
-                                <label>Student Photo</label>
-                                <label class="file-upload-label">
-                                    📷 Upload Photo
-                                    <input type="file" id="newStudentPhoto" accept="image/*"
-                                        onchange="previewNewStudentPhoto(this)">
-                                </label>
-                                <img id="newStudentPhotoPreview" class="image-preview" style="display:none;">
+                            <div class="form-actions">
+                                <button class="btn-save" onclick="createStudent()">✅ Register Student</button>
+                                <button class="btn-cancel" onclick="hideAddStudentForm()">Cancel</button>
+                            </div>
+                            <div class="new-student-result" id="newStudentResult" style="display:none;"></div>
+                        </div>
+
+                        <!-- Student List with Filter -->
+                        <div class="student-section">
+                            <div class="sort-row">
+                                <label>Filter by Grade:</label>
+                                <select id="filterGrade" onchange="renderStudentList()">
+                                    <option value="all">All Grades</option>
+                                    <option value="Palaruan 1">Palaruan 1</option>
+                                    <option value="Palaruan 2">Palaruan 2</option>
+                                    <option value="Kindergarten">Kindergarten</option>
+                                    <option value="Grade 1">Grade 1</option>
+                                    <option value="Grade 2">Grade 2</option>
+                                    <option value="Grade 3">Grade 3</option>
+                                    <option value="Grade 4">Grade 4</option>
+                                    <option value="Grade 5">Grade 5</option>
+                                    <option value="Grade 6">Grade 6</option>
+                                </select>
+                            </div>
+                            <div class="student-list" id="studentList"></div>
+                        </div>
+                    </div>
+                    <!-- End Students View -->
+
+                    <!-- Attendance View -->
+                    <div class="admin-view" id="attendanceView">
+                        <div class="dashboard-header">
+                            <h2>📅 Attendance</h2>
+                        </div>
+                        <div class="attendance-controls"
+                            style="display:flex;gap:1rem;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;">
+                            <div>
+                                <label>Date:</label>
+                                <input type="date" id="attendanceDate" onchange="loadAttendance()">
+                            </div>
+                            <div>
+                                <label>Grade:</label>
+                                <select id="attendanceGradeFilter" onchange="loadAttendance()">
+                                    <option value="all">All Grades</option>
+                                    <option value="Palaruan 1">Palaruan 1</option>
+                                    <option value="Palaruan 2">Palaruan 2</option>
+                                    <option value="Kindergarten">Kindergarten</option>
+                                    <option value="Grade 1">Grade 1</option>
+                                    <option value="Grade 2">Grade 2</option>
+                                    <option value="Grade 3">Grade 3</option>
+                                    <option value="Grade 4">Grade 4</option>
+                                    <option value="Grade 5">Grade 5</option>
+                                    <option value="Grade 6">Grade 6</option>
+                                </select>
+                            </div>
+                            <button class="btn-edit" id="btnEditAttendance" onclick="enableAttendanceEdit()">✏️ Edit
+                                Attendance</button>
+                            <button class="btn-add-student" id="btnSaveAttendance" onclick="saveAllAttendance()"
+                                style="display:none;">💾 Save Attendance</button>
+                            <button class="btn-cancel" id="btnCancelAttendance" onclick="cancelAttendanceEdit()"
+                                style="display:none;">Cancel</button>
+                        </div>
+                        <div class="attendance-legend" style="margin-bottom:1rem;font-size:0.85rem;color:#555;">
+                            <span style="margin-right:1rem;"><strong>P</strong> = Present</span>
+                            <span style="margin-right:1rem;"><strong>L</strong> = Late</span>
+                            <span style="margin-right:1rem;"><strong>E</strong> = Excused</span>
+                            <span><strong>U</strong> = Unexcused Absence</span>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="admin-table" id="attendanceTable">
+                                <thead>
+                                    <tr>
+                                        <th>Student No</th>
+                                        <th>Name</th>
+                                        <th>Grade</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attendanceBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- End Attendance View -->
+
+                    <!-- Announcements View -->
+                    <div class="admin-view" id="announcementsView">
+                        <div class="dashboard-header">
+                            <h2>📢 Announcements</h2>
+                            <div class="top-actions">
+                                <button class="btn-add-student" onclick="showAnnouncementForm()">+ Add
+                                    Announcement</button>
                             </div>
                         </div>
-                        <div class="form-actions">
-                            <button class="btn-save" onclick="createStudent()">✅ Register Student</button>
-                            <button class="btn-cancel" onclick="hideAddStudentForm()">Cancel</button>
-                        </div>
-                        <div class="new-student-result" id="newStudentResult" style="display:none;"></div>
-                    </div>
 
-                    <!-- Student List with Filter -->
-                    <div class="student-section">
-                        <div class="sort-row">
-                            <label>Filter by Grade:</label>
-                            <select id="filterGrade" onchange="renderStudentList()">
-                                <option value="all">All Grades</option>
-                                <option value="Palaruan 1">Palaruan 1</option>
-                                <option value="Palaruan 2">Palaruan 2</option>
-                                <option value="Kindergarten">Kindergarten</option>
-                                <option value="Grade 1">Grade 1</option>
-                                <option value="Grade 2">Grade 2</option>
-                                <option value="Grade 3">Grade 3</option>
-                                <option value="Grade 4">Grade 4</option>
-                                <option value="Grade 5">Grade 5</option>
-                                <option value="Grade 6">Grade 6</option>
+                        <div id="announcementForm" class="expandable-panel" style="display:none;">
+                            <h3>📢 Create Announcement</h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Subject *</label>
+                                    <input type="text" id="annSubject" placeholder="e.g. School Event Notice" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Target Grade</label>
+                                    <select id="annGrade">
+                                        <option value="all">All Grades</option>
+                                        <option value="Palaruan 1">Palaruan 1</option>
+                                        <option value="Palaruan 2">Palaruan 2</option>
+                                        <option value="Kindergarten">Kindergarten</option>
+                                        <option value="Grade 1">Grade 1</option>
+                                        <option value="Grade 2">Grade 2</option>
+                                        <option value="Grade 3">Grade 3</option>
+                                        <option value="Grade 4">Grade 4</option>
+                                        <option value="Grade 5">Grade 5</option>
+                                        <option value="Grade 6">Grade 6</option>
+                                    </select>
+                                </div>
+                                <div class="form-group full-width">
+                                    <label>Body *</label>
+                                    <textarea id="annBody" rows="4" placeholder="Write your announcement here..."
+                                        style="width:100%;padding:0.7rem 1rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.95rem;resize:vertical;"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn-save" onclick="createAnnouncement()">📢 Post Announcement</button>
+                                <button class="btn-cancel" onclick="hideAnnouncementForm()">Cancel</button>
+                            </div>
+                        </div>
+
+                        <div id="announcementsList" style="margin-bottom:1.5rem;"></div>
+                    </div>
+                    <!-- End Announcements View -->
+
+                    <!-- Messages View -->
+                    <div class="admin-view" id="messagesView">
+                        <div class="dashboard-header">
+                            <h2>📩 Messages</h2>
+                        </div>
+                        <div id="inquiriesPanel">
+                            <div id="inquiriesList"></div>
+                        </div>
+                    </div>
+                    <!-- End Messages View -->
+
+                    <!-- Projects View -->
+                    <div class="admin-view" id="projectsView">
+                        <div class="dashboard-header">
+                            <h2>📁 Projects</h2>
+                            <div class="top-actions">
+                                <button class="btn-add-student" onclick="showGlobalProjectForm()">+ Add Project</button>
+                            </div>
+                        </div>
+
+                        <div id="globalProjectForm" class="expandable-panel" style="display:none;">
+                            <h3>📁 Add New Project</h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Title *</label>
+                                    <input type="text" id="globalProjTitle" placeholder="e.g. Science Fair Project"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Subject *</label>
+                                    <select id="globalProjSubject" required>
+                                        <option value="">Select Subject</option>
+                                        <option value="Mathematics">Mathematics</option>
+                                        <option value="Science">Science</option>
+                                        <option value="English">English</option>
+                                        <option value="Filipino">Filipino</option>
+                                        <option value="Araling Panlipunan">Araling Panlipunan</option>
+                                        <option value="MAPEH">MAPEH</option>
+                                        <option value="TLE">TLE</option>
+                                        <option value="Values Education">Values Education</option>
+                                        <option value="Mother Tongue">Mother Tongue</option>
+                                        <option value="ESP">ESP</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Due Date *</label>
+                                    <input type="text" id="globalProjDue" class="datepicker-input"
+                                        placeholder="Pick a date" readonly required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Target Grade</label>
+                                    <select id="globalProjGrade">
+                                        <option value="all">All Grades</option>
+                                        <option value="Palaruan 1">Palaruan 1</option>
+                                        <option value="Palaruan 2">Palaruan 2</option>
+                                        <option value="Kindergarten">Kindergarten</option>
+                                        <option value="Grade 1">Grade 1</option>
+                                        <option value="Grade 2">Grade 2</option>
+                                        <option value="Grade 3">Grade 3</option>
+                                        <option value="Grade 4">Grade 4</option>
+                                        <option value="Grade 5">Grade 5</option>
+                                        <option value="Grade 6">Grade 6</option>
+                                    </select>
+                                </div>
+                                <div class="form-group full-width">
+                                    <label>Description *</label>
+                                    <textarea id="globalProjDesc" rows="3" placeholder="Project details..."
+                                        style="width:100%;padding:0.7rem 1rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.95rem;resize:vertical;"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn-save" onclick="createGlobalProject()">📁 Post Project</button>
+                                <button class="btn-cancel" onclick="hideGlobalProjectForm()">Cancel</button>
+                            </div>
+                        </div>
+
+                        <div id="globalProjectsList"></div>
+                    </div>
+                    <!-- End Projects View -->
+
+                    <!-- Audit Log View -->
+                    <div class="admin-view" id="auditView">
+                        <div class="dashboard-header">
+                            <h2>📋 Audit Log</h2>
+                        </div>
+                        <div id="auditLogList"></div>
+                    </div>
+                    <!-- End Audit Log View -->
+
+                    <!-- Collections View -->
+                    <div class="admin-view" id="collectionsView">
+                        <div class="dashboard-header">
+                            <h2>💰 Monthly Collection</h2>
+                            <div class="top-actions">
+                                <select id="collectionMonth" onchange="calculateCollection()"
+                                    style="padding:0.5rem 1rem;border-radius:8px;border:2px solid #e0e0e0;font-size:0.95rem;">
+                                    <option value="01">January</option>
+                                    <option value="02">February</option>
+                                    <option value="03">March</option>
+                                    <option value="04">April</option>
+                                    <option value="05">May</option>
+                                    <option value="06">June</option>
+                                    <option value="07">July</option>
+                                    <option value="08">August</option>
+                                    <option value="09">September</option>
+                                    <option value="10">October</option>
+                                    <option value="11">November</option>
+                                    <option value="12">December</option>
+                                </select>
+                                <select id="collectionYear" onchange="calculateCollection()"
+                                    style="padding:0.5rem 1rem;border-radius:8px;border:2px solid #e0e0e0;font-size:0.95rem;">
+                                    <option value="2026">2026</option>
+                                    <option value="2027">2027</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="collection-cards" style="margin-top:1.5rem;">
+                            <div class="collection-card">
+                                <span class="collection-label">✅ Total Collected</span>
+                                <span class="collection-value collected" id="monthCollected">₱0</span>
+                            </div>
+                            <div class="collection-card">
+                                <span class="collection-label">⏳ Pending</span>
+                                <span class="collection-value pending" id="monthPending">₱0</span>
+                            </div>
+                            <div class="collection-card">
+                                <span class="collection-label">📊 Total Expected</span>
+                                <span class="collection-value" id="monthTotal">₱0</span>
+                            </div>
+                        </div>
+
+                        <div class="sort-row" style="margin-top:1.5rem;">
+                            <label>Filter:</label>
+                            <select id="collectionStatusFilter" onchange="calculateCollection()">
+                                <option value="all">All</option>
+                                <option value="paid">Paid Only</option>
+                                <option value="pending">Pending Only</option>
                             </select>
-                        </div>
-                        <div class="student-list" id="studentList"></div>
-                    </div>
-                </div>
-                <!-- End Students View -->
-
-                <!-- Attendance View -->
-                <div class="admin-view" id="attendanceView">
-                    <div class="dashboard-header">
-                        <h2>📅 Attendance</h2>
-                    </div>
-                    <div class="attendance-controls"
-                        style="display:flex;gap:1rem;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;">
-                        <div>
-                            <label>Date:</label>
-                            <input type="date" id="attendanceDate" onchange="loadAttendance()">
-                        </div>
-                        <div>
                             <label>Grade:</label>
-                            <select id="attendanceGradeFilter" onchange="loadAttendance()">
+                            <select id="collectionGradeFilter" onchange="calculateCollection()">
                                 <option value="all">All Grades</option>
                                 <option value="Palaruan 1">Palaruan 1</option>
                                 <option value="Palaruan 2">Palaruan 2</option>
@@ -277,178 +514,229 @@
                                 <option value="Grade 6">Grade 6</option>
                             </select>
                         </div>
-                        <button class="btn-edit" id="btnEditAttendance" onclick="enableAttendanceEdit()">✏️ Edit
-                            Attendance</button>
-                        <button class="btn-add-student" id="btnSaveAttendance" onclick="saveAllAttendance()"
-                            style="display:none;">💾 Save Attendance</button>
-                        <button class="btn-cancel" id="btnCancelAttendance" onclick="cancelAttendanceEdit()"
-                            style="display:none;">Cancel</button>
+
+                        <div class="table-wrapper" style="margin-top:1rem;">
+                            <table class="admin-table" id="collectionTable">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>Grade</th>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Paid Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="collectionTableBody"></tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div class="attendance-legend" style="margin-bottom:1rem;font-size:0.85rem;color:#555;">
-                        <span style="margin-right:1rem;"><strong>P</strong> = Present</span>
-                        <span style="margin-right:1rem;"><strong>L</strong> = Late</span>
-                        <span style="margin-right:1rem;"><strong>E</strong> = Excused</span>
-                        <span><strong>U</strong> = Unexcused Absence</span>
+                    <!-- End Collections View -->
+
+                    <!-- Archived Students View -->
+                    <div class="admin-view" id="archivedView">
+                        <div class="dashboard-header">
+                            <h2>📦 Archived Students</h2>
+                        </div>
+                        <div class="student-list" id="archivedStudentList"></div>
                     </div>
-                    <div class="table-wrapper">
-                        <table class="admin-table" id="attendanceTable">
-                            <thead>
-                                <tr>
-                                    <th>Student No</th>
-                                    <th>Name</th>
-                                    <th>Grade</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="attendanceBody"></tbody>
-                        </table>
+                    <!-- End Archived View -->
+
+                    <!-- Staff Management View (Superadmin only) -->
+                    <div class="admin-view" id="staffView">
+                        <div class="dashboard-header">
+                            <h2>👥 Staff Management</h2>
+                            <div class="top-actions">
+                                <button class="btn-add-student" onclick="showAddStaffForm()">+ Add Staff</button>
+                            </div>
+                        </div>
+                        <div id="addStaffForm" class="expandable-panel" style="display:none;">
+                            <h3>Create New Account</h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Full Name *</label>
+                                    <input type="text" id="newStaffName" placeholder="e.g. Maria Santos" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Username *</label>
+                                    <input type="text" id="newStaffUsername" placeholder="e.g. maria.santos" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Password *</label>
+                                    <div style="position:relative;">
+                                        <input type="password" id="newStaffPassword" placeholder="Min 6 characters"
+                                            required>
+                                        <span onclick="toggleStaffPwVisibility()"
+                                            style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:1.1rem;user-select:none;">👁️</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Role *</label>
+                                    <select id="newStaffRole">
+                                        <option value="staff">Staff</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn-save" onclick="createStaffAccount()">Create Account</button>
+                                <button class="btn-cancel" onclick="hideAddStaffForm()">Cancel</button>
+                            </div>
+                        </div>
+                        <div class="table-wrapper" style="margin-top:1rem;">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Username</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="staffTableBody"></tbody>
+                            </table>
+                        </div>
                     </div>
+                    <!-- End Staff View -->
+
                 </div>
-                <!-- End Attendance View -->
+                <!-- End studentListPanel -->
 
-                <!-- Announcements View -->
-                <div class="admin-view" id="announcementsView">
-                    <div class="dashboard-header">
-                        <h2>📢 Announcements</h2>
-                        <div class="top-actions">
-                            <button class="btn-add-student" onclick="showAnnouncementForm()">+ Add Announcement</button>
+                <!-- Student Detail -->
+                <div class="panel student-detail-panel" id="studentDetailPanel" style="display:none;">
+                    <div class="detail-top-actions">
+                        <button class="btn-back" onclick="backToList()">← Back to List</button>
+                        <div class="detail-right-actions">
+                            <button class="btn-archive-student" id="btnArchiveStudent" onclick="archiveStudent()">📦
+                                Archive
+                                Student</button>
+                            <button class="btn-unarchive-student" id="btnUnarchiveStudent" onclick="unarchiveStudent()"
+                                style="display:none;">📦 Unarchive Student</button>
+                            <button class="btn-delete-student" onclick="deleteStudent()">🗑️ Delete Student</button>
+                        </div>
+                    </div>
+                    <div class="student-header" id="studentHeader"></div>
+
+                    <div class="admin-tabs">
+                        <button class="admin-tab active" onclick="switchAdminTab(event, 'profilePanel')">👤
+                            Profile</button>
+                        <button class="admin-tab" onclick="switchAdminTab(event, 'gradesPanel')">📝 Assessments</button>
+                        <button class="admin-tab" onclick="switchAdminTab(event, 'paymentsPanel')">💰 Payments</button>
+                        <button class="admin-tab" onclick="switchAdminTab(event, 'activitiesPanel')">📋
+                            Activities</button>
+                    </div>
+
+                    <!-- Profile Panel -->
+                    <div class="admin-panel active" id="profilePanel">
+                        <h3>Student Profile</h3>
+                        <div class="profile-edit">
+                            <div class="profile-top">
+                                <div class="profile-photo-section">
+                                    <div class="profile-photo-wrapper" id="profilePhotoWrapper">
+                                        <span class="no-photo">No Photo</span>
+                                    </div>
+                                    <label class="file-upload-label" id="editProfilePhotoLabel" style="display:none;">
+                                        📷 Change Photo
+                                        <input type="file" id="editProfilePhoto" accept="image/*"
+                                            onchange="uploadProfilePhoto(this)">
+                                    </label>
+                                </div>
+                                <div class="profile-form-grid">
+                                    <div class="form-group">
+                                        <label>Full Name</label>
+                                        <input type="text" id="editFullName"
+                                            oninput="this.value = this.value.replace(/[^a-zA-Z\s.,-]/g, '')">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Grade & Section</label>
+                                        <input type="text" id="editGrade">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Guardian Name</label>
+                                        <input type="text" id="editGuardian"
+                                            oninput="this.value = this.value.replace(/[^a-zA-Z\s.,-]/g, '')">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Guardian Contact</label>
+                                        <input type="tel" id="editGuardianContact" inputmode="numeric"
+                                            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Address</label>
+                                        <input type="text" id="editAddress">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Birth Date</label>
+                                        <input type="text" id="editBirthDate" class="datepicker-input"
+                                            placeholder="Pick a date" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Gender</label>
+                                        <select id="editGender">
+                                            <option value="">Select</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Total Tuition (₱)</label>
+                                        <input type="number" id="editTuition" inputmode="numeric" min="0"
+                                            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Payment Option</label>
+                                        <select id="editPayOption">
+                                            <option value="monthly">Monthly (10 installments)</option>
+                                            <option value="quarterly">Quarterly (4 installments)</option>
+                                            <option value="full">Fully Paid (1 payment)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="profile-actions">
+                                <button class="btn-edit" id="btnEditProfile" onclick="enableProfileEdit()">✏️ Edit
+                                    Profile</button>
+                                <button class="btn-save" id="btnSaveProfile" onclick="saveProfile()"
+                                    style="display:none;">💾
+                                    Save Profile</button>
+                                <button class="btn-cancel" id="btnCancelProfile" onclick="cancelProfileEdit()"
+                                    style="display:none;">Cancel</button>
+                            </div>
+                            <div class="change-password-section">
+                                <h4>🔒 Change Password</h4>
+                                <div class="password-row">
+                                    <input type="password" id="newStudentPassword" placeholder="Enter new password"
+                                        minlength="6">
+                                    <button class="btn-add" onclick="changeStudentPassword()">Update Password</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div id="announcementForm" class="expandable-panel" style="display:none;">
-                        <h3>📢 Create Announcement</h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Subject *</label>
-                                <input type="text" id="annSubject" placeholder="e.g. School Event Notice" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Target Grade</label>
-                                <select id="annGrade">
-                                    <option value="all">All Grades</option>
-                                    <option value="Palaruan 1">Palaruan 1</option>
-                                    <option value="Palaruan 2">Palaruan 2</option>
-                                    <option value="Kindergarten">Kindergarten</option>
-                                    <option value="Grade 1">Grade 1</option>
-                                    <option value="Grade 2">Grade 2</option>
-                                    <option value="Grade 3">Grade 3</option>
-                                    <option value="Grade 4">Grade 4</option>
-                                    <option value="Grade 5">Grade 5</option>
-                                    <option value="Grade 6">Grade 6</option>
-                                </select>
-                            </div>
-                            <div class="form-group full-width">
-                                <label>Body *</label>
-                                <textarea id="annBody" rows="4" placeholder="Write your announcement here..."
-                                    style="width:100%;padding:0.7rem 1rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.95rem;resize:vertical;"></textarea>
-                            </div>
-                        </div>
+                    <!-- Grades Panel -->
+                    <div class="admin-panel" id="gradesPanel">
+                        <h3>Update Assessments</h3>
+                        <div id="gradesForm"></div>
                         <div class="form-actions">
-                            <button class="btn-save" onclick="createAnnouncement()">📢 Post Announcement</button>
-                            <button class="btn-cancel" onclick="hideAnnouncementForm()">Cancel</button>
+                            <button class="btn-edit" id="btnEditAssessment" onclick="enableAssessmentEdit()">✏️ Edit
+                                Assessments</button>
+                            <button class="btn-save" id="btnSaveAssessment" onclick="saveGrades()"
+                                style="display:none;">💾
+                                Save Assessments</button>
+                            <button class="btn-cancel" id="btnCancelAssessment" onclick="cancelAssessmentEdit()"
+                                style="display:none;">Cancel</button>
                         </div>
                     </div>
 
-                    <div id="announcementsList" style="margin-bottom:1.5rem;"></div>
-                </div>
-                <!-- End Announcements View -->
-
-                <!-- Messages View -->
-                <div class="admin-view" id="messagesView">
-                    <div class="dashboard-header">
-                        <h2>📩 Messages</h2>
-                    </div>
-                    <div id="inquiriesPanel">
-                        <div id="inquiriesList"></div>
-                    </div>
-                </div>
-                <!-- End Messages View -->
-
-                <!-- Projects View -->
-                <div class="admin-view" id="projectsView">
-                    <div class="dashboard-header">
-                        <h2>📁 Projects</h2>
-                        <div class="top-actions">
-                            <button class="btn-add-student" onclick="showGlobalProjectForm()">+ Add Project</button>
-                        </div>
-                    </div>
-
-                    <div id="globalProjectForm" class="expandable-panel" style="display:none;">
-                        <h3>📁 Add New Project</h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Title *</label>
-                                <input type="text" id="globalProjTitle" placeholder="e.g. Science Fair Project"
-                                    required>
-                            </div>
-                            <div class="form-group">
-                                <label>Subject *</label>
-                                <select id="globalProjSubject" required>
-                                    <option value="">Select Subject</option>
-                                    <option value="Mathematics">Mathematics</option>
-                                    <option value="Science">Science</option>
-                                    <option value="English">English</option>
-                                    <option value="Filipino">Filipino</option>
-                                    <option value="Araling Panlipunan">Araling Panlipunan</option>
-                                    <option value="MAPEH">MAPEH</option>
-                                    <option value="TLE">TLE</option>
-                                    <option value="Values Education">Values Education</option>
-                                    <option value="Mother Tongue">Mother Tongue</option>
-                                    <option value="ESP">ESP</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Due Date *</label>
-                                <input type="text" id="globalProjDue" class="datepicker-input" placeholder="Pick a date"
-                                    readonly required>
-                            </div>
-                            <div class="form-group">
-                                <label>Target Grade</label>
-                                <select id="globalProjGrade">
-                                    <option value="all">All Grades</option>
-                                    <option value="Palaruan 1">Palaruan 1</option>
-                                    <option value="Palaruan 2">Palaruan 2</option>
-                                    <option value="Kindergarten">Kindergarten</option>
-                                    <option value="Grade 1">Grade 1</option>
-                                    <option value="Grade 2">Grade 2</option>
-                                    <option value="Grade 3">Grade 3</option>
-                                    <option value="Grade 4">Grade 4</option>
-                                    <option value="Grade 5">Grade 5</option>
-                                    <option value="Grade 6">Grade 6</option>
-                                </select>
-                            </div>
-                            <div class="form-group full-width">
-                                <label>Description *</label>
-                                <textarea id="globalProjDesc" rows="3" placeholder="Project details..."
-                                    style="width:100%;padding:0.7rem 1rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.95rem;resize:vertical;"></textarea>
-                            </div>
-                        </div>
-                        <div class="form-actions">
-                            <button class="btn-save" onclick="createGlobalProject()">📁 Post Project</button>
-                            <button class="btn-cancel" onclick="hideGlobalProjectForm()">Cancel</button>
-                        </div>
-                    </div>
-
-                    <div id="globalProjectsList"></div>
-                </div>
-                <!-- End Projects View -->
-
-                <!-- Audit Log View -->
-                <div class="admin-view" id="auditView">
-                    <div class="dashboard-header">
-                        <h2>📋 Audit Log</h2>
-                    </div>
-                    <div id="auditLogList"></div>
-                </div>
-                <!-- End Audit Log View -->
-
-                <!-- Collections View -->
-                <div class="admin-view" id="collectionsView">
-                    <div class="dashboard-header">
-                        <h2>💰 Monthly Collection</h2>
-                        <div class="top-actions">
-                            <select id="collectionMonth" onchange="calculateCollection()"
-                                style="padding:0.5rem 1rem;border-radius:8px;border:2px solid #e0e0e0;font-size:0.95rem;">
+                    <!-- Payments Panel -->
+                    <div class="admin-panel" id="paymentsPanel">
+                        <h3>Payment Records</h3>
+                        <div class="sort-row">
+                            <label>Month:</label>
+                            <select id="adminPayMonth" onchange="renderPayments()">
+                                <option value="all">All</option>
                                 <option value="01">January</option>
                                 <option value="02">February</option>
                                 <option value="03">March</option>
@@ -462,386 +750,113 @@
                                 <option value="11">November</option>
                                 <option value="12">December</option>
                             </select>
-                            <select id="collectionYear" onchange="calculateCollection()"
-                                style="padding:0.5rem 1rem;border-radius:8px;border:2px solid #e0e0e0;font-size:0.95rem;">
+                            <label>Year:</label>
+                            <select id="adminPayYear" onchange="renderPayments()">
+                                <option value="all">All</option>
                                 <option value="2026">2026</option>
                                 <option value="2027">2027</option>
                             </select>
+                            <button class="btn-export" onclick="exportStudentPayments()">📥 Export Payments</button>
+                            <button class="btn-add" onclick="togglePaymentForm()">+ Add Payment</button>
+                            <button class="btn-add" style="background:#2e7d32;" onclick="toggleDiscountForm()">+ Add
+                                Discount</button>
                         </div>
-                    </div>
-
-                    <div class="collection-cards" style="margin-top:1.5rem;">
-                        <div class="collection-card">
-                            <span class="collection-label">✅ Total Collected</span>
-                            <span class="collection-value collected" id="monthCollected">₱0</span>
-                        </div>
-                        <div class="collection-card">
-                            <span class="collection-label">⏳ Pending</span>
-                            <span class="collection-value pending" id="monthPending">₱0</span>
-                        </div>
-                        <div class="collection-card">
-                            <span class="collection-label">📊 Total Expected</span>
-                            <span class="collection-value" id="monthTotal">₱0</span>
-                        </div>
-                    </div>
-
-                    <div class="sort-row" style="margin-top:1.5rem;">
-                        <label>Filter:</label>
-                        <select id="collectionStatusFilter" onchange="calculateCollection()">
-                            <option value="all">All</option>
-                            <option value="paid">Paid Only</option>
-                            <option value="pending">Pending Only</option>
-                        </select>
-                        <label>Grade:</label>
-                        <select id="collectionGradeFilter" onchange="calculateCollection()">
-                            <option value="all">All Grades</option>
-                            <option value="Palaruan 1">Palaruan 1</option>
-                            <option value="Palaruan 2">Palaruan 2</option>
-                            <option value="Kindergarten">Kindergarten</option>
-                            <option value="Grade 1">Grade 1</option>
-                            <option value="Grade 2">Grade 2</option>
-                            <option value="Grade 3">Grade 3</option>
-                            <option value="Grade 4">Grade 4</option>
-                            <option value="Grade 5">Grade 5</option>
-                            <option value="Grade 6">Grade 6</option>
-                        </select>
-                    </div>
-
-                    <div class="table-wrapper" style="margin-top:1rem;">
-                        <table class="admin-table" id="collectionTable">
-                            <thead>
-                                <tr>
-                                    <th>Student</th>
-                                    <th>Grade</th>
-                                    <th>Description</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
-                                    <th>Paid Date</th>
-                                </tr>
-                            </thead>
-                            <tbody id="collectionTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-                <!-- End Collections View -->
-
-                <!-- Archived Students View -->
-                <div class="admin-view" id="archivedView">
-                    <div class="dashboard-header">
-                        <h2>📦 Archived Students</h2>
-                    </div>
-                    <div class="student-list" id="archivedStudentList"></div>
-                </div>
-                <!-- End Archived View -->
-
-                <!-- Staff Management View (Superadmin only) -->
-                <div class="admin-view" id="staffView">
-                    <div class="dashboard-header">
-                        <h2>👥 Staff Management</h2>
-                        <div class="top-actions">
-                            <button class="btn-add-student" onclick="showAddStaffForm()">+ Add Staff</button>
-                        </div>
-                    </div>
-                    <div id="addStaffForm" class="expandable-panel" style="display:none;">
-                        <h3>Create New Account</h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Full Name *</label>
-                                <input type="text" id="newStaffName" placeholder="e.g. Maria Santos" required>
+                        <div class="add-form" id="addPaymentForm" style="display:none;">
+                            <h4>Add Payment</h4>
+                            <div class="form-row">
+                                <input type="text" id="payDate" class="datepicker-input" placeholder="Pick a date"
+                                    readonly required>
+                                <input type="text" id="payDesc" placeholder="Description" required>
+                                <input type="number" id="payAmount" placeholder="Amount" required inputmode="numeric"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                <select id="payStatus">
+                                    <option value="paid">Paid</option>
+                                    <option value="pending">Pending</option>
+                                </select>
+                                <button class="btn-add" onclick="addPayment()">+ Add</button>
                             </div>
-                            <div class="form-group">
-                                <label>Username *</label>
-                                <input type="text" id="newStaffUsername" placeholder="e.g. maria.santos" required>
+                        </div>
+                        <div class="add-form" id="addDiscountForm" style="display:none; border-color: #4caf50;">
+                            <h4 style="color:#2e7d32;">Add Discount</h4>
+                            <div class="form-row">
+                                <input type="text" id="discDate" class="datepicker-input" placeholder="Pick a date"
+                                    readonly required>
+                                <select id="discType" onchange="onDiscountTypeChange()">
+                                    <option value="custom">Custom Discount</option>
+                                    <option value="referral">Referral Fee Discount (₱250)</option>
+                                    <option value="siblings">Siblings Discount (10%)</option>
+                                    <option value="early_bird">Early Bird Discount (5%)</option>
+                                </select>
+                                <input type="text" id="discDesc" placeholder="Description" required>
+                                <input type="number" id="discAmount" placeholder="Amount" required inputmode="numeric"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                <button class="btn-add" style="background:#2e7d32;" onclick="addDiscount()">+ Add
+                                    Discount</button>
                             </div>
-                            <div class="form-group">
-                                <label>Password *</label>
-                                <input type="password" id="newStaffPassword" placeholder="Min 6 characters" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Role *</label>
-                                <select id="newStaffRole">
-                                    <option value="staff">Staff</option>
-                                    <option value="admin">Admin</option>
+                            <div class="form-row" style="margin-top:0.5rem;">
+                                <label style="font-size:0.85rem;color:#666;display:flex;align-items:center;gap:0.5rem;">
+                                    <input type="checkbox" id="discBulk"> Apply to all students
+                                </label>
+                                <select id="discBulkGrade" style="display:none;">
+                                    <option value="all">All Grades</option>
+                                    <option value="Kinder">Kinder</option>
+                                    <option value="Grade 1">Grade 1</option>
+                                    <option value="Grade 2">Grade 2</option>
+                                    <option value="Grade 3">Grade 3</option>
+                                    <option value="Grade 4">Grade 4</option>
+                                    <option value="Grade 5">Grade 5</option>
+                                    <option value="Grade 6">Grade 6</option>
+                                    <option value="Grade 7">Grade 7</option>
+                                    <option value="Grade 8">Grade 8</option>
+                                    <option value="Grade 9">Grade 9</option>
+                                    <option value="Grade 10">Grade 10</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="form-actions">
-                            <button class="btn-save" onclick="createStaffAccount()">Create Account</button>
-                            <button class="btn-cancel" onclick="hideAddStaffForm()">Cancel</button>
+                        <div class="table-wrapper">
+                            <table class="admin-table" id="paymentsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Paid Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="paymentsBody"></tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="table-wrapper" style="margin-top:1rem;">
-                        <table class="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Username</th>
-                                    <th>Role</th>
-                                    <th>Status</th>
-                                    <th>Created</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="staffTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-                <!-- End Staff View -->
 
-            </div>
-            <!-- End studentListPanel -->
-
-            <!-- Student Detail -->
-            <div class="panel student-detail-panel" id="studentDetailPanel" style="display:none;">
-                <div class="detail-top-actions">
-                    <button class="btn-back" onclick="backToList()">← Back to List</button>
-                    <div class="detail-right-actions">
-                        <button class="btn-archive-student" id="btnArchiveStudent" onclick="archiveStudent()">📦
-                            Archive
-                            Student</button>
-                        <button class="btn-unarchive-student" id="btnUnarchiveStudent" onclick="unarchiveStudent()"
-                            style="display:none;">📦 Unarchive Student</button>
-                        <button class="btn-delete-student" onclick="deleteStudent()">🗑️ Delete Student</button>
-                    </div>
-                </div>
-                <div class="student-header" id="studentHeader"></div>
-
-                <div class="admin-tabs">
-                    <button class="admin-tab active" onclick="switchAdminTab(event, 'profilePanel')">👤
-                        Profile</button>
-                    <button class="admin-tab" onclick="switchAdminTab(event, 'gradesPanel')">📝 Assessments</button>
-                    <button class="admin-tab" onclick="switchAdminTab(event, 'paymentsPanel')">💰 Payments</button>
-                    <button class="admin-tab" onclick="switchAdminTab(event, 'activitiesPanel')">📋
-                        Activities</button>
-                </div>
-
-                <!-- Profile Panel -->
-                <div class="admin-panel active" id="profilePanel">
-                    <h3>Student Profile</h3>
-                    <div class="profile-edit">
-                        <div class="profile-top">
-                            <div class="profile-photo-section">
-                                <div class="profile-photo-wrapper" id="profilePhotoWrapper">
-                                    <span class="no-photo">No Photo</span>
-                                </div>
-                                <label class="file-upload-label" id="editProfilePhotoLabel" style="display:none;">
-                                    📷 Change Photo
-                                    <input type="file" id="editProfilePhoto" accept="image/*"
-                                        onchange="uploadProfilePhoto(this)">
+                    <!-- Activities Panel -->
+                    <div class="admin-panel" id="activitiesPanel">
+                        <h3>Activities</h3>
+                        <div class="add-form">
+                            <h4>Add Activity</h4>
+                            <div class="form-row">
+                                <input type="text" id="actTitle" placeholder="Title" required>
+                                <input type="text" id="actSubject" placeholder="Subject" required>
+                                <input type="text" id="actDate" class="datepicker-input" placeholder="Pick a date"
+                                    readonly required>
+                            </div>
+                            <div class="form-row">
+                                <input type="text" id="actDesc" placeholder="Description" style="flex:3" required>
+                            </div>
+                            <div class="form-row">
+                                <label class="file-upload-label">
+                                    📷 Upload Photo
+                                    <input type="file" id="actImage" accept="image/*" onchange="previewImage(this)">
                                 </label>
-                            </div>
-                            <div class="profile-form-grid">
-                                <div class="form-group">
-                                    <label>Full Name</label>
-                                    <input type="text" id="editFullName"
-                                        oninput="this.value = this.value.replace(/[^a-zA-Z\s.,-]/g, '')">
-                                </div>
-                                <div class="form-group">
-                                    <label>Grade & Section</label>
-                                    <input type="text" id="editGrade">
-                                </div>
-                                <div class="form-group">
-                                    <label>Guardian Name</label>
-                                    <input type="text" id="editGuardian"
-                                        oninput="this.value = this.value.replace(/[^a-zA-Z\s.,-]/g, '')">
-                                </div>
-                                <div class="form-group">
-                                    <label>Guardian Contact</label>
-                                    <input type="tel" id="editGuardianContact" inputmode="numeric"
-                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                                </div>
-                                <div class="form-group">
-                                    <label>Address</label>
-                                    <input type="text" id="editAddress">
-                                </div>
-                                <div class="form-group">
-                                    <label>Birth Date</label>
-                                    <input type="text" id="editBirthDate" class="datepicker-input"
-                                        placeholder="Pick a date" readonly>
-                                </div>
-                                <div class="form-group">
-                                    <label>Gender</label>
-                                    <select id="editGender">
-                                        <option value="">Select</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Total Tuition (₱)</label>
-                                    <input type="number" id="editTuition" inputmode="numeric" min="0"
-                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                                </div>
-                                <div class="form-group">
-                                    <label>Payment Option</label>
-                                    <select id="editPayOption">
-                                        <option value="monthly">Monthly (10 installments)</option>
-                                        <option value="quarterly">Quarterly (4 installments)</option>
-                                        <option value="full">Fully Paid (1 payment)</option>
-                                    </select>
-                                </div>
+                                <img id="actImagePreview" class="image-preview" style="display:none;">
+                                <button class="btn-add" onclick="addActivity()">+ Add Activity</button>
                             </div>
                         </div>
-                        <div class="profile-actions">
-                            <button class="btn-edit" id="btnEditProfile" onclick="enableProfileEdit()">✏️ Edit
-                                Profile</button>
-                            <button class="btn-save" id="btnSaveProfile" onclick="saveProfile()"
-                                style="display:none;">💾
-                                Save Profile</button>
-                            <button class="btn-cancel" id="btnCancelProfile" onclick="cancelProfileEdit()"
-                                style="display:none;">Cancel</button>
-                        </div>
-                        <div class="change-password-section">
-                            <h4>🔒 Change Password</h4>
-                            <div class="password-row">
-                                <input type="password" id="newStudentPassword" placeholder="Enter new password"
-                                    minlength="6">
-                                <button class="btn-add" onclick="changeStudentPassword()">Update Password</button>
-                            </div>
-                        </div>
+                        <div id="activitiesList"></div>
                     </div>
-                </div>
 
-                <!-- Grades Panel -->
-                <div class="admin-panel" id="gradesPanel">
-                    <h3>Update Assessments</h3>
-                    <div id="gradesForm"></div>
-                    <div class="form-actions">
-                        <button class="btn-edit" id="btnEditAssessment" onclick="enableAssessmentEdit()">✏️ Edit
-                            Assessments</button>
-                        <button class="btn-save" id="btnSaveAssessment" onclick="saveGrades()" style="display:none;">💾
-                            Save Assessments</button>
-                        <button class="btn-cancel" id="btnCancelAssessment" onclick="cancelAssessmentEdit()"
-                            style="display:none;">Cancel</button>
-                    </div>
                 </div>
-
-                <!-- Payments Panel -->
-                <div class="admin-panel" id="paymentsPanel">
-                    <h3>Payment Records</h3>
-                    <div class="sort-row">
-                        <label>Month:</label>
-                        <select id="adminPayMonth" onchange="renderPayments()">
-                            <option value="all">All</option>
-                            <option value="01">January</option>
-                            <option value="02">February</option>
-                            <option value="03">March</option>
-                            <option value="04">April</option>
-                            <option value="05">May</option>
-                            <option value="06">June</option>
-                            <option value="07">July</option>
-                            <option value="08">August</option>
-                            <option value="09">September</option>
-                            <option value="10">October</option>
-                            <option value="11">November</option>
-                            <option value="12">December</option>
-                        </select>
-                        <label>Year:</label>
-                        <select id="adminPayYear" onchange="renderPayments()">
-                            <option value="all">All</option>
-                            <option value="2026">2026</option>
-                            <option value="2027">2027</option>
-                        </select>
-                        <button class="btn-export" onclick="exportStudentPayments()">📥 Export Payments</button>
-                        <button class="btn-add" onclick="togglePaymentForm()">+ Add Payment</button>
-                        <button class="btn-add" style="background:#2e7d32;" onclick="toggleDiscountForm()">+ Add
-                            Discount</button>
-                    </div>
-                    <div class="add-form" id="addPaymentForm" style="display:none;">
-                        <h4>Add Payment</h4>
-                        <div class="form-row">
-                            <input type="text" id="payDate" class="datepicker-input" placeholder="Pick a date" readonly
-                                required>
-                            <input type="text" id="payDesc" placeholder="Description" required>
-                            <input type="number" id="payAmount" placeholder="Amount" required inputmode="numeric"
-                                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                            <select id="payStatus">
-                                <option value="paid">Paid</option>
-                                <option value="pending">Pending</option>
-                            </select>
-                            <button class="btn-add" onclick="addPayment()">+ Add</button>
-                        </div>
-                    </div>
-                    <div class="add-form" id="addDiscountForm" style="display:none; border-color: #4caf50;">
-                        <h4 style="color:#2e7d32;">Add Discount</h4>
-                        <div class="form-row">
-                            <input type="text" id="discDate" class="datepicker-input" placeholder="Pick a date" readonly
-                                required>
-                            <select id="discType" onchange="onDiscountTypeChange()">
-                                <option value="custom">Custom Discount</option>
-                                <option value="referral">Referral Fee Discount (₱250)</option>
-                                <option value="siblings">Siblings Discount (10%)</option>
-                                <option value="early_bird">Early Bird Discount (5%)</option>
-                            </select>
-                            <input type="text" id="discDesc" placeholder="Description" required>
-                            <input type="number" id="discAmount" placeholder="Amount" required inputmode="numeric"
-                                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                            <button class="btn-add" style="background:#2e7d32;" onclick="addDiscount()">+ Add
-                                Discount</button>
-                        </div>
-                        <div class="form-row" style="margin-top:0.5rem;">
-                            <label style="font-size:0.85rem;color:#666;display:flex;align-items:center;gap:0.5rem;">
-                                <input type="checkbox" id="discBulk"> Apply to all students
-                            </label>
-                            <select id="discBulkGrade" style="display:none;">
-                                <option value="all">All Grades</option>
-                                <option value="Kinder">Kinder</option>
-                                <option value="Grade 1">Grade 1</option>
-                                <option value="Grade 2">Grade 2</option>
-                                <option value="Grade 3">Grade 3</option>
-                                <option value="Grade 4">Grade 4</option>
-                                <option value="Grade 5">Grade 5</option>
-                                <option value="Grade 6">Grade 6</option>
-                                <option value="Grade 7">Grade 7</option>
-                                <option value="Grade 8">Grade 8</option>
-                                <option value="Grade 9">Grade 9</option>
-                                <option value="Grade 10">Grade 10</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="table-wrapper">
-                        <table class="admin-table" id="paymentsTable">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Description</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
-                                    <th>Paid Date</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="paymentsBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Activities Panel -->
-                <div class="admin-panel" id="activitiesPanel">
-                    <h3>Activities</h3>
-                    <div class="add-form">
-                        <h4>Add Activity</h4>
-                        <div class="form-row">
-                            <input type="text" id="actTitle" placeholder="Title" required>
-                            <input type="text" id="actSubject" placeholder="Subject" required>
-                            <input type="text" id="actDate" class="datepicker-input" placeholder="Pick a date" readonly
-                                required>
-                        </div>
-                        <div class="form-row">
-                            <input type="text" id="actDesc" placeholder="Description" style="flex:3" required>
-                        </div>
-                        <div class="form-row">
-                            <label class="file-upload-label">
-                                📷 Upload Photo
-                                <input type="file" id="actImage" accept="image/*" onchange="previewImage(this)">
-                            </label>
-                            <img id="actImagePreview" class="image-preview" style="display:none;">
-                            <button class="btn-add" onclick="addActivity()">+ Add Activity</button>
-                        </div>
-                    </div>
-                    <div id="activitiesList"></div>
-                </div>
-
             </div>
         </div>
     </div>
