@@ -186,6 +186,10 @@ router.put('/students/:id/assessments', authMiddleware, async (req, res) => {
 // POST /api/admin/students/:id/payments - Add payment
 router.post('/students/:id/payments', authMiddleware, async (req, res) => {
     try {
+        if (req.admin.role === 'staff') {
+            return res.status(403).json({ message: 'Staff cannot add payments' });
+        }
+
         const { date, description, amount, status, password } = req.body;
 
         // Verify admin password
@@ -236,6 +240,10 @@ router.post('/students/:id/payments', authMiddleware, async (req, res) => {
 // POST /api/admin/students/:id/discount - Add discount (deducts from totalTuition)
 router.post('/students/:id/discount', authMiddleware, async (req, res) => {
     try {
+        if (req.admin.role === 'staff') {
+            return res.status(403).json({ message: 'Staff cannot add discounts' });
+        }
+
         const { date, description, amount, password } = req.body;
 
         // Verify admin password
@@ -681,9 +689,13 @@ router.delete('/students/:id', authMiddleware, async (req, res) => {
     }
 });
 
-// PUT /api/admin/students/:id/archive - Archive student
+// PUT /api/admin/students/:id/archive - Archive student (superadmin and admin only)
 router.put('/students/:id/archive', authMiddleware, async (req, res) => {
     try {
+        if (req.admin.role === 'staff') {
+            return res.status(403).json({ message: 'Staff cannot archive students' });
+        }
+
         const student = await Student.findById(req.params.id);
         if (!student) return res.status(404).json({ message: 'Student not found' });
 
