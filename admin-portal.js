@@ -979,6 +979,14 @@ function switchAdminView(viewId) {
     view.classList.add('active');
     if (event && event.target) event.target.classList.add('active');
 
+    // Close all open forms when switching views
+    const expandablePanels = document.querySelectorAll('.expandable-panel');
+    expandablePanels.forEach(p => p.style.display = 'none');
+    const announcementForm = document.getElementById('announcementForm');
+    if (announcementForm) announcementForm.style.display = 'none';
+    const projectForm = document.getElementById('globalProjectForm');
+    if (projectForm) projectForm.style.display = 'none';
+
     // Load data for the view
     if (viewId === 'messagesView') loadInquiries();
     if (viewId === 'announcementsView') loadAnnouncements();
