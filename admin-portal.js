@@ -544,12 +544,12 @@ function renderPayments() {
         return `
     <tr${isDiscount ? ' style="background:#e8f5e9;"' : ''}>
       <td>${p.date}</td>
-      <td>${p.description}${isDiscount ? ' 🏷️' : ''}</td>
+      <td>${p.description}</td>
       <td>${isDiscount ? '-₱' + Math.abs(p.amount).toLocaleString() : '₱' + p.amount.toLocaleString()}</td>
       <td><span class="status-${p.status}">${isDiscount ? '✓ Discount' : (p.status === 'paid' ? '✓ Paid' : '⏳ Pending')}</span></td>
       <td>${p.paidDate || '-'}</td>
       <td>
-        ${isDiscount ? '<span style="color:#2e7d32;font-weight:600;">Deducted from Tuition</span>' :
+        ${isDiscount ? `<button class="btn-status btn-mark-pending" onclick="removeDiscount('${p._id}')">Remove</button>` :
                 (p.status === 'pending'
                     ? `<button class="btn-status btn-mark-paid" onclick="updatePaymentStatus('${p._id}', 'paid')">Mark Paid</button>`
                     : `<button class="btn-status btn-mark-pending" onclick="updatePaymentStatus('${p._id}', 'pending')">Mark Pending</button>`
@@ -628,60 +628,60 @@ async function addDiscount() {
         return;
     }
 
-    showConfirmPopup(`Are you sure you want to apply a ₱${amount.toLocaleString()} discount${isBulk ? ' to ALL students' : ''}?`, async () => {
-        if (isBulk) {
-            const grade = document.getElementById('discBulkGrade').value;
-            const res = await fetch(`${API_URL}/admin/students-discount-bulk`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
-                body: JSON.stringify({ date, description, amount, grade })
-            });
+    showConfirmPopup(`Are you sure you want to apply a ₱${amount.toLocaleString()} discount${isBulk ? ' to ALL students' : ''}?`, () => {
+        showPasswordPrompt(async (password) => {
+            if (isBulk) {
+                const grade = document.getElementById('discBulkGrade').value;
+                const res = await fetch(`${API_URL}/admin/students-discount-bulk`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+                    body: JSON.stringify({ date, description, amount, grade, password })
+                });
 
-            if (res.ok) {
-                const data = await res.json();
-                showToast(`Discount applied to ${data.updatedCount} students!`);
-                loadStudents();
-                // Clear form
-                document.getElementById('discDate').value = '';
-                document.getElementById('discDate').dataset.value = '';
-                document.getElementById('discDesc').value = '';
-                document.getElementById('discAmount').value = '';
-                document.getElementById('discType').value = 'custom';
-                document.getElementById('discDesc').readOnly = false;
-                document.getElementById('discAmount').readOnly = false;
-                document.getElementById('discBulk').checked = false;
-                document.getElementById('discBulkGrade').style.display = 'none';
+                if (res.ok) {
+                    const data = await res.json();
+                    showToast(`Discount applied to ${data.updatedCount} students!`);
+                    loadStudents();
+                    document.getElementById('discDate').value = '';
+                    document.getElementById('discDate').dataset.value = '';
+                    document.getElementById('discDesc').value = '';
+                    document.getElementById('discAmount').value = '';
+                    document.getElementById('discType').value = 'custom';
+                    document.getElementById('discDesc').readOnly = false;
+                    document.getElementById('discAmount').readOnly = false;
+                    document.getElementById('discBulk').checked = false;
+                    document.getElementById('discBulkGrade').style.display = 'none';
+                } else {
+                    const data = await res.json();
+                    showToast(data.message || 'Error applying discount');
+                }
             } else {
-                const data = await res.json();
-                showToast(data.message || 'Error applying discount');
-            }
-        } else {
-            if (!selectedStudent) return;
-            const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/discount`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
-                body: JSON.stringify({ date, description, amount })
-            });
+                if (!selectedStudent) return;
+                const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/discount`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+                    body: JSON.stringify({ date, description, amount, password })
+                });
 
-            if (res.ok) {
-                const data = await res.json();
-                selectedStudent.payments = data.payments;
-                selectedStudent.totalTuition = data.totalTuition;
-                renderPayments();
-                showToast('Discount applied!');
-                // Clear form
-                document.getElementById('discDate').value = '';
-                document.getElementById('discDate').dataset.value = '';
-                document.getElementById('discDesc').value = '';
-                document.getElementById('discAmount').value = '';
-                document.getElementById('discType').value = 'custom';
-                document.getElementById('discDesc').readOnly = false;
-                document.getElementById('discAmount').readOnly = false;
-            } else {
-                const data = await res.json();
-                showToast(data.message || 'Error applying discount');
+                if (res.ok) {
+                    const data = await res.json();
+                    selectedStudent.payments = data.payments;
+                    selectedStudent.totalTuition = data.totalTuition;
+                    renderPayments();
+                    showToast('Discount applied!');
+                    document.getElementById('discDate').value = '';
+                    document.getElementById('discDate').dataset.value = '';
+                    document.getElementById('discDesc').value = '';
+                    document.getElementById('discAmount').value = '';
+                    document.getElementById('discType').value = 'custom';
+                    document.getElementById('discDesc').readOnly = false;
+                    document.getElementById('discAmount').readOnly = false;
+                } else {
+                    const data = await res.json();
+                    showToast(data.message || 'Error applying discount');
+                }
             }
-        }
+        });
     });
 }
 
@@ -693,23 +693,28 @@ async function addPayment() {
 
     if (!date || !description || !amount) return;
 
-    const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/payments`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
-        body: JSON.stringify({ date, description, amount, status })
-    });
+    showPasswordPrompt(async (password) => {
+        const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/payments`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+            body: JSON.stringify({ date, description, amount, status, password })
+        });
 
-    if (res.ok) {
-        const data = await res.json();
-        selectedStudent.payments = data.payments;
-        if (data.totalTuition !== undefined) selectedStudent.totalTuition = data.totalTuition;
-        renderPayments();
-        showToast('Payment added!');
-        document.getElementById('payDate').value = '';
-        document.getElementById('payDate').dataset.value = '';
-        document.getElementById('payDesc').value = '';
-        document.getElementById('payAmount').value = '';
-    }
+        if (res.ok) {
+            const data = await res.json();
+            selectedStudent.payments = data.payments;
+            if (data.totalTuition !== undefined) selectedStudent.totalTuition = data.totalTuition;
+            renderPayments();
+            showToast('Payment added!');
+            document.getElementById('payDate').value = '';
+            document.getElementById('payDate').dataset.value = '';
+            document.getElementById('payDesc').value = '';
+            document.getElementById('payAmount').value = '';
+        } else {
+            const data = await res.json();
+            showToast(data.message || 'Error adding payment');
+        }
+    });
 }
 
 async function updatePaymentStatus(paymentId, status) {
@@ -1460,7 +1465,7 @@ function showPasswordPrompt(onConfirm) {
     overlay.className = 'confirm-overlay';
     overlay.innerHTML = `
         <div class="confirm-box">
-            <p>Enter your admin password to confirm deletion:</p>
+            <p>Enter your admin password to confirm:</p>
             <input type="password" id="deletePasswordInput" placeholder="Admin password" style="width:100%;padding:0.7rem 1rem;border:2px solid #eee;border-radius:8px;font-size:1rem;margin-bottom:1rem;">
             <div class="confirm-buttons">
                 <button class="confirm-yes" id="passwordConfirmBtn">Confirm</button>
@@ -1486,6 +1491,29 @@ function showPasswordPrompt(onConfirm) {
     overlay.querySelector('#deletePasswordInput').onkeydown = (e) => {
         if (e.key === 'Enter') overlay.querySelector('#passwordConfirmBtn').click();
     };
+}
+
+async function removeDiscount(paymentId) {
+    showConfirmPopup('Are you sure you want to remove this discount?', () => {
+        showPasswordPrompt(async (password) => {
+            const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/payments/${paymentId}/remove-discount`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+                body: JSON.stringify({ password })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                selectedStudent.payments = data.payments;
+                selectedStudent.totalTuition = data.totalTuition;
+                renderPayments();
+                showToast('Discount removed!');
+            } else {
+                const data = await res.json();
+                showToast(data.message || 'Error removing discount');
+            }
+        });
+    });
 }
 
 // Inquiries
@@ -1818,16 +1846,58 @@ async function loadAuditLog() {
         list.innerHTML = '<p style="text-align:center;color:#888;padding:2rem;">No activity yet.</p>';
         return;
     }
-    list.innerHTML = logs.map(log => `
-        <div class="audit-item">
-            <div class="audit-icon">${getAuditIcon(log.action)}</div>
-            <div class="audit-details">
-                <strong>${log.action.replace(/_/g, ' ')}</strong>
-                <p>${log.details || ''}</p>
-                <span class="audit-meta">By: ${log.performedBy} • ${new Date(log.createdAt).toLocaleString()}</span>
-            </div>
+    list.innerHTML = `
+        <div style="margin-bottom:1rem;">
+            <button class="btn-export" onclick="exportAuditLog()">Export Excel</button>
         </div>
-    `).join('');
+        <div class="table-wrapper">
+            <table class="admin-table" id="auditLogTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Action</th>
+                        <th>Details</th>
+                        <th>Performed By</th>
+                        <th>Student</th>
+                        <th>IP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${logs.map(log => `
+                        <tr>
+                            <td>${new Date(log.createdAt).toLocaleString()}</td>
+                            <td>${log.action.replace(/_/g, ' ')}</td>
+                            <td>${log.details || '-'}</td>
+                            <td>${log.performedBy}</td>
+                            <td>${log.targetStudent || '-'}</td>
+                            <td>${log.ip || '-'}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+function exportAuditLog() {
+    const table = document.getElementById('auditLogTable');
+    if (!table) return;
+    let csv = '';
+    const rows = table.querySelectorAll('tr');
+    rows.forEach(row => {
+        const cols = row.querySelectorAll('th, td');
+        const rowData = [];
+        cols.forEach(col => {
+            let text = col.textContent.replace(/"/g, '""');
+            rowData.push('"' + text + '"');
+        });
+        csv += rowData.join(',') + '\n';
+    });
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `audit-log-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
 }
 
 function getAuditIcon(action) {

@@ -185,7 +185,17 @@ router.put('/students/:id/assessments', authMiddleware, async (req, res) => {
 // POST /api/admin/students/:id/payments - Add payment
 router.post('/students/:id/payments', authMiddleware, async (req, res) => {
     try {
-        const { date, description, amount, status } = req.body;
+        const { date, description, amount, status, password } = req.body;
+
+        // Verify admin password
+        if (password) {
+            const Admin = require('../models/Admin');
+            const admin = await Admin.findById(req.admin.id);
+            if (!admin) return res.status(404).json({ message: 'Admin not found' });
+            const isMatch = await admin.comparePassword(password);
+            if (!isMatch) return res.status(401).json({ message: 'Incorrect password' });
+        }
+
         const student = await Student.findById(req.params.id);
         if (!student) return res.status(404).json({ message: 'Student not found' });
 
@@ -215,6 +225,7 @@ router.post('/students/:id/payments', authMiddleware, async (req, res) => {
         }
 
         await student.save();
+        logAction('ADD_PAYMENT', req.admin.username, `Added payment ₱${amount} for ${student.fullName}`, student.studentNo, req.ip);
         res.json({ message: 'Payment added', payments: student.payments, totalTuition: student.totalTuition });
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
@@ -224,7 +235,17 @@ router.post('/students/:id/payments', authMiddleware, async (req, res) => {
 // POST /api/admin/students/:id/discount - Add discount (deducts from totalTuition)
 router.post('/students/:id/discount', authMiddleware, async (req, res) => {
     try {
-        const { date, description, amount } = req.body;
+        const { date, description, amount, password } = req.body;
+
+        // Verify admin password
+        if (password) {
+            const Admin = require('../models/Admin');
+            const admin = await Admin.findById(req.admin.id);
+            if (!admin) return res.status(404).json({ message: 'Admin not found' });
+            const isMatch = await admin.comparePassword(password);
+            if (!isMatch) return res.status(401).json({ message: 'Incorrect password' });
+        }
+
         const student = await Student.findById(req.params.id);
         if (!student) return res.status(404).json({ message: 'Student not found' });
 
@@ -287,7 +308,17 @@ router.post('/students/:id/discount', authMiddleware, async (req, res) => {
 // POST /api/admin/students/discount/bulk - Apply discount to all active students
 router.post('/students-discount-bulk', authMiddleware, async (req, res) => {
     try {
-        const { date, description, amount, grade } = req.body;
+        const { date, description, amount, grade, password } = req.body;
+
+        // Verify admin password
+        if (password) {
+            const Admin = require('../models/Admin');
+            const admin = await Admin.findById(req.admin.id);
+            if (!admin) return res.status(404).json({ message: 'Admin not found' });
+            const isMatch = await admin.comparePassword(password);
+            if (!isMatch) return res.status(401).json({ message: 'Incorrect password' });
+        }
+
         const discountAmount = Math.abs(Number(amount));
         if (!discountAmount || discountAmount <= 0) {
             return res.status(400).json({ message: 'Invalid discount amount' });
@@ -408,6 +439,65 @@ router.put('/students/:id/payments/:paymentId', authMiddleware, async (req, res)
         await student.save();
         logAction('UPDATE_PAYMENT', req.admin.username, `Marked payment as ${status} for ${student.fullName}`, student.studentNo, req.ip);
         res.json({ message: 'Payment updated', payments: student.payments });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// DELETE /api/admin/students/:id/payments/:paymentId/remove-discount - Remove a discount
+router.delete('/students/:id/payments/:paymentId/remove-discount', authMiddleware, async (req, res) => {
+    try {
+        const { password } = req.body;
+
+        // Verify admin password
+        if (password) {
+            const Admin = require('../models/Admin');
+            const admin = await Admin.findById(req.admin.id);
+            if (!admin) return res.status(404).json({ message: 'Admin not found' });
+            const isMatch = await admin.comparePassword(password);
+            if (!isMatch) return res.status(401).json({ message: 'Incorrect password' });
+        }
+
+        const student = await Student.findById(req.params.id);
+        if (!student) return res.status(404).json({ message: 'Student not found' });
+
+        const payment = student.payments.id(req.params.paymentId);
+        if (!payment) return res.status(404).json({ message: 'Discount not found' });
+        if (payment.amount >= 0) return res.status(400).json({ message: 'This is not a discount entry' });
+
+        // Add the discount amount back to totalTuition
+        const discountAmount = Math.abs(payment.amount);
+        student.totalTuition = (student.totalTuition || 0) + discountAmount;
+
+        // Remove the discount entry
+        student.payments.pull({ _id: req.params.paymentId });
+
+        // Recalculate pending payment amounts
+        const paidTotal = student.payments
+            .filter(p => p.status === 'paid' && p.amount > 0)
+            .reduce((sum, p) => sum + p.amount, 0);
+        const remainingBalance = (student.totalTuition || 0) - paidTotal;
+        const pendingPayments = student.payments.filter(p => p.status === 'pending' && p.amount > 0);
+
+        if (pendingPayments.length > 0 && remainingBalance > 0) {
+            const perPayment = Math.round(remainingBalance / pendingPayments.length);
+            const lastIndex = pendingPayments.length - 1;
+            let distributed = 0;
+            pendingPayments.forEach((p, i) => {
+                if (i === lastIndex) {
+                    p.amount = remainingBalance - distributed;
+                } else {
+                    p.amount = perPayment;
+                    distributed += perPayment;
+                }
+            });
+        } else if (pendingPayments.length > 0 && remainingBalance <= 0) {
+            pendingPayments.forEach(p => { p.amount = 0; });
+        }
+
+        await student.save();
+        logAction('REMOVE_DISCOUNT', req.admin.username, `Removed discount ₱${discountAmount} from ${student.fullName}`, student.studentNo, req.ip);
+        res.json({ message: 'Discount removed', payments: student.payments, totalTuition: student.totalTuition });
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
     }
