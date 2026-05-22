@@ -203,6 +203,7 @@ async function adminReply(announcementId) {
 function calculateCollection() {
     const month = document.getElementById('collectionMonth').value;
     const year = document.getElementById('collectionYear').value;
+    const statusFilter = document.getElementById('collectionStatusFilter') ? document.getElementById('collectionStatusFilter').value : 'all';
 
     let collected = 0;
     let pending = 0;
@@ -244,13 +245,27 @@ function calculateCollection() {
     document.getElementById('monthPending').textContent = '₱' + pending.toLocaleString();
     document.getElementById('monthTotal').textContent = '₱' + (collected + pending).toLocaleString();
 
+    // Apply status filter
+    let filtered = collectionRows;
+    if (statusFilter === 'paid') {
+        filtered = collectionRows.filter(r => r.status === 'paid');
+    } else if (statusFilter === 'pending') {
+        filtered = collectionRows.filter(r => r.status === 'pending');
+    }
+
+    // Sort: paid first, then pending
+    filtered.sort((a, b) => {
+        if (a.status === b.status) return 0;
+        return a.status === 'paid' ? -1 : 1;
+    });
+
     // Render collection table
     const tbody = document.getElementById('collectionTableBody');
     if (tbody) {
-        if (collectionRows.length === 0) {
+        if (filtered.length === 0) {
             tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;padding:2rem;">No records for this month</td></tr>';
         } else {
-            tbody.innerHTML = collectionRows.map(r => `
+            tbody.innerHTML = filtered.map(r => `
                 <tr>
                     <td>${r.name}</td>
                     <td>${r.grade}</td>

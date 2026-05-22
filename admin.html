@@ -67,14 +67,14 @@
         <div class="admin-content">
             <!-- Admin Navigation -->
             <div class="admin-nav">
-                <button class="admin-nav-btn active" onclick="switchAdminView('studentsView')">Students</button>
-                <button class="admin-nav-btn" onclick="switchAdminView('collectionsView')">Collections</button>
-                <button class="admin-nav-btn" onclick="switchAdminView('attendanceView')">Attendance</button>
-                <button class="admin-nav-btn" onclick="switchAdminView('announcementsView')">Announcements</button>
-                <button class="admin-nav-btn" onclick="switchAdminView('messagesView')">Messages</button>
-                <button class="admin-nav-btn" onclick="switchAdminView('projectsView')">Projects</button>
-                <button class="admin-nav-btn" onclick="switchAdminView('archivedView')">Archived</button>
-                <button class="admin-nav-btn" onclick="switchAdminView('auditView')">Audit Log</button>
+                <button class="admin-nav-btn active" onclick="switchAdminView('studentsView')">📋 Students</button>
+                <button class="admin-nav-btn" onclick="switchAdminView('collectionsView')">💰 Collections</button>
+                <button class="admin-nav-btn" onclick="switchAdminView('attendanceView')">📅 Attendance</button>
+                <button class="admin-nav-btn" onclick="switchAdminView('announcementsView')">📢 Announcements</button>
+                <button class="admin-nav-btn" onclick="switchAdminView('messagesView')">📩 Messages</button>
+                <button class="admin-nav-btn" onclick="switchAdminView('projectsView')">📁 Projects</button>
+                <button class="admin-nav-btn" onclick="switchAdminView('archivedView')">📦 Archived</button>
+                <button class="admin-nav-btn" onclick="switchAdminView('auditView')">📋 Audit Log</button>
             </div>
 
             <!-- Student List -->
@@ -84,10 +84,10 @@
                 <div class="admin-view active" id="studentsView">
                     <!-- Dashboard Header -->
                     <div class="dashboard-header">
-                        <h2>Student List</h2>
+                        <h2>📋 Student List</h2>
                         <div class="top-actions">
                             <button class="btn-add-student" onclick="showAddStudentForm()">+ Add New Student</button>
-                            <button class="btn-export" onclick="exportStudentList()">Export Students</button>
+                            <button class="btn-export" onclick="exportStudentList()">📥 Export Students</button>
                         </div>
                     </div>
 
@@ -423,7 +423,7 @@
                 <!-- Audit Log View -->
                 <div class="admin-view" id="auditView">
                     <div class="dashboard-header">
-                        <h2>Audit Log</h2>
+                        <h2>📋 Audit Log</h2>
                     </div>
                     <div id="auditLogList"></div>
                 </div>
@@ -432,11 +432,10 @@
                 <!-- Collections View -->
                 <div class="admin-view" id="collectionsView">
                     <div class="dashboard-header">
-                        <h2>Monthly Collection</h2>
-                    </div>
-                    <div class="collection-summary">
-                        <div class="month-selector">
-                            <select id="collectionMonth" onchange="calculateCollection()">
+                        <h2>💰 Monthly Collection</h2>
+                        <div class="top-actions">
+                            <select id="collectionMonth" onchange="calculateCollection()"
+                                style="padding:0.5rem 1rem;border-radius:8px;border:2px solid #e0e0e0;font-size:0.95rem;">
                                 <option value="01">January</option>
                                 <option value="02">February</option>
                                 <option value="03">March</option>
@@ -450,27 +449,39 @@
                                 <option value="11">November</option>
                                 <option value="12">December</option>
                             </select>
-                            <select id="collectionYear" onchange="calculateCollection()">
+                            <select id="collectionYear" onchange="calculateCollection()"
+                                style="padding:0.5rem 1rem;border-radius:8px;border:2px solid #e0e0e0;font-size:0.95rem;">
                                 <option value="2026">2026</option>
                                 <option value="2027">2027</option>
                             </select>
                         </div>
-                        <div class="collection-cards">
-                            <div class="collection-card">
-                                <span class="collection-label">Total Collected</span>
-                                <span class="collection-value collected" id="monthCollected">₱0</span>
-                            </div>
-                            <div class="collection-card">
-                                <span class="collection-label">Pending</span>
-                                <span class="collection-value pending" id="monthPending">₱0</span>
-                            </div>
-                            <div class="collection-card">
-                                <span class="collection-label">Total Expected</span>
-                                <span class="collection-value" id="monthTotal">₱0</span>
-                            </div>
+                    </div>
+
+                    <div class="collection-cards" style="margin-top:1.5rem;">
+                        <div class="collection-card">
+                            <span class="collection-label">✅ Total Collected</span>
+                            <span class="collection-value collected" id="monthCollected">₱0</span>
+                        </div>
+                        <div class="collection-card">
+                            <span class="collection-label">⏳ Pending</span>
+                            <span class="collection-value pending" id="monthPending">₱0</span>
+                        </div>
+                        <div class="collection-card">
+                            <span class="collection-label">📊 Total Expected</span>
+                            <span class="collection-value" id="monthTotal">₱0</span>
                         </div>
                     </div>
-                    <div class="table-wrapper" style="margin-top:1.5rem;">
+
+                    <div class="sort-row" style="margin-top:1.5rem;">
+                        <label>Filter:</label>
+                        <select id="collectionStatusFilter" onchange="calculateCollection()">
+                            <option value="all">All</option>
+                            <option value="paid">Paid Only</option>
+                            <option value="pending">Pending Only</option>
+                        </select>
+                    </div>
+
+                    <div class="table-wrapper" style="margin-top:1rem;">
                         <table class="admin-table" id="collectionTable">
                             <thead>
                                 <tr>
@@ -491,7 +502,7 @@
                 <!-- Archived Students View -->
                 <div class="admin-view" id="archivedView">
                     <div class="dashboard-header">
-                        <h2>Archived Students</h2>
+                        <h2>📦 Archived Students</h2>
                     </div>
                     <div class="student-list" id="archivedStudentList"></div>
                 </div>
