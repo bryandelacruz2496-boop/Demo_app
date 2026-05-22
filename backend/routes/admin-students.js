@@ -191,6 +191,29 @@ router.post('/students/:id/payments', authMiddleware, async (req, res) => {
 
         student.payments.push({ date, description, amount, status });
 
+        // Recalculate pending payment amounts to match remaining balance
+        const paidTotal = student.payments
+            .filter(p => p.status === 'paid' && p.amount > 0)
+            .reduce((sum, p) => sum + p.amount, 0);
+        const remainingBalance = (student.totalTuition || 0) - paidTotal;
+        const pendingPayments = student.payments.filter(p => p.status === 'pending' && p.amount > 0);
+
+        if (pendingPayments.length > 0 && remainingBalance > 0) {
+            const perPayment = Math.round(remainingBalance / pendingPayments.length);
+            const lastIndex = pendingPayments.length - 1;
+            let distributed = 0;
+            pendingPayments.forEach((p, i) => {
+                if (i === lastIndex) {
+                    p.amount = remainingBalance - distributed;
+                } else {
+                    p.amount = perPayment;
+                    distributed += perPayment;
+                }
+            });
+        } else if (pendingPayments.length > 0 && remainingBalance <= 0) {
+            pendingPayments.forEach(p => { p.amount = 0; });
+        }
+
         await student.save();
         res.json({ message: 'Payment added', payments: student.payments, totalTuition: student.totalTuition });
     } catch (err) {
@@ -348,6 +371,29 @@ router.put('/students/:id/payments/:paymentId', authMiddleware, async (req, res)
 
         payment.status = status;
         payment.paidDate = status === 'paid' ? new Date().toISOString().split('T')[0] : null;
+
+        // Recalculate pending payment amounts to match remaining balance
+        const paidTotal = student.payments
+            .filter(p => p.status === 'paid' && p.amount > 0)
+            .reduce((sum, p) => sum + p.amount, 0);
+        const remainingBalance = (student.totalTuition || 0) - paidTotal;
+        const pendingPayments = student.payments.filter(p => p.status === 'pending' && p.amount > 0);
+
+        if (pendingPayments.length > 0 && remainingBalance > 0) {
+            const perPayment = Math.round(remainingBalance / pendingPayments.length);
+            const lastIndex = pendingPayments.length - 1;
+            let distributed = 0;
+            pendingPayments.forEach((p, i) => {
+                if (i === lastIndex) {
+                    p.amount = remainingBalance - distributed;
+                } else {
+                    p.amount = perPayment;
+                    distributed += perPayment;
+                }
+            });
+        } else if (pendingPayments.length > 0 && remainingBalance <= 0) {
+            pendingPayments.forEach(p => { p.amount = 0; });
+        }
 
         // Add notification for student
         if (!student.notifications) student.notifications = [];
