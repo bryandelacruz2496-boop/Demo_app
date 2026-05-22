@@ -241,11 +241,12 @@ function calculateCollection() {
         });
     });
 
+    // Update summary cards with actual totals from the data
     document.getElementById('monthCollected').textContent = '₱' + collected.toLocaleString();
     document.getElementById('monthPending').textContent = '₱' + pending.toLocaleString();
     document.getElementById('monthTotal').textContent = '₱' + (collected + pending).toLocaleString();
 
-    // Apply status filter
+    // Apply status filter for table display only
     let filtered = collectionRows;
     if (statusFilter === 'paid') {
         filtered = collectionRows.filter(r => r.status === 'paid');
@@ -255,7 +256,7 @@ function calculateCollection() {
 
     // Sort: paid first, then pending
     filtered.sort((a, b) => {
-        if (a.status === b.status) return 0;
+        if (a.status === b.status) return a.name.localeCompare(b.name);
         return a.status === 'paid' ? -1 : 1;
     });
 
@@ -265,6 +266,8 @@ function calculateCollection() {
         if (filtered.length === 0) {
             tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;padding:2rem;">No records for this month</td></tr>';
         } else {
+            // Show subtotal for filtered view
+            const filteredTotal = filtered.reduce((sum, r) => sum + r.amount, 0);
             tbody.innerHTML = filtered.map(r => `
                 <tr>
                     <td>${r.name}</td>
@@ -274,7 +277,13 @@ function calculateCollection() {
                     <td><span class="status-${r.status}">${r.status === 'paid' ? '✓ Paid' : '⏳ Pending'}</span></td>
                     <td>${r.paidDate}</td>
                 </tr>
-            `).join('');
+            `).join('') + `
+                <tr style="font-weight:700;background:#f5f5f5;">
+                    <td colspan="3">Total (${filtered.length} records)</td>
+                    <td>₱${filteredTotal.toLocaleString()}</td>
+                    <td colspan="2"></td>
+                </tr>
+            `;
         }
     }
 }
