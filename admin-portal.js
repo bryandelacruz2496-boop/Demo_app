@@ -353,6 +353,7 @@ async function selectStudent(id) {
     renderPayments();
     renderActivities();
     renderProjects();
+    applyRoleUI();
 }
 
 // Profile
@@ -639,6 +640,13 @@ function renderPayments() {
 
     if (payments.length === 0) {
         body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;padding:2rem;">No payments found</td></tr>';
+    }
+
+    // Re-apply role restrictions after rendering payment table
+    if (adminRole === 'staff') {
+        document.querySelectorAll('#paymentsBody .btn-mark-paid, #paymentsBody .btn-mark-pending').forEach(btn => {
+            btn.style.display = 'none';
+        });
     }
 }
 
@@ -2167,12 +2175,31 @@ function applyRoleUI() {
         badge.textContent = labels[adminRole] || adminRole;
     }
 
-    // Hide delete/archive buttons for staff
+    // Hide delete/archive/payment/discount buttons for staff
     if (adminRole === 'staff') {
         const deleteBtn = document.querySelector('.btn-delete-student');
         if (deleteBtn) deleteBtn.style.display = 'none';
         const archiveBtn = document.getElementById('btnArchiveStudent');
         if (archiveBtn) archiveBtn.style.display = 'none';
+
+        // Hide Add Payment and Add Discount buttons in payment panel
+        document.querySelectorAll('.sort-row .btn-add').forEach(btn => {
+            if (btn.textContent.includes('Payment') || btn.textContent.includes('Discount')) {
+                btn.style.display = 'none';
+            }
+        });
+
+        // Hide payment/discount forms if open
+        const payForm = document.getElementById('addPaymentForm');
+        if (payForm) payForm.style.display = 'none';
+        const discForm = document.getElementById('addDiscountForm');
+        if (discForm) discForm.style.display = 'none';
+
+        // Hide Mark Paid/Pending and Remove buttons in payment table
+        document.querySelectorAll('.btn-mark-paid, .btn-mark-pending').forEach(btn => {
+            const row = btn.closest('tr');
+            if (row && row.closest('#paymentsBody')) btn.style.display = 'none';
+        });
     }
 }
 
