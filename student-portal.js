@@ -660,6 +660,31 @@ function renderStudentAttendance() {
 // FIRST LOGIN - FORCE PASSWORD CHANGE
 // ============================================
 
+function cancelPasswordChange() {
+  // Clear form fields and errors
+  document.getElementById('newPw').value = '';
+  document.getElementById('confirmPw').value = '';
+  document.getElementById('changePwError').textContent = '';
+
+  // Log out the student session
+  const token = localStorage.getItem('studentToken');
+  if (token) {
+    fetch(`${API_URL}/student/logout`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` }
+    }).catch(() => { });
+  }
+  currentStudent = null;
+  localStorage.removeItem('studentToken');
+  localStorage.removeItem('studentData');
+
+  // Hide change password overlay and show login
+  document.getElementById('changePwOverlay').style.display = 'none';
+  document.getElementById('loginWrapper').style.display = 'flex';
+  document.getElementById('studentId').value = '';
+  document.getElementById('studentPassword').value = '';
+}
+
 async function handleFirstPasswordChange(event) {
   event.preventDefault();
   const newPw = document.getElementById('newPw').value;
