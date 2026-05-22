@@ -204,12 +204,16 @@ function calculateCollection() {
     const month = document.getElementById('collectionMonth').value;
     const year = document.getElementById('collectionYear').value;
     const statusFilter = document.getElementById('collectionStatusFilter') ? document.getElementById('collectionStatusFilter').value : 'all';
+    const gradeFilter = document.getElementById('collectionGradeFilter') ? document.getElementById('collectionGradeFilter').value : 'all';
 
     let collected = 0;
     let pending = 0;
     let collectionRows = [];
 
     students.forEach(student => {
+        // Apply grade filter
+        if (gradeFilter !== 'all' && student.grade !== gradeFilter) return;
+
         student.payments.forEach(payment => {
             if (payment.amount < 0) return; // skip discounts
 
