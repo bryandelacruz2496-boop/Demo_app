@@ -689,11 +689,11 @@ router.delete('/students/:id', authMiddleware, async (req, res) => {
     }
 });
 
-// PUT /api/admin/students/:id/archive - Archive student (superadmin and admin only)
+// PUT /api/admin/students/:id/archive - Archive student (superadmin only)
 router.put('/students/:id/archive', authMiddleware, async (req, res) => {
     try {
-        if (req.admin.role === 'staff') {
-            return res.status(403).json({ message: 'Staff cannot archive students' });
+        if (req.admin.role !== 'superadmin') {
+            return res.status(403).json({ message: 'Only Super Admin can archive students' });
         }
 
         const student = await Student.findById(req.params.id);

@@ -341,14 +341,14 @@ async function selectStudent(id) {
     // Show/hide archive buttons
     if (selectedStudent.status === 'archived') {
         document.getElementById('btnArchiveStudent').style.display = 'none';
-        document.getElementById('btnUnarchiveStudent').style.display = 'inline-block';
+        document.getElementById('btnUnarchiveStudent').style.display = adminRole === 'superadmin' ? 'inline-block' : 'none';
     } else {
-        document.getElementById('btnArchiveStudent').style.display = adminRole === 'staff' ? 'none' : 'inline-block';
+        document.getElementById('btnArchiveStudent').style.display = adminRole === 'superadmin' ? 'inline-block' : 'none';
         document.getElementById('btnUnarchiveStudent').style.display = 'none';
     }
 
-    // Hide delete button for staff
-    if (adminRole === 'staff') {
+    // Hide delete button for staff and admin
+    if (adminRole === 'staff' || adminRole === 'admin') {
         document.querySelector('.btn-delete-student').style.display = 'none';
     }
 
