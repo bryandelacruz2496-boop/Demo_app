@@ -222,6 +222,29 @@ router.post('/students/:id/discount', authMiddleware, async (req, res) => {
             paidDate: date || new Date().toISOString().split('T')[0]
         });
 
+        // Recalculate pending payment amounts to match new totalTuition
+        const paidTotal = student.payments
+            .filter(p => p.status === 'paid' && p.amount > 0)
+            .reduce((sum, p) => sum + p.amount, 0);
+        const remainingBalance = student.totalTuition - paidTotal;
+        const pendingPayments = student.payments.filter(p => p.status === 'pending' && p.amount > 0);
+
+        if (pendingPayments.length > 0 && remainingBalance > 0) {
+            const perPayment = Math.round(remainingBalance / pendingPayments.length);
+            const lastIndex = pendingPayments.length - 1;
+            let distributed = 0;
+            pendingPayments.forEach((p, i) => {
+                if (i === lastIndex) {
+                    p.amount = remainingBalance - distributed;
+                } else {
+                    p.amount = perPayment;
+                    distributed += perPayment;
+                }
+            });
+        } else if (pendingPayments.length > 0 && remainingBalance <= 0) {
+            pendingPayments.forEach(p => { p.amount = 0; });
+        }
+
         // Add notification
         if (!student.notifications) student.notifications = [];
         student.notifications.push({
@@ -262,6 +285,30 @@ router.post('/students-discount-bulk', authMiddleware, async (req, res) => {
                 status: 'paid',
                 paidDate: date || new Date().toISOString().split('T')[0]
             });
+
+            // Recalculate pending payment amounts to match new totalTuition
+            const paidTotal = student.payments
+                .filter(p => p.status === 'paid' && p.amount > 0)
+                .reduce((sum, p) => sum + p.amount, 0);
+            const remainingBalance = student.totalTuition - paidTotal;
+            const pendingPayments = student.payments.filter(p => p.status === 'pending' && p.amount > 0);
+
+            if (pendingPayments.length > 0 && remainingBalance > 0) {
+                const perPayment = Math.round(remainingBalance / pendingPayments.length);
+                const lastIndex = pendingPayments.length - 1;
+                let distributed = 0;
+                pendingPayments.forEach((p, i) => {
+                    if (i === lastIndex) {
+                        p.amount = remainingBalance - distributed;
+                    } else {
+                        p.amount = perPayment;
+                        distributed += perPayment;
+                    }
+                });
+            } else if (pendingPayments.length > 0 && remainingBalance <= 0) {
+                pendingPayments.forEach(p => { p.amount = 0; });
+            }
+
             if (!student.notifications) student.notifications = [];
             student.notifications.push({
                 message: `A discount of ₱${discountAmount.toLocaleString()} has been applied: ${description || 'Discount'}`,
