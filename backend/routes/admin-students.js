@@ -191,13 +191,89 @@ router.post('/students/:id/payments', authMiddleware, async (req, res) => {
 
         student.payments.push({ date, description, amount, status });
 
-        // If negative amount (discount), deduct from totalTuition
-        if (amount < 0) {
-            student.totalTuition = (student.totalTuition || 0) + amount;
+        await student.save();
+        res.json({ message: 'Payment added', payments: student.payments, totalTuition: student.totalTuition });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// POST /api/admin/students/:id/discount - Add discount (deducts from totalTuition)
+router.post('/students/:id/discount', authMiddleware, async (req, res) => {
+    try {
+        const { date, description, amount } = req.body;
+        const student = await Student.findById(req.params.id);
+        if (!student) return res.status(404).json({ message: 'Student not found' });
+
+        const discountAmount = Math.abs(Number(amount));
+        if (!discountAmount || discountAmount <= 0) {
+            return res.status(400).json({ message: 'Invalid discount amount' });
         }
 
+        // Deduct from totalTuition
+        student.totalTuition = (student.totalTuition || 0) - discountAmount;
+
+        // Add a record in payments for tracking (as paid, with the discount description)
+        student.payments.push({
+            date: date || new Date().toISOString().split('T')[0],
+            description: description || 'Discount',
+            amount: -discountAmount,
+            status: 'paid',
+            paidDate: date || new Date().toISOString().split('T')[0]
+        });
+
+        // Add notification
+        if (!student.notifications) student.notifications = [];
+        student.notifications.push({
+            message: `A discount of ₱${discountAmount.toLocaleString()} has been applied: ${description || 'Discount'}`,
+            type: 'payment',
+            read: false
+        });
+
         await student.save();
-        res.json({ message: 'Payment added', payments: student.payments });
+        logAction('ADD_DISCOUNT', req.admin.username, `Applied discount ₱${discountAmount} to ${student.fullName}`, student.studentNo, req.ip);
+        res.json({ message: 'Discount applied', payments: student.payments, totalTuition: student.totalTuition });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// POST /api/admin/students/discount/bulk - Apply discount to all active students
+router.post('/students-discount-bulk', authMiddleware, async (req, res) => {
+    try {
+        const { date, description, amount, grade } = req.body;
+        const discountAmount = Math.abs(Number(amount));
+        if (!discountAmount || discountAmount <= 0) {
+            return res.status(400).json({ message: 'Invalid discount amount' });
+        }
+
+        const filter = { status: { $ne: 'archived' } };
+        if (grade && grade !== 'all') filter.grade = grade;
+
+        const students = await Student.find(filter);
+        let updatedCount = 0;
+
+        for (const student of students) {
+            student.totalTuition = (student.totalTuition || 0) - discountAmount;
+            student.payments.push({
+                date: date || new Date().toISOString().split('T')[0],
+                description: description || 'Discount',
+                amount: -discountAmount,
+                status: 'paid',
+                paidDate: date || new Date().toISOString().split('T')[0]
+            });
+            if (!student.notifications) student.notifications = [];
+            student.notifications.push({
+                message: `A discount of ₱${discountAmount.toLocaleString()} has been applied: ${description || 'Discount'}`,
+                type: 'payment',
+                read: false
+            });
+            await student.save();
+            updatedCount++;
+        }
+
+        logAction('BULK_DISCOUNT', req.admin.username, `Applied discount ₱${discountAmount} to ${updatedCount} students`, 'BULK', req.ip);
+        res.json({ message: `Discount applied to ${updatedCount} students`, updatedCount });
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
     }

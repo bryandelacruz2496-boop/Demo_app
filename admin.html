@@ -631,18 +631,51 @@
                         <div class="form-row">
                             <input type="text" id="payDate" class="datepicker-input" placeholder="Pick a date" readonly
                                 required>
-                            <select id="payType" onchange="onPayTypeChange()">
-                                <option value="custom">Custom Payment</option>
-                                <option value="referral">Referral Discount (-₱250)</option>
-                            </select>
                             <input type="text" id="payDesc" placeholder="Description" required>
                             <input type="number" id="payAmount" placeholder="Amount" required inputmode="numeric"
-                                oninput="this.value = this.value.replace(/[^0-9\-]/g, '')">
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                             <select id="payStatus">
                                 <option value="paid">Paid</option>
                                 <option value="pending">Pending</option>
                             </select>
                             <button class="btn-add" onclick="addPayment()">+ Add</button>
+                        </div>
+                    </div>
+                    <div class="add-form" style="border-color: #4caf50;">
+                        <h4 style="color:#2e7d32;">Add Discount</h4>
+                        <div class="form-row">
+                            <input type="text" id="discDate" class="datepicker-input" placeholder="Pick a date" readonly
+                                required>
+                            <select id="discType" onchange="onDiscountTypeChange()">
+                                <option value="custom">Custom Discount</option>
+                                <option value="referral">Referral Fee Discount (₱250)</option>
+                                <option value="siblings">Siblings Discount (10%)</option>
+                                <option value="early_bird">Early Bird Discount (5%)</option>
+                            </select>
+                            <input type="text" id="discDesc" placeholder="Description" required>
+                            <input type="number" id="discAmount" placeholder="Amount" required inputmode="numeric"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            <button class="btn-add" style="background:#2e7d32;" onclick="addDiscount()">+ Add
+                                Discount</button>
+                        </div>
+                        <div class="form-row" style="margin-top:0.5rem;">
+                            <label style="font-size:0.85rem;color:#666;display:flex;align-items:center;gap:0.5rem;">
+                                <input type="checkbox" id="discBulk"> Apply to all students
+                            </label>
+                            <select id="discBulkGrade" style="display:none;">
+                                <option value="all">All Grades</option>
+                                <option value="Kinder">Kinder</option>
+                                <option value="Grade 1">Grade 1</option>
+                                <option value="Grade 2">Grade 2</option>
+                                <option value="Grade 3">Grade 3</option>
+                                <option value="Grade 4">Grade 4</option>
+                                <option value="Grade 5">Grade 5</option>
+                                <option value="Grade 6">Grade 6</option>
+                                <option value="Grade 7">Grade 7</option>
+                                <option value="Grade 8">Grade 8</option>
+                                <option value="Grade 9">Grade 9</option>
+                                <option value="Grade 10">Grade 10</option>
+                            </select>
                         </div>
                     </div>
                     <div class="table-wrapper">

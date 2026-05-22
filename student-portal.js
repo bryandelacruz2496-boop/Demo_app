@@ -308,15 +308,18 @@ function renderStudentPayments() {
   // Sort newest first
   payments.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-  paymentBody.innerHTML = payments.map(p => `
-    <tr>
+  paymentBody.innerHTML = payments.map(p => {
+    const isDiscount = p.amount < 0;
+    return `
+    <tr${isDiscount ? ' style="background:#e8f5e9;"' : ''}>
       <td>${p.date}</td>
-      <td>${p.description}</td>
-      <td>₱${p.amount.toLocaleString()}</td>
-      <td><span class="status-${p.status}">${p.status === 'paid' ? '✓ Paid' : '⏳ Pending'}</span></td>
+      <td>${p.description}${isDiscount ? ' 🏷️' : ''}</td>
+      <td>${isDiscount ? '-₱' + Math.abs(p.amount).toLocaleString() : '₱' + p.amount.toLocaleString()}</td>
+      <td><span class="${isDiscount ? 'status-paid' : 'status-' + p.status}">${isDiscount ? '✓ Discount Applied' : (p.status === 'paid' ? '✓ Paid' : '⏳ Pending')}</span></td>
       <td>${p.paidDate ? p.paidDate : '-'}</td>
     </tr>
-  `).join('');
+    `;
+  }).join('');
 
   if (payments.length === 0) {
     paymentBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#888;padding:2rem;">No payments found</td></tr>';

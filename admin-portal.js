@@ -21,6 +21,14 @@ window.addEventListener('DOMContentLoaded', () => {
         loadStudents();
         startReplyNotificationCheck();
     }
+
+    // Toggle bulk grade selector for discounts
+    const discBulkCheckbox = document.getElementById('discBulk');
+    if (discBulkCheckbox) {
+        discBulkCheckbox.addEventListener('change', function () {
+            document.getElementById('discBulkGrade').style.display = this.checked ? 'inline-block' : 'none';
+        });
+    }
 });
 
 // Prevent browser back/forward button from navigating away
@@ -531,36 +539,53 @@ function renderPayments() {
     // Sort by date
     payments.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    body.innerHTML = payments.map(p => `
-    <tr>
+    body.innerHTML = payments.map(p => {
+        const isDiscount = p.amount < 0;
+        return `
+    <tr${isDiscount ? ' style="background:#e8f5e9;"' : ''}>
       <td>${p.date}</td>
-      <td>${p.description}</td>
-      <td>₱${p.amount.toLocaleString()}</td>
-      <td><span class="status-${p.status}">${p.status === 'paid' ? '✓ Paid' : '⏳ Pending'}</span></td>
+      <td>${p.description}${isDiscount ? ' 🏷️' : ''}</td>
+      <td>${isDiscount ? '-₱' + Math.abs(p.amount).toLocaleString() : '₱' + p.amount.toLocaleString()}</td>
+      <td><span class="status-${p.status}">${isDiscount ? '✓ Discount' : (p.status === 'paid' ? '✓ Paid' : '⏳ Pending')}</span></td>
       <td>${p.paidDate || '-'}</td>
       <td>
-        ${p.status === 'pending'
-            ? `<button class="btn-status btn-mark-paid" onclick="updatePaymentStatus('${p._id}', 'paid')">Mark Paid</button>`
-            : `<button class="btn-status btn-mark-pending" onclick="updatePaymentStatus('${p._id}', 'pending')">Mark Pending</button>`
-        }
+        ${isDiscount ? '<span style="color:#2e7d32;font-weight:600;">Deducted from Tuition</span>' :
+                (p.status === 'pending'
+                    ? `<button class="btn-status btn-mark-paid" onclick="updatePaymentStatus('${p._id}', 'paid')">Mark Paid</button>`
+                    : `<button class="btn-status btn-mark-pending" onclick="updatePaymentStatus('${p._id}', 'pending')">Mark Pending</button>`
+                )
+            }
       </td>
     </tr>
-  `).join('');
+    `;
+    }).join('');
 
     if (payments.length === 0) {
         body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;padding:2rem;">No payments found</td></tr>';
     }
 }
 
-function onPayTypeChange() {
-    const payType = document.getElementById('payType').value;
-    const descInput = document.getElementById('payDesc');
-    const amountInput = document.getElementById('payAmount');
+function onDiscountTypeChange() {
+    const discType = document.getElementById('discType').value;
+    const descInput = document.getElementById('discDesc');
+    const amountInput = document.getElementById('discAmount');
 
-    if (payType === 'referral') {
+    if (discType === 'referral') {
         descInput.value = 'Referral Fee Discount';
         descInput.readOnly = true;
-        amountInput.value = '-250';
+        amountInput.value = '250';
+        amountInput.readOnly = true;
+    } else if (discType === 'siblings') {
+        descInput.value = 'Siblings Discount (10%)';
+        descInput.readOnly = true;
+        const tuition = selectedStudent ? selectedStudent.totalTuition || 0 : 0;
+        amountInput.value = Math.round(tuition * 0.10);
+        amountInput.readOnly = true;
+    } else if (discType === 'early_bird') {
+        descInput.value = 'Early Bird Discount (5%)';
+        descInput.readOnly = true;
+        const tuition = selectedStudent ? selectedStudent.totalTuition || 0 : 0;
+        amountInput.value = Math.round(tuition * 0.05);
         amountInput.readOnly = true;
     } else {
         descInput.value = '';
@@ -568,6 +593,74 @@ function onPayTypeChange() {
         amountInput.value = '';
         amountInput.readOnly = false;
     }
+}
+
+async function addDiscount() {
+    const date = getDatePickerValue('discDate');
+    const description = document.getElementById('discDesc').value;
+    const amount = Number(document.getElementById('discAmount').value);
+    const isBulk = document.getElementById('discBulk').checked;
+
+    if (!date || !description || !amount) {
+        showToast('Please fill in all discount fields');
+        return;
+    }
+
+    showConfirmPopup(`Are you sure you want to apply a ₱${amount.toLocaleString()} discount${isBulk ? ' to ALL students' : ''}?`, async () => {
+        if (isBulk) {
+            const grade = document.getElementById('discBulkGrade').value;
+            const res = await fetch(`${API_URL}/admin/students-discount-bulk`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+                body: JSON.stringify({ date, description, amount, grade })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                showToast(`Discount applied to ${data.updatedCount} students!`);
+                loadStudents();
+                // Clear form
+                document.getElementById('discDate').value = '';
+                document.getElementById('discDate').dataset.value = '';
+                document.getElementById('discDesc').value = '';
+                document.getElementById('discAmount').value = '';
+                document.getElementById('discType').value = 'custom';
+                document.getElementById('discDesc').readOnly = false;
+                document.getElementById('discAmount').readOnly = false;
+                document.getElementById('discBulk').checked = false;
+                document.getElementById('discBulkGrade').style.display = 'none';
+            } else {
+                const data = await res.json();
+                showToast(data.message || 'Error applying discount');
+            }
+        } else {
+            if (!selectedStudent) return;
+            const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/discount`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+                body: JSON.stringify({ date, description, amount })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                selectedStudent.payments = data.payments;
+                selectedStudent.totalTuition = data.totalTuition;
+                renderPayments();
+                showToast('Discount applied!');
+                // Clear form
+                document.getElementById('discDate').value = '';
+                document.getElementById('discDate').dataset.value = '';
+                document.getElementById('discDesc').value = '';
+                document.getElementById('discAmount').value = '';
+                document.getElementById('discType').value = 'custom';
+                document.getElementById('discDesc').readOnly = false;
+                document.getElementById('discAmount').readOnly = false;
+            } else {
+                const data = await res.json();
+                showToast(data.message || 'Error applying discount');
+            }
+        }
+    });
 }
 
 async function addPayment() {
@@ -587,15 +680,13 @@ async function addPayment() {
     if (res.ok) {
         const data = await res.json();
         selectedStudent.payments = data.payments;
+        if (data.totalTuition !== undefined) selectedStudent.totalTuition = data.totalTuition;
         renderPayments();
         showToast('Payment added!');
         document.getElementById('payDate').value = '';
         document.getElementById('payDate').dataset.value = '';
         document.getElementById('payDesc').value = '';
         document.getElementById('payAmount').value = '';
-        document.getElementById('payType').value = 'custom';
-        document.getElementById('payDesc').readOnly = false;
-        document.getElementById('payAmount').readOnly = false;
     }
 }
 
