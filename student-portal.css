@@ -92,7 +92,8 @@
 
 body {
     font-family: 'Nunito', sans-serif;
-    background: #fafafa;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-attachment: fixed;
     min-height: 100vh;
 }
 
@@ -353,13 +354,14 @@ h4 {
 
 /* Dashboard Header */
 .dash-header {
-    background: linear-gradient(135deg, #8e0000 0%, #b71c1c 40%, #e53935 100%);
+    background: rgba(139, 0, 0, 0.95);
+    backdrop-filter: blur(20px);
     padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: #fff;
-    box-shadow: 0 4px 20px rgba(183, 28, 28, 0.35);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -421,13 +423,14 @@ h4 {
 
 /* Info Card */
 .info-card {
-    background: #fff;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
     border-radius: 16px;
     padding: 2rem;
     display: flex;
     align-items: center;
     gap: 2rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 10px 30px rgba(0, 0, 0, 0.1);
     margin-bottom: 2rem;
     border-left: 5px solid #e53935;
     animation: cardEntrance 0.4s ease forwards;
@@ -461,12 +464,17 @@ h4 {
     gap: 0.5rem;
     margin-bottom: 1.5rem;
     flex-wrap: wrap;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 0.8rem;
+    border-radius: 14px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .dash-tab {
     padding: 0.7rem 1.5rem;
     border: 1.5px solid #e0e0e0;
-    background: #fff;
+    background: transparent;
     border-radius: 10px;
     cursor: pointer;
     font-size: 0.9rem;
@@ -491,10 +499,11 @@ h4 {
 /* Panels */
 .dash-panel {
     display: none;
-    background: #fff;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
     border-radius: 16px;
     padding: 2rem;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 10px 30px rgba(0, 0, 0, 0.1);
     animation: cardEntrance 0.4s ease forwards;
 }
 
@@ -519,14 +528,15 @@ h4 {
 
 .summary-item {
     flex: 1;
-    background: #fafafa;
+    background: rgba(255, 255, 255, 0.8);
     padding: 1.2rem;
     border-radius: 12px;
     text-align: center;
     min-width: 150px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform;
+    border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .summary-item:hover {
@@ -1228,7 +1238,7 @@ h4 {
 
 /* Softer page background */
 .dashboard {
-    background: #f8f9fa;
+    background: transparent;
 }
 
 /* Tab underline animation */
