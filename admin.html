@@ -625,8 +625,11 @@
                             <option value="2027">2027</option>
                         </select>
                         <button class="btn-export" onclick="exportStudentPayments()">📥 Export Payments</button>
+                        <button class="btn-add" onclick="togglePaymentForm()">+ Add Payment</button>
+                        <button class="btn-add" style="background:#2e7d32;" onclick="toggleDiscountForm()">+ Add
+                            Discount</button>
                     </div>
-                    <div class="add-form">
+                    <div class="add-form" id="addPaymentForm" style="display:none;">
                         <h4>Add Payment</h4>
                         <div class="form-row">
                             <input type="text" id="payDate" class="datepicker-input" placeholder="Pick a date" readonly
@@ -641,7 +644,7 @@
                             <button class="btn-add" onclick="addPayment()">+ Add</button>
                         </div>
                     </div>
-                    <div class="add-form" style="border-color: #4caf50;">
+                    <div class="add-form" id="addDiscountForm" style="display:none; border-color: #4caf50;">
                         <h4 style="color:#2e7d32;">Add Discount</h4>
                         <div class="form-row">
                             <input type="text" id="discDate" class="datepicker-input" placeholder="Pick a date" readonly

@@ -595,6 +595,28 @@ function onDiscountTypeChange() {
     }
 }
 
+function togglePaymentForm() {
+    const payForm = document.getElementById('addPaymentForm');
+    const discForm = document.getElementById('addDiscountForm');
+    if (payForm.style.display === 'none') {
+        payForm.style.display = 'block';
+        discForm.style.display = 'none';
+    } else {
+        payForm.style.display = 'none';
+    }
+}
+
+function toggleDiscountForm() {
+    const payForm = document.getElementById('addPaymentForm');
+    const discForm = document.getElementById('addDiscountForm');
+    if (discForm.style.display === 'none') {
+        discForm.style.display = 'block';
+        payForm.style.display = 'none';
+    } else {
+        discForm.style.display = 'none';
+    }
+}
+
 async function addDiscount() {
     const date = getDatePickerValue('discDate');
     const description = document.getElementById('discDesc').value;
