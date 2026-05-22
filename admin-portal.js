@@ -22,6 +22,11 @@ window.addEventListener('DOMContentLoaded', () => {
         startReplyNotificationCheck();
     }
 
+    // Set collection month/year to current
+    const now = new Date();
+    const monthSelect = document.getElementById('collectionMonth');
+    if (monthSelect) monthSelect.value = String(now.getMonth() + 1).padStart(2, '0');
+
     // Toggle bulk grade selector for discounts
     const discBulkCheckbox = document.getElementById('discBulk');
     if (discBulkCheckbox) {
@@ -71,14 +76,11 @@ async function handleAdminLogin(event) {
 
 // Load students
 async function loadStudents() {
-    const includeArchived = document.getElementById('showArchivedToggle') && document.getElementById('showArchivedToggle').checked;
-    const url = includeArchived ? `${API_URL}/admin/students?includeArchived=true` : `${API_URL}/admin/students`;
-    const res = await fetch(url, {
+    const res = await fetch(`${API_URL}/admin/students`, {
         headers: { 'Authorization': `Bearer ${adminToken}` }
     });
     students = await res.json();
     renderStudentList();
-    calculateCollection();
     loadAnnouncements();
 }
 
@@ -204,14 +206,36 @@ function calculateCollection() {
 
     let collected = 0;
     let pending = 0;
+    let collectionRows = [];
 
     students.forEach(student => {
         student.payments.forEach(payment => {
+            if (payment.amount < 0) return; // skip discounts
+
+            // Collected: payments marked as paid where paidDate is in the selected month
             if (payment.status === 'paid' && payment.paidDate && payment.paidDate.startsWith(`${year}-${month}`)) {
                 collected += payment.amount;
+                collectionRows.push({
+                    name: student.fullName,
+                    grade: student.grade,
+                    description: payment.description,
+                    amount: payment.amount,
+                    status: 'paid',
+                    paidDate: payment.paidDate
+                });
             }
+
+            // Pending: payments still pending where scheduled date is in the selected month
             if (payment.status === 'pending' && payment.date && payment.date.startsWith(`${year}-${month}`)) {
                 pending += payment.amount;
+                collectionRows.push({
+                    name: student.fullName,
+                    grade: student.grade,
+                    description: payment.description,
+                    amount: payment.amount,
+                    status: 'pending',
+                    paidDate: '-'
+                });
             }
         });
     });
@@ -219,6 +243,25 @@ function calculateCollection() {
     document.getElementById('monthCollected').textContent = '₱' + collected.toLocaleString();
     document.getElementById('monthPending').textContent = '₱' + pending.toLocaleString();
     document.getElementById('monthTotal').textContent = '₱' + (collected + pending).toLocaleString();
+
+    // Render collection table
+    const tbody = document.getElementById('collectionTableBody');
+    if (tbody) {
+        if (collectionRows.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;padding:2rem;">No records for this month</td></tr>';
+        } else {
+            tbody.innerHTML = collectionRows.map(r => `
+                <tr>
+                    <td>${r.name}</td>
+                    <td>${r.grade}</td>
+                    <td>${r.description}</td>
+                    <td>₱${r.amount.toLocaleString()}</td>
+                    <td><span class="status-${r.status}">${r.status === 'paid' ? '✓ Paid' : '⏳ Pending'}</span></td>
+                    <td>${r.paidDate}</td>
+                </tr>
+            `).join('');
+        }
+    }
 }
 
 function renderStudentList() {
@@ -914,6 +957,8 @@ function switchAdminView(viewId) {
     if (viewId === 'projectsView') loadGlobalProjects();
     if (viewId === 'auditView') loadAuditLog();
     if (viewId === 'attendanceView') loadAttendance();
+    if (viewId === 'collectionsView') calculateCollection();
+    if (viewId === 'archivedView') loadArchivedStudents();
 }
 
 // Toast notification
@@ -1618,6 +1663,46 @@ function unarchiveStudent() {
 
 function toggleShowArchived() {
     loadStudents();
+}
+
+async function loadArchivedStudents() {
+    const res = await fetch(`${API_URL}/admin/students?includeArchived=true`, {
+        headers: { 'Authorization': `Bearer ${adminToken}` }
+    });
+    const allStudents = await res.json();
+    const archived = allStudents.filter(s => s.status === 'archived');
+    const list = document.getElementById('archivedStudentList');
+
+    if (archived.length === 0) {
+        list.innerHTML = '<p style="text-align:center;color:#888;padding:2rem;">No archived students.</p>';
+        return;
+    }
+
+    list.innerHTML = archived.map(s => `
+        <div class="student-item student-archived">
+            <div class="student-item-info">
+                <h4>${s.fullName} <span class="archived-badge">Archived</span></h4>
+                <p>${s.studentNo} • ${s.grade}</p>
+            </div>
+            <button class="btn-add" style="font-size:0.8rem;padding:0.4rem 0.8rem;" onclick="unarchiveFromList('${s._id}')">Unarchive</button>
+        </div>
+    `).join('');
+}
+
+async function unarchiveFromList(studentId) {
+    showConfirmPopup('Are you sure you want to unarchive this student?', async () => {
+        const res = await fetch(`${API_URL}/admin/students/${studentId}/unarchive`, {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+        if (res.ok) {
+            showToast('Student unarchived');
+            loadArchivedStudents();
+            loadStudents();
+        } else {
+            showToast('Error unarchiving student');
+        }
+    });
 }
 
 // Old Student Search & Re-enrollment
