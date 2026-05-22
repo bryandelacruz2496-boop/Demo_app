@@ -2241,7 +2241,6 @@ async function loadStaffList() {
     if (!tbody) return;
 
     tbody.innerHTML = staff.map(s => {
-        const isSelf = s.username === (localStorage.getItem('adminName') || '');
         const roleLabels = { superadmin: 'Super Admin', admin: 'Admin', staff: 'Staff' };
         return `
         <tr>
@@ -2252,11 +2251,7 @@ async function loadStaffList() {
             <td>${new Date(s.createdAt).toLocaleDateString()}</td>
             <td>
                 ${s.role === 'superadmin' ? '-' : `
-                    <select onchange="updateStaffRole('${s._id}', this.value)" style="padding:0.3rem;border-radius:5px;border:1px solid #ddd;">
-                        <option value="staff" ${s.role === 'staff' ? 'selected' : ''}>Staff</option>
-                        <option value="admin" ${s.role === 'admin' ? 'selected' : ''}>Admin</option>
-                    </select>
-                    <button class="btn-status btn-mark-${s.status === 'active' ? 'pending' : 'paid'}" onclick="toggleStaffStatus('${s._id}', '${s.status === 'active' ? 'inactive' : 'active'}')">${s.status === 'active' ? 'Deactivate' : 'Activate'}</button>
+                    <button class="btn-status btn-mark-paid" onclick="openStaffDetail('${s._id}')">Edit</button>
                     <button class="btn-status btn-mark-pending" onclick="deleteStaffAccount('${s._id}')">Delete</button>
                 `}
             </td>
@@ -2265,48 +2260,110 @@ async function loadStaffList() {
     }).join('');
 }
 
-async function updateStaffRole(id, role) {
+function openStaffDetail(id) {
+    fetch(`${API_URL}/auth/staff`, {
+        headers: { 'Authorization': `Bearer ${adminToken}` }
+    }).then(res => res.json()).then(staff => {
+        const s = staff.find(x => x._id === id);
+        if (!s) return;
+
+        const overlay = document.createElement('div');
+        overlay.className = 'confirm-overlay';
+        overlay.innerHTML = `
+            <div class="confirm-box" style="max-width:450px;width:90%;">
+                <h3 style="margin-bottom:1rem;">Edit Account: ${s.name}</h3>
+                <div style="display:flex;flex-direction:column;gap:0.8rem;">
+                    <div>
+                        <label style="font-weight:600;font-size:0.85rem;">Full Name</label>
+                        <input type="text" id="editStaffName" value="${s.name}" style="width:100%;padding:0.6rem 0.8rem;border:2px solid #eee;border-radius:8px;font-size:0.95rem;">
+                    </div>
+                    <div>
+                        <label style="font-weight:600;font-size:0.85rem;">Username</label>
+                        <input type="text" id="editStaffUsername" value="${s.username}" style="width:100%;padding:0.6rem 0.8rem;border:2px solid #eee;border-radius:8px;font-size:0.95rem;">
+                    </div>
+                    <div>
+                        <label style="font-weight:600;font-size:0.85rem;">New Password (leave blank to keep current)</label>
+                        <input type="password" id="editStaffPassword" placeholder="Enter new password" style="width:100%;padding:0.6rem 0.8rem;border:2px solid #eee;border-radius:8px;font-size:0.95rem;">
+                    </div>
+                    <div>
+                        <label style="font-weight:600;font-size:0.85rem;">Role</label>
+                        <select id="editStaffRole" style="width:100%;padding:0.6rem 0.8rem;border:2px solid #eee;border-radius:8px;font-size:0.95rem;">
+                            <option value="staff" ${s.role === 'staff' ? 'selected' : ''}>Staff</option>
+                            <option value="admin" ${s.role === 'admin' ? 'selected' : ''}>Admin</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-weight:600;font-size:0.85rem;">Status</label>
+                        <select id="editStaffStatus" style="width:100%;padding:0.6rem 0.8rem;border:2px solid #eee;border-radius:8px;font-size:0.95rem;">
+                            <option value="active" ${s.status === 'active' ? 'selected' : ''}>Active</option>
+                            <option value="inactive" ${s.status === 'inactive' ? 'selected' : ''}>Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="confirm-buttons" style="margin-top:1.2rem;">
+                    <button class="confirm-yes" onclick="saveStaffDetail('${s._id}')">Save Changes</button>
+                    <button class="confirm-no" onclick="this.closest('.confirm-overlay').remove()">Cancel</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+    });
+}
+
+async function saveStaffDetail(id) {
+    const name = document.getElementById('editStaffName').value.trim();
+    const username = document.getElementById('editStaffUsername').value.trim();
+    const password = document.getElementById('editStaffPassword').value;
+    const role = document.getElementById('editStaffRole').value;
+    const status = document.getElementById('editStaffStatus').value;
+
+    if (!name || !username) {
+        showToast('Name and username are required');
+        return;
+    }
+
+    const body = { name, username, role, status };
+    if (password) body.password = password;
+
     const res = await fetch(`${API_URL}/auth/staff/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
-        body: JSON.stringify({ role })
+        body: JSON.stringify(body)
     });
+
     if (res.ok) {
-        showToast('Role updated');
+        document.querySelector('.confirm-overlay').remove();
+        showToast('Account updated');
         loadStaffList();
     } else {
         const data = await res.json();
-        showToast(data.message || 'Error updating role');
+        showToast(data.message || 'Error updating account');
     }
+}
+
+async function updateStaffRole(id, role) {
+    // Deprecated - use openStaffDetail instead
 }
 
 async function toggleStaffStatus(id, status) {
-    const res = await fetch(`${API_URL}/auth/staff/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
-        body: JSON.stringify({ status })
-    });
-    if (res.ok) {
-        showToast('Status updated');
-        loadStaffList();
-    } else {
-        const data = await res.json();
-        showToast(data.message || 'Error updating status');
-    }
+    // Deprecated - use openStaffDetail instead
 }
 
 async function deleteStaffAccount(id) {
-    showConfirmPopup('Are you sure you want to delete this account?', async () => {
-        const res = await fetch(`${API_URL}/auth/staff/${id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${adminToken}` }
+    showConfirmPopup('Are you sure you want to delete this account?', () => {
+        showPasswordPrompt(async (password) => {
+            const res = await fetch(`${API_URL}/auth/staff/${id}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+                body: JSON.stringify({ password })
+            });
+            if (res.ok) {
+                showToast('Account deleted');
+                loadStaffList();
+            } else {
+                const data = await res.json();
+                showToast(data.message || 'Error deleting account');
+            }
         });
-        if (res.ok) {
-            showToast('Account deleted');
-            loadStaffList();
-        } else {
-            const data = await res.json();
-            showToast(data.message || 'Error deleting account');
-        }
     });
 }

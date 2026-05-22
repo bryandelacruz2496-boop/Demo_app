@@ -198,24 +198,34 @@ router.get('/staff', authMiddleware, async (req, res) => {
     }
 });
 
-// PUT /api/auth/staff/:id - Update staff role/status (superadmin only)
+// PUT /api/auth/staff/:id - Update staff account (superadmin only)
 router.put('/staff/:id', authMiddleware, async (req, res) => {
     try {
         if (req.admin.role !== 'superadmin') {
             return res.status(403).json({ message: 'Access denied' });
         }
 
-        const { role, status } = req.body;
+        const { name, username, password, role, status } = req.body;
         const staff = await Admin.findById(req.params.id);
         if (!staff) return res.status(404).json({ message: 'Account not found' });
 
         // Cannot modify own superadmin account role
-        if (staff._id.toString() === req.admin.id && role !== 'superadmin') {
+        if (staff._id.toString() === req.admin.id && role && role !== 'superadmin') {
             return res.status(400).json({ message: 'Cannot change your own role' });
         }
 
+        // Check username uniqueness if changed
+        if (username && username !== staff.username) {
+            const existing = await Admin.findOne({ username });
+            if (existing) return res.status(400).json({ message: 'Username already taken' });
+            staff.username = username;
+        }
+
+        if (name) staff.name = name;
         if (role) staff.role = role;
         if (status) staff.status = status;
+        if (password && password.length >= 6) staff.password = password;
+
         await staff.save();
 
         logAction('UPDATE_STAFF', req.admin.username, `Updated ${staff.name} - role: ${staff.role}, status: ${staff.status}`, null, req.ip);
@@ -225,11 +235,21 @@ router.put('/staff/:id', authMiddleware, async (req, res) => {
     }
 });
 
-// DELETE /api/auth/staff/:id - Delete staff account (superadmin only)
+// DELETE /api/auth/staff/:id - Delete staff account (superadmin only, requires password)
 router.delete('/staff/:id', authMiddleware, async (req, res) => {
     try {
         if (req.admin.role !== 'superadmin') {
             return res.status(403).json({ message: 'Access denied' });
+        }
+
+        const { password } = req.body;
+
+        // Verify superadmin password
+        if (password) {
+            const currentAdmin = await Admin.findById(req.admin.id);
+            if (!currentAdmin) return res.status(404).json({ message: 'Admin not found' });
+            const isMatch = await currentAdmin.comparePassword(password);
+            if (!isMatch) return res.status(401).json({ message: 'Incorrect password' });
         }
 
         const staff = await Admin.findById(req.params.id);
