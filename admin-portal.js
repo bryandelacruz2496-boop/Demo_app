@@ -343,8 +343,13 @@ async function selectStudent(id) {
         document.getElementById('btnArchiveStudent').style.display = 'none';
         document.getElementById('btnUnarchiveStudent').style.display = 'inline-block';
     } else {
-        document.getElementById('btnArchiveStudent').style.display = 'inline-block';
+        document.getElementById('btnArchiveStudent').style.display = adminRole === 'staff' ? 'none' : 'inline-block';
         document.getElementById('btnUnarchiveStudent').style.display = 'none';
+    }
+
+    // Hide delete button for staff
+    if (adminRole === 'staff') {
+        document.querySelector('.btn-delete-student').style.display = 'none';
     }
 
     renderProfile();
