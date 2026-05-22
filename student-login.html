@@ -132,167 +132,177 @@
                     <button class="dash-tab" onclick="switchDashTab(event, 'assessments')">📝 Assessments</button>
                 </div>
 
-                <!-- Announcements Tab -->
-                <div class="dash-panel" id="announcements">
-                    <h3>📢 Announcements</h3>
-                    <div id="studentAnnouncementsList"></div>
-                </div>
+                <div class="dash-main-content">
 
-                <!-- Payments Tab -->
-                <div class="dash-panel active" id="payments">
-                    <h3>Payment Records</h3>
-                    <div class="payment-summary">
-                        <div class="summary-item">
-                            <span class="summary-label">Total Tuition</span>
-                            <span class="summary-value" id="totalTuition"></span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="summary-label">Total Paid</span>
-                            <span class="summary-value paid" id="totalPaid"></span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="summary-label">Balance</span>
-                            <span class="summary-value balance" id="totalBalance"></span>
-                        </div>
+                    <!-- Announcements Tab -->
+                    <div class="dash-panel" id="announcements">
+                        <h3>📢 Announcements</h3>
+                        <div id="studentAnnouncementsList"></div>
                     </div>
-                    <div class="sort-row">
-                        <label>Month:</label>
-                        <select id="studentPayMonth" onchange="renderStudentPayments()">
-                            <option value="all">All</option>
-                            <option value="01">January</option>
-                            <option value="02">February</option>
-                            <option value="03">March</option>
-                            <option value="04">April</option>
-                            <option value="05">May</option>
-                            <option value="06">June</option>
-                            <option value="07">July</option>
-                            <option value="08">August</option>
-                            <option value="09">September</option>
-                            <option value="10">October</option>
-                            <option value="11">November</option>
-                            <option value="12">December</option>
-                        </select>
-                        <label>Year:</label>
-                        <select id="studentPayYear" onchange="renderStudentPayments()">
-                            <option value="all">All</option>
-                            <option value="2026">2026</option>
-                            <option value="2027">2027</option>
-                        </select>
-                    </div>
-                    <div class="table-wrapper">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Description</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
-                                    <th>Paid Date</th>
-                                </tr>
-                            </thead>
-                            <tbody id="paymentTableBody"></tbody>
-                        </table>
-                    </div>
-                    <div class="payment-options-section">
-                        <h4>💳 Pay Now</h4>
-                        <p class="pay-now-desc">Scan the QR code or use the bank details below to make a payment.</p>
-                        <div class="pay-now-grid">
-                            <div class="qr-code-box">
-                                <div id="paymentQRCode"></div>
-                                <p class="qr-label">Scan to Pay</p>
+
+                    <!-- Payments Tab -->
+                    <div class="dash-panel active" id="payments">
+                        <h3>Payment Records</h3>
+                        <div class="payment-summary">
+                            <div class="summary-item">
+                                <span class="summary-label">Total Tuition</span>
+                                <span class="summary-value" id="totalTuition"></span>
                             </div>
-                            <div class="bank-details-box">
-                                <h5>Bank Transfer Details</h5>
-                                <div class="bank-detail-row"><span>Bank:</span><strong>BDO (Banco de Oro)</strong></div>
-                                <div class="bank-detail-row"><span>Account Name:</span><strong>Beata Sai Integrated
-                                        School</strong></div>
-                                <div class="bank-detail-row"><span>Account Number:</span><strong>0012-3456-7890</strong>
+                            <div class="summary-item">
+                                <span class="summary-label">Total Paid</span>
+                                <span class="summary-value paid" id="totalPaid"></span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Balance</span>
+                                <span class="summary-value balance" id="totalBalance"></span>
+                            </div>
+                        </div>
+                        <div class="sort-row">
+                            <label>Month:</label>
+                            <select id="studentPayMonth" onchange="renderStudentPayments()">
+                                <option value="all">All</option>
+                                <option value="01">January</option>
+                                <option value="02">February</option>
+                                <option value="03">March</option>
+                                <option value="04">April</option>
+                                <option value="05">May</option>
+                                <option value="06">June</option>
+                                <option value="07">July</option>
+                                <option value="08">August</option>
+                                <option value="09">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
+                            <label>Year:</label>
+                            <select id="studentPayYear" onchange="renderStudentPayments()">
+                                <option value="all">All</option>
+                                <option value="2026">2026</option>
+                                <option value="2027">2027</option>
+                            </select>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Paid Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="paymentTableBody"></tbody>
+                            </table>
+                        </div>
+                        <div class="payment-options-section">
+                            <h4>💳 Pay Now</h4>
+                            <p class="pay-now-desc">Scan the QR code or use the bank details below to make a payment.
+                            </p>
+                            <div class="pay-now-grid">
+                                <div class="qr-code-box">
+                                    <div id="paymentQRCode"></div>
+                                    <p class="qr-label">Scan to Pay</p>
                                 </div>
-                                <div class="bank-detail-row"><span>Branch:</span><strong>Quezon City Main</strong></div>
-                                <p class="bank-note">After payment, please send proof of payment to the school admin for
-                                    confirmation.</p>
+                                <div class="bank-details-box">
+                                    <h5>Bank Transfer Details</h5>
+                                    <div class="bank-detail-row"><span>Bank:</span><strong>BDO (Banco de Oro)</strong>
+                                    </div>
+                                    <div class="bank-detail-row"><span>Account Name:</span><strong>Beata Sai Integrated
+                                            School</strong></div>
+                                    <div class="bank-detail-row"><span>Account
+                                            Number:</span><strong>0012-3456-7890</strong>
+                                    </div>
+                                    <div class="bank-detail-row"><span>Branch:</span><strong>Quezon City Main</strong>
+                                    </div>
+                                    <p class="bank-note">After payment, please send proof of payment to the school admin
+                                        for
+                                        confirmation.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Attendance Tab -->
-                <div class="dash-panel" id="attendance">
-                    <h3>📅 My Attendance</h3>
-                    <div class="attendance-summary" style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
-                        <div class="summary-item">
-                            <span class="summary-label">Total Days</span>
-                            <span class="summary-value" id="attendTotalDays">0</span>
+                    <!-- Attendance Tab -->
+                    <div class="dash-panel" id="attendance">
+                        <h3>📅 My Attendance</h3>
+                        <div class="attendance-summary"
+                            style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+                            <div class="summary-item">
+                                <span class="summary-label">Total Days</span>
+                                <span class="summary-value" id="attendTotalDays">0</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Present</span>
+                                <span class="summary-value paid" id="attendPresent">0</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Late</span>
+                                <span class="summary-value" id="attendLate" style="color:#ff9800;">0</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Absent</span>
+                                <span class="summary-value balance" id="attendAbsent">0</span>
+                            </div>
                         </div>
-                        <div class="summary-item">
-                            <span class="summary-label">Present</span>
-                            <span class="summary-value paid" id="attendPresent">0</span>
+                        <div class="sort-row">
+                            <label>Month:</label>
+                            <select id="attendMonth" onchange="renderStudentAttendance()">
+                                <option value="all">All</option>
+                                <option value="01">January</option>
+                                <option value="02">February</option>
+                                <option value="03">March</option>
+                                <option value="04">April</option>
+                                <option value="05">May</option>
+                                <option value="06">June</option>
+                                <option value="07">July</option>
+                                <option value="08">August</option>
+                                <option value="09">September</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">December</option>
+                            </select>
+                            <label>Year:</label>
+                            <select id="attendYear" onchange="renderStudentAttendance()">
+                                <option value="all">All</option>
+                                <option value="2026">2026</option>
+                                <option value="2027">2027</option>
+                            </select>
                         </div>
-                        <div class="summary-item">
-                            <span class="summary-label">Late</span>
-                            <span class="summary-value" id="attendLate" style="color:#ff9800;">0</span>
-                        </div>
-                        <div class="summary-item">
-                            <span class="summary-label">Absent</span>
-                            <span class="summary-value balance" id="attendAbsent">0</span>
+                        <div class="table-wrapper">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Day</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attendanceTableBody"></tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="sort-row">
-                        <label>Month:</label>
-                        <select id="attendMonth" onchange="renderStudentAttendance()">
-                            <option value="all">All</option>
-                            <option value="01">January</option>
-                            <option value="02">February</option>
-                            <option value="03">March</option>
-                            <option value="04">April</option>
-                            <option value="05">May</option>
-                            <option value="06">June</option>
-                            <option value="07">July</option>
-                            <option value="08">August</option>
-                            <option value="09">September</option>
-                            <option value="10">October</option>
-                            <option value="11">November</option>
-                            <option value="12">December</option>
-                        </select>
-                        <label>Year:</label>
-                        <select id="attendYear" onchange="renderStudentAttendance()">
-                            <option value="all">All</option>
-                            <option value="2026">2026</option>
-                            <option value="2027">2027</option>
-                        </select>
+
+                    <!-- Activities Tab -->
+                    <div class="dash-panel" id="activities">
+                        <h3>Activities</h3>
+                        <div class="activity-list" id="activityList"></div>
                     </div>
-                    <div class="table-wrapper">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Day</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="attendanceTableBody"></tbody>
-                        </table>
+
+                    <!-- Projects Tab -->
+                    <div class="dash-panel" id="projects">
+                        <h3>Projects</h3>
+                        <div class="project-list" id="projectList"></div>
                     </div>
-                </div>
 
-                <!-- Activities Tab -->
-                <div class="dash-panel" id="activities">
-                    <h3>Activities</h3>
-                    <div class="activity-list" id="activityList"></div>
-                </div>
+                    <!-- Assessments Tab -->
+                    <div class="dash-panel" id="assessments">
+                        <h3>Assessments & Remarks</h3>
+                        <div id="assessmentsList"></div>
+                    </div>
 
-                <!-- Projects Tab -->
-                <div class="dash-panel" id="projects">
-                    <h3>Projects</h3>
-                    <div class="project-list" id="projectList"></div>
                 </div>
-
-                <!-- Assessments Tab -->
-                <div class="dash-panel" id="assessments">
-                    <h3>Assessments & Remarks</h3>
-                    <div id="assessmentsList"></div>
-                </div>
-
+                <!-- end dash-main-content -->
 
             </div>
         </div>

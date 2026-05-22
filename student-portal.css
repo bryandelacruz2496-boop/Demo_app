@@ -92,8 +92,7 @@
 
 body {
     font-family: 'Nunito', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    background-attachment: fixed;
+    background: #f0f2f5;
     min-height: 100vh;
 }
 
@@ -354,14 +353,13 @@ h4 {
 
 /* Dashboard Header */
 .dash-header {
-    background: rgba(139, 0, 0, 0.95);
-    backdrop-filter: blur(20px);
+    background: linear-gradient(135deg, #8e0000 0%, #b71c1c 40%, #e53935 100%);
     padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: #fff;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(183, 28, 28, 0.35);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -414,23 +412,27 @@ h4 {
 }
 
 .dash-content {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: 2rem auto;
     padding: 0 2rem;
     overflow: hidden;
     animation: slideUp 0.5s ease;
+    display: flex;
+    gap: 0;
+    flex-wrap: wrap;
 }
 
 /* Info Card */
 .info-card {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
+    background: #fff;
     border-radius: 16px;
     padding: 2rem;
     display: flex;
     align-items: center;
     gap: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.04);
+    width: 100%;
+    margin-bottom: 1.5rem;
     margin-bottom: 2rem;
     border-left: 5px solid #e53935;
     animation: cardEntrance 0.4s ease forwards;
@@ -461,27 +463,32 @@ h4 {
 /* Tabs */
 .dash-tabs {
     display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    padding: 0.8rem;
-    border-radius: 14px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 10px 30px rgba(0, 0, 0, 0.1);
+    flex-direction: column;
+    gap: 0.3rem;
+    background: #fff;
+    border-radius: 16px;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.04);
+    width: 220px;
+    min-width: 220px;
+    height: fit-content;
+    position: sticky;
+    top: 5rem;
 }
 
 .dash-tab {
-    padding: 0.7rem 1.5rem;
-    border: 1.5px solid #e0e0e0;
+    padding: 0.8rem 1.2rem;
+    border: none;
     background: transparent;
     border-radius: 10px;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 600;
     font-family: inherit;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform;
+    text-align: left;
+    white-space: nowrap;
 }
 
 .dash-tab.active,
@@ -496,14 +503,19 @@ h4 {
     transform: scale(0.97);
 }
 
+.dash-main-content {
+    flex: 1;
+    min-width: 0;
+    padding-left: 2rem;
+}
+
 /* Panels */
 .dash-panel {
     display: none;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
+    background: #fff;
     border-radius: 16px;
     padding: 2rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 10px 30px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.04);
     animation: cardEntrance 0.4s ease forwards;
 }
 
@@ -528,15 +540,14 @@ h4 {
 
 .summary-item {
     flex: 1;
-    background: rgba(255, 255, 255, 0.8);
+    background: #fafafa;
     padding: 1.2rem;
     border-radius: 12px;
     text-align: center;
     min-width: 150px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform;
-    border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .summary-item:hover {
@@ -693,8 +704,26 @@ h4 {
         text-align: center;
     }
 
+    .dash-content {
+        flex-direction: column;
+    }
+
     .dash-tabs {
-        justify-content: center;
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+        min-width: unset;
+        position: static;
+    }
+
+    .dash-main-content {
+        padding-left: 0;
+    }
+
+    .dash-tab {
+        text-align: center;
+        font-size: 0.8rem;
+        padding: 0.6rem 1rem;
     }
 
     .payment-summary {
@@ -1238,7 +1267,7 @@ h4 {
 
 /* Softer page background */
 .dashboard {
-    background: transparent;
+    background: #f0f2f5;
 }
 
 /* Tab underline animation */
