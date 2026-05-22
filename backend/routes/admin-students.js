@@ -722,4 +722,47 @@ router.delete('/students/:id/attendance/:date', authMiddleware, async (req, res)
     }
 });
 
+// POST /api/admin/students-recalculate - Recalculate all pending payments for all students
+router.post('/students-recalculate', authMiddleware, async (req, res) => {
+    try {
+        const students = await Student.find({ status: { $ne: 'archived' } });
+        let updatedCount = 0;
+
+        for (const student of students) {
+            const paidTotal = student.payments
+                .filter(p => p.status === 'paid' && p.amount > 0)
+                .reduce((sum, p) => sum + p.amount, 0);
+
+            const remainingBalance = (student.totalTuition || 0) - paidTotal;
+            const pendingPayments = student.payments.filter(p => p.status === 'pending' && p.amount > 0);
+
+            if (pendingPayments.length === 0) continue;
+
+            if (remainingBalance > 0) {
+                const perPayment = Math.round(remainingBalance / pendingPayments.length);
+                const lastIndex = pendingPayments.length - 1;
+                let distributed = 0;
+                pendingPayments.forEach((p, i) => {
+                    if (i === lastIndex) {
+                        p.amount = remainingBalance - distributed;
+                    } else {
+                        p.amount = perPayment;
+                        distributed += perPayment;
+                    }
+                });
+            } else {
+                pendingPayments.forEach(p => { p.amount = 0; });
+            }
+
+            await student.save();
+            updatedCount++;
+        }
+
+        logAction('RECALCULATE_PAYMENTS', req.admin.username, `Recalculated pending payments for ${updatedCount} students`, 'BULK', req.ip);
+        res.json({ message: `Recalculated payments for ${updatedCount} students`, updatedCount });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 module.exports = router;

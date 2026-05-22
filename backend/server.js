@@ -135,7 +135,45 @@ app.get('/uploads/*', serveEncryptedFile);
 const mongoOptions = {};
 
 mongoose.connect(process.env.MONGO_URI, mongoOptions)
-  .then(() => console.log('MongoDB connected'))
+  .then(async () => {
+    console.log('MongoDB connected');
+    // Auto-recalculate pending payments on startup
+    try {
+      const Student = require('./models/Student');
+      const students = await Student.find({ status: { $ne: 'archived' } });
+      let fixed = 0;
+      for (const student of students) {
+        const paidTotal = student.payments
+          .filter(p => p.status === 'paid' && p.amount > 0)
+          .reduce((sum, p) => sum + p.amount, 0);
+        const remainingBalance = (student.totalTuition || 0) - paidTotal;
+        const pendingPayments = student.payments.filter(p => p.status === 'pending' && p.amount > 0);
+        if (pendingPayments.length === 0) continue;
+        const currentTotal = pendingPayments.reduce((s, p) => s + p.amount, 0);
+        if (Math.abs(currentTotal - remainingBalance) < 1) continue; // already correct
+        if (remainingBalance > 0) {
+          const perPayment = Math.round(remainingBalance / pendingPayments.length);
+          const lastIndex = pendingPayments.length - 1;
+          let distributed = 0;
+          pendingPayments.forEach((p, i) => {
+            if (i === lastIndex) {
+              p.amount = remainingBalance - distributed;
+            } else {
+              p.amount = perPayment;
+              distributed += perPayment;
+            }
+          });
+        } else {
+          pendingPayments.forEach(p => { p.amount = 0; });
+        }
+        await student.save();
+        fixed++;
+      }
+      if (fixed > 0) console.log(`Auto-fixed pending payments for ${fixed} students`);
+    } catch (e) {
+      console.error('Auto-recalculate error:', e.message);
+    }
+  })
   .catch(err => console.error('MongoDB connection error:', err));
 
 // ============================================
