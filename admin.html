@@ -59,22 +59,35 @@
                 <span>Admin Portal</span>
             </div>
             <div class="admin-user">
-                <span id="adminName"></span>
+                <div class="admin-user-info">
+                    <span id="adminName"></span>
+                    <span class="admin-role-badge" id="adminRoleBadge"></span>
+                </div>
                 <button onclick="adminLogout()" class="btn-logout">Logout</button>
             </div>
         </header>
 
         <div class="admin-content">
             <!-- Admin Navigation -->
-            <div class="admin-nav">
-                <button class="admin-nav-btn active" onclick="switchAdminView('studentsView')">📋 Students</button>
-                <button class="admin-nav-btn" onclick="switchAdminView('collectionsView')">💰 Collections</button>
-                <button class="admin-nav-btn" onclick="switchAdminView('attendanceView')">📅 Attendance</button>
-                <button class="admin-nav-btn" onclick="switchAdminView('announcementsView')">📢 Announcements</button>
-                <button class="admin-nav-btn" onclick="switchAdminView('messagesView')">📩 Messages</button>
-                <button class="admin-nav-btn" onclick="switchAdminView('projectsView')">📁 Projects</button>
-                <button class="admin-nav-btn" onclick="switchAdminView('archivedView')">📦 Archived</button>
-                <button class="admin-nav-btn" onclick="switchAdminView('auditView')">📋 Audit Log</button>
+            <div class="admin-nav" id="adminNav">
+                <button class="admin-nav-btn active" data-view="studentsView" data-roles="superadmin,admin,staff"
+                    onclick="switchAdminView('studentsView')">📋 Students</button>
+                <button class="admin-nav-btn" data-view="collectionsView" data-roles="superadmin,admin"
+                    onclick="switchAdminView('collectionsView')">💰 Collections</button>
+                <button class="admin-nav-btn" data-view="attendanceView" data-roles="superadmin,admin,staff"
+                    onclick="switchAdminView('attendanceView')">📅 Attendance</button>
+                <button class="admin-nav-btn" data-view="announcementsView" data-roles="superadmin,admin,staff"
+                    onclick="switchAdminView('announcementsView')">📢 Announcements</button>
+                <button class="admin-nav-btn" data-view="messagesView" data-roles="superadmin,admin,staff"
+                    onclick="switchAdminView('messagesView')">📩 Messages</button>
+                <button class="admin-nav-btn" data-view="projectsView" data-roles="superadmin,admin,staff"
+                    onclick="switchAdminView('projectsView')">📁 Projects</button>
+                <button class="admin-nav-btn" data-view="archivedView" data-roles="superadmin,admin"
+                    onclick="switchAdminView('archivedView')">📦 Archived</button>
+                <button class="admin-nav-btn" data-view="staffView" data-roles="superadmin"
+                    onclick="switchAdminView('staffView')">👥 Staff</button>
+                <button class="admin-nav-btn" data-view="auditView" data-roles="superadmin"
+                    onclick="switchAdminView('auditView')">📋 Audit Log</button>
             </div>
 
             <!-- Student List -->
@@ -520,6 +533,60 @@
                     <div class="student-list" id="archivedStudentList"></div>
                 </div>
                 <!-- End Archived View -->
+
+                <!-- Staff Management View (Superadmin only) -->
+                <div class="admin-view" id="staffView">
+                    <div class="dashboard-header">
+                        <h2>👥 Staff Management</h2>
+                        <div class="top-actions">
+                            <button class="btn-add-student" onclick="showAddStaffForm()">+ Add Staff</button>
+                        </div>
+                    </div>
+                    <div id="addStaffForm" class="expandable-panel" style="display:none;">
+                        <h3>Create New Account</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Full Name *</label>
+                                <input type="text" id="newStaffName" placeholder="e.g. Maria Santos" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Username *</label>
+                                <input type="text" id="newStaffUsername" placeholder="e.g. maria.santos" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Password *</label>
+                                <input type="password" id="newStaffPassword" placeholder="Min 6 characters" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Role *</label>
+                                <select id="newStaffRole">
+                                    <option value="staff">Staff</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn-save" onclick="createStaffAccount()">Create Account</button>
+                            <button class="btn-cancel" onclick="hideAddStaffForm()">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper" style="margin-top:1rem;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Username</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="staffTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- End Staff View -->
 
             </div>
             <!-- End studentListPanel -->

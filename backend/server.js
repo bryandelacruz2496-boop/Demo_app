@@ -173,6 +173,25 @@ mongoose.connect(process.env.MONGO_URI, mongoOptions)
     } catch (e) {
       console.error('Auto-recalculate error:', e.message);
     }
+
+    // Ensure at least one superadmin exists (upgrade first admin if none)
+    try {
+      const Admin = require('./models/Admin');
+      const superadminExists = await Admin.findOne({ role: 'superadmin' });
+      if (!superadminExists) {
+        const firstAdmin = await Admin.findOne().sort({ createdAt: 1 });
+        if (firstAdmin) {
+          firstAdmin.role = 'superadmin';
+          if (!firstAdmin.status) firstAdmin.status = 'active';
+          await firstAdmin.save();
+          console.log(`Upgraded ${firstAdmin.username} to superadmin`);
+        }
+      }
+      // Ensure all admins have a status field
+      await Admin.updateMany({ status: { $exists: false } }, { $set: { status: 'active' } });
+    } catch (e) {
+      console.error('Admin role setup error:', e.message);
+    }
   })
   .catch(err => console.error('MongoDB connection error:', err));
 

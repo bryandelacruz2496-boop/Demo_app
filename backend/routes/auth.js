@@ -46,6 +46,11 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
+        // Check if account is inactive
+        if (admin.status === 'inactive') {
+            return res.status(403).json({ message: 'Your account has been deactivated. Contact the administrator.' });
+        }
+
         const isMatch = await admin.comparePassword(password);
         if (!isMatch) {
             return res.status(401).json({ message: 'Invalid credentials' });
@@ -140,20 +145,91 @@ router.get('/me', authMiddleware, async (req, res) => {
     }
 });
 
-// POST /api/auth/register (admin only - requires existing admin auth + password policy)
+// POST /api/auth/register (superadmin only - can create staff/admin accounts)
 router.post('/register', authMiddleware, passwordPolicyMiddleware, async (req, res) => {
     try {
-        const { username, password, name } = req.body;
+        // Only superadmin can create accounts
+        if (req.admin.role !== 'superadmin') {
+            return res.status(403).json({ message: 'Only Super Admin can create accounts' });
+        }
+
+        const { username, password, name, role } = req.body;
 
         const existing = await Admin.findOne({ username });
         if (existing) {
             return res.status(400).json({ message: 'Username already exists' });
         }
 
-        const admin = new Admin({ username, password, name });
+        const allowedRoles = ['admin', 'staff'];
+        const assignedRole = allowedRoles.includes(role) ? role : 'staff';
+
+        const admin = new Admin({ username, password, name, role: assignedRole });
         await admin.save();
 
-        res.status(201).json({ message: 'Admin created successfully' });
+        logAction('CREATE_STAFF', req.admin.username, `Created ${assignedRole} account: ${name} (${username})`, null, req.ip);
+        res.status(201).json({ message: `${assignedRole} account created successfully` });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// GET /api/auth/staff - List all staff/admin accounts (superadmin only)
+router.get('/staff', authMiddleware, async (req, res) => {
+    try {
+        if (req.admin.role !== 'superadmin') {
+            return res.status(403).json({ message: 'Access denied' });
+        }
+        const staff = await Admin.find().select('-password -refreshToken').sort({ createdAt: -1 });
+        res.json(staff);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// PUT /api/auth/staff/:id - Update staff role/status (superadmin only)
+router.put('/staff/:id', authMiddleware, async (req, res) => {
+    try {
+        if (req.admin.role !== 'superadmin') {
+            return res.status(403).json({ message: 'Access denied' });
+        }
+
+        const { role, status } = req.body;
+        const staff = await Admin.findById(req.params.id);
+        if (!staff) return res.status(404).json({ message: 'Account not found' });
+
+        // Cannot modify own superadmin account role
+        if (staff._id.toString() === req.admin.id && role !== 'superadmin') {
+            return res.status(400).json({ message: 'Cannot change your own role' });
+        }
+
+        if (role) staff.role = role;
+        if (status) staff.status = status;
+        await staff.save();
+
+        logAction('UPDATE_STAFF', req.admin.username, `Updated ${staff.name} - role: ${staff.role}, status: ${staff.status}`, null, req.ip);
+        res.json({ message: 'Account updated', staff: { ...staff.toObject(), password: undefined, refreshToken: undefined } });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// DELETE /api/auth/staff/:id - Delete staff account (superadmin only)
+router.delete('/staff/:id', authMiddleware, async (req, res) => {
+    try {
+        if (req.admin.role !== 'superadmin') {
+            return res.status(403).json({ message: 'Access denied' });
+        }
+
+        const staff = await Admin.findById(req.params.id);
+        if (!staff) return res.status(404).json({ message: 'Account not found' });
+
+        if (staff._id.toString() === req.admin.id) {
+            return res.status(400).json({ message: 'Cannot delete your own account' });
+        }
+
+        await Admin.findByIdAndDelete(req.params.id);
+        logAction('DELETE_STAFF', req.admin.username, `Deleted account: ${staff.name} (${staff.username})`, null, req.ip);
+        res.json({ message: 'Account deleted' });
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
     }

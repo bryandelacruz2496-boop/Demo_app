@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const Student = require('../models/Student');
 const authMiddleware = require('../middleware/auth');
+const requireRole = require('../middleware/requireRole');
 const { TUITION_TABLE, generatePayments } = require('../config/tuition');
 const { clearCache } = require('../middleware/cache');
 const { logAction } = require('../middleware/auditLogger');

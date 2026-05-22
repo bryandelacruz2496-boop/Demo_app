@@ -1,6 +1,7 @@
 const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : '/api';
 const UPLOADS_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
 let adminToken = localStorage.getItem('adminToken');
+let adminRole = localStorage.getItem('adminRole') || 'staff';
 
 // Helper: resolve image URL (handles both Cloudinary full URLs and local /uploads/ paths)
 function imgUrl(path) {
@@ -18,6 +19,8 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('loginWrapper').style.display = 'none';
         document.getElementById('adminDashboard').style.display = 'block';
         document.getElementById('adminName').textContent = localStorage.getItem('adminName') || 'Admin';
+        adminRole = localStorage.getItem('adminRole') || 'staff';
+        applyRoleUI();
         loadStudents();
         startReplyNotificationCheck();
     }
@@ -59,11 +62,14 @@ async function handleAdminLogin(event) {
 
         if (res.ok) {
             adminToken = data.token;
+            adminRole = data.admin.role || 'staff';
             localStorage.setItem('adminToken', data.token);
             localStorage.setItem('adminName', data.admin.name);
+            localStorage.setItem('adminRole', data.admin.role || 'staff');
             document.getElementById('adminName').textContent = data.admin.name;
             document.getElementById('loginWrapper').style.display = 'none';
             document.getElementById('adminDashboard').style.display = 'block';
+            applyRoleUI();
             loadStudents();
             startReplyNotificationCheck();
         } else {
@@ -995,6 +1001,7 @@ function switchAdminView(viewId) {
     if (viewId === 'attendanceView') loadAttendance();
     if (viewId === 'collectionsView') calculateCollection();
     if (viewId === 'archivedView') loadArchivedStudents();
+    if (viewId === 'staffView') loadStaffList();
 }
 
 // Toast notification
@@ -2140,4 +2147,159 @@ async function saveAllAttendance() {
     } catch (err) {
         showToast('Error saving attendance');
     }
+}
+
+// ============================================
+// ROLE-BASED UI
+// ============================================
+
+function applyRoleUI() {
+    const navBtns = document.querySelectorAll('.admin-nav-btn[data-roles]');
+    navBtns.forEach(btn => {
+        const roles = btn.getAttribute('data-roles').split(',');
+        btn.style.display = roles.includes(adminRole) ? '' : 'none';
+    });
+
+    // Show role badge
+    const badge = document.getElementById('adminRoleBadge');
+    if (badge) {
+        const labels = { superadmin: 'Super Admin', admin: 'Admin', staff: 'Staff' };
+        badge.textContent = labels[adminRole] || adminRole;
+    }
+
+    // Hide delete/archive buttons for staff
+    if (adminRole === 'staff') {
+        const deleteBtn = document.querySelector('.btn-delete-student');
+        if (deleteBtn) deleteBtn.style.display = 'none';
+        const archiveBtn = document.getElementById('btnArchiveStudent');
+        if (archiveBtn) archiveBtn.style.display = 'none';
+    }
+}
+
+// ============================================
+// STAFF MANAGEMENT (Superadmin only)
+// ============================================
+
+function showAddStaffForm() {
+    document.getElementById('addStaffForm').style.display = 'block';
+}
+
+function hideAddStaffForm() {
+    document.getElementById('addStaffForm').style.display = 'none';
+    document.getElementById('newStaffName').value = '';
+    document.getElementById('newStaffUsername').value = '';
+    document.getElementById('newStaffPassword').value = '';
+    document.getElementById('newStaffRole').value = 'staff';
+}
+
+async function createStaffAccount() {
+    const name = document.getElementById('newStaffName').value.trim();
+    const username = document.getElementById('newStaffUsername').value.trim();
+    const password = document.getElementById('newStaffPassword').value;
+    const role = document.getElementById('newStaffRole').value;
+
+    if (!name || !username || !password) {
+        showToast('Please fill in all fields');
+        return;
+    }
+
+    if (password.length < 6) {
+        showToast('Password must be at least 6 characters');
+        return;
+    }
+
+    const res = await fetch(`${API_URL}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+        body: JSON.stringify({ name, username, password, role })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+        showToast(data.message);
+        hideAddStaffForm();
+        loadStaffList();
+    } else {
+        showToast(data.message || 'Error creating account');
+    }
+}
+
+async function loadStaffList() {
+    const res = await fetch(`${API_URL}/auth/staff`, {
+        headers: { 'Authorization': `Bearer ${adminToken}` }
+    });
+    if (!res.ok) return;
+    const staff = await res.json();
+    const tbody = document.getElementById('staffTableBody');
+    if (!tbody) return;
+
+    tbody.innerHTML = staff.map(s => {
+        const isSelf = s.username === (localStorage.getItem('adminName') || '');
+        const roleLabels = { superadmin: 'Super Admin', admin: 'Admin', staff: 'Staff' };
+        return `
+        <tr>
+            <td>${s.name}</td>
+            <td>${s.username}</td>
+            <td>${roleLabels[s.role] || s.role}</td>
+            <td><span class="status-${s.status === 'active' ? 'paid' : 'pending'}">${s.status === 'active' ? '✓ Active' : '⏸ Inactive'}</span></td>
+            <td>${new Date(s.createdAt).toLocaleDateString()}</td>
+            <td>
+                ${s.role === 'superadmin' ? '-' : `
+                    <select onchange="updateStaffRole('${s._id}', this.value)" style="padding:0.3rem;border-radius:5px;border:1px solid #ddd;">
+                        <option value="staff" ${s.role === 'staff' ? 'selected' : ''}>Staff</option>
+                        <option value="admin" ${s.role === 'admin' ? 'selected' : ''}>Admin</option>
+                    </select>
+                    <button class="btn-status btn-mark-${s.status === 'active' ? 'pending' : 'paid'}" onclick="toggleStaffStatus('${s._id}', '${s.status === 'active' ? 'inactive' : 'active'}')">${s.status === 'active' ? 'Deactivate' : 'Activate'}</button>
+                    <button class="btn-status btn-mark-pending" onclick="deleteStaffAccount('${s._id}')">Delete</button>
+                `}
+            </td>
+        </tr>
+        `;
+    }).join('');
+}
+
+async function updateStaffRole(id, role) {
+    const res = await fetch(`${API_URL}/auth/staff/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+        body: JSON.stringify({ role })
+    });
+    if (res.ok) {
+        showToast('Role updated');
+        loadStaffList();
+    } else {
+        const data = await res.json();
+        showToast(data.message || 'Error updating role');
+    }
+}
+
+async function toggleStaffStatus(id, status) {
+    const res = await fetch(`${API_URL}/auth/staff/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+        body: JSON.stringify({ status })
+    });
+    if (res.ok) {
+        showToast('Status updated');
+        loadStaffList();
+    } else {
+        const data = await res.json();
+        showToast(data.message || 'Error updating status');
+    }
+}
+
+async function deleteStaffAccount(id) {
+    showConfirmPopup('Are you sure you want to delete this account?', async () => {
+        const res = await fetch(`${API_URL}/auth/staff/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+        if (res.ok) {
+            showToast('Account deleted');
+            loadStaffList();
+        } else {
+            const data = await res.json();
+            showToast(data.message || 'Error deleting account');
+        }
+    });
 }
