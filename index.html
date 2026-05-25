@@ -90,47 +90,43 @@
                 <h2>News & Announcements</h2>
                 <p class="subtitle">Stay updated with what's happening at Beata Sai Integrated School</p>
             </div>
-            <div class="news-carousel-wrapper">
-                <button class="news-arrow news-arrow-left" onclick="slideNews(-1)" aria-label="Previous">←</button>
-                <div class="news-carousel" id="newsCarousel">
-                    <div class="news-cards">
-                        <div class="news-card active" onclick="openNewsModal('news1')">
-                            <div class="news-card-image">
-                                <img src="news1.jpg" alt="Enrollment Open" class="news-card-img">
-                            </div>
-                            <div class="news-card-overlay">
-                                <span class="news-badge-carousel">🆕 New</span>
-                                <h3>ENROLL NOW! Admissions 2026-2027</h3>
-                                <p>Waldorf-inspired curriculum, air-conditioned classrooms, school service available.
-                                </p>
-                                <span class="news-learn-more">LEARN MORE ▶</span>
-                            </div>
-                        </div>
-                        <div class="news-card" onclick="openNewsModal('news2')">
-                            <div class="news-card-image">
-                                <img src="news2.jpg" alt="John David Argente" class="news-card-img">
-                            </div>
-                            <div class="news-card-overlay">
-                                <span class="news-badge-carousel">📢 Announcement</span>
-                                <h3>CONGRATULATIONS! John David R. Argente</h3>
-                                <p>TOP 8 – LEPT March 2026. Proudly celebrating your outstanding achievement!</p>
-                                <span class="news-learn-more">LEARN MORE ▶</span>
-                            </div>
-                        </div>
-                        <div class="news-card" onclick="openNewsModal('news3')">
-                            <div class="news-card-image">
-                                <img src="news3.jpg" alt="Mae Angelie Villapando" class="news-card-img">
-                            </div>
-                            <div class="news-card-overlay">
-                                <span class="news-badge-carousel">📢 Announcement</span>
-                                <h3>CONGRATULATIONS! Mae Angelie P. Villapando</h3>
-                                <p>LEPT March 2026. Celebrating your outstanding achievement and success!</p>
-                                <span class="news-learn-more">LEARN MORE ▶</span>
-                            </div>
-                        </div>
+            <div class="news-cards">
+                <div class="news-card" onclick="openNewsModal('news1')">
+                    <div class="news-card-image">
+                        <img src="news1.jpg" alt="Enrollment Open" class="news-card-img">
+                        <span class="news-badge">🆕 New</span>
+                    </div>
+                    <div class="news-card-body">
+                        <span class="news-date">📅 May 2026</span>
+                        <h3>ENROLL NOW! Admissions 2026-2027</h3>
+                        <p class="news-desc">Waldorf-inspired curriculum, air-conditioned classrooms, school service
+                            available.</p>
+                        <span class="news-read-more">Read more →</span>
                     </div>
                 </div>
-                <button class="news-arrow news-arrow-right" onclick="slideNews(1)" aria-label="Next">→</button>
+                <div class="news-card" onclick="openNewsModal('news2')">
+                    <div class="news-card-image">
+                        <img src="news2.jpg" alt="John David Argente" class="news-card-img">
+                    </div>
+                    <div class="news-card-body">
+                        <span class="news-date">� March 2026</span>
+                        <h3>CONGRATULATIONS! John David R. Argente</h3>
+                        <p class="news-desc">TOP 8 – LEPT March 2026. Proudly celebrating your outstanding achievement!
+                        </p>
+                        <span class="news-read-more">Read more →</span>
+                    </div>
+                </div>
+                <div class="news-card" onclick="openNewsModal('news3')">
+                    <div class="news-card-image">
+                        <img src="news3.jpg" alt="Mae Angelie Villapando" class="news-card-img">
+                    </div>
+                    <div class="news-card-body">
+                        <span class="news-date">� March 2026</span>
+                        <h3>CONGRATULATIONS! Mae Angelie P. Villapando</h3>
+                        <p class="news-desc">LEPT March 2026. Celebrating your outstanding achievement and success!</p>
+                        <span class="news-read-more">Read more →</span>
+                    </div>
+                </div>
             </div>
 
             <!-- News Modal -->

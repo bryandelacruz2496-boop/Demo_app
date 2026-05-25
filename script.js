@@ -3,12 +3,11 @@
 // ============================================
 const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : '/api';
 
-// Load dynamic news from CMS (carousel format, max 3)
+// Load dynamic news from CMS (card format, max 3)
 async function loadDynamicNews() {
     const newsContainer = document.querySelector('.news-cards');
     if (!newsContainer) return;
 
-    // Fetch from API
     try {
         const res = await fetch(`${API_URL}/website/news`);
         if (res.ok) {
@@ -19,22 +18,17 @@ async function loadDynamicNews() {
                     <div class="news-card" onclick="openDynamicNewsModal(${i})">
                         <div class="news-card-image">
                             <img src="${item.imageUrl}" alt="${item.title}" class="news-card-img">
+                            ${item.badge ? `<span class="news-badge">${item.badge}</span>` : ''}
                         </div>
-                        <div class="news-card-overlay">
-                            ${item.badge ? `<span class="news-badge-carousel">${item.badge}</span>` : ''}
+                        <div class="news-card-body">
+                            <span class="news-date">📅 ${item.date}</span>
                             <h3>${item.title}</h3>
-                            <p>${item.description.substring(0, 100)}${item.description.length > 100 ? '...' : ''}</p>
-                            <span class="news-learn-more">LEARN MORE ▶</span>
+                            <p class="news-desc">${item.description.substring(0, 100)}${item.description.length > 100 ? '...' : ''}</p>
+                            <span class="news-read-more">Read more →</span>
                         </div>
                     </div>
                 `).join('');
                 window._dynamicNews = display;
-                newsSlideIndex = 0;
-                newsContainer.style.transform = 'translateX(0)';
-                setTimeout(() => {
-                    const firstCard = newsContainer.querySelector('.news-card');
-                    if (firstCard) firstCard.classList.add('active');
-                }, 50);
             }
         }
     } catch (e) { }
@@ -96,48 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDynamicNews();
     loadDynamicGallery();
 });
-
-// News Carousel - 3 visible with center focus, looping
-let newsSlideIndex = 0;
-
-function slideNews(direction) {
-    const cards = document.querySelectorAll('.news-cards .news-card');
-    if (cards.length === 0) return;
-    newsSlideIndex += direction;
-    if (newsSlideIndex < 0) newsSlideIndex = cards.length - 1;
-    if (newsSlideIndex >= cards.length) newsSlideIndex = 0;
-    updateNewsCarousel();
-}
-
-function updateNewsCarousel() {
-    const container = document.querySelector('.news-cards');
-    const cards = document.querySelectorAll('.news-cards .news-card');
-    if (!container || cards.length === 0) return;
-
-    // Clone cards for infinite loop effect
-    const total = cards.length;
-
-    // Remove active from all
-    cards.forEach(c => c.classList.remove('active'));
-
-    // Set active
-    cards[newsSlideIndex].classList.add('active');
-
-    // Calculate transform to center the active card
-    // Each side card is 22%, active is 56%, so offset to center active
-    const offset = newsSlideIndex * 22;
-    container.style.transform = `translateX(-${offset}%)`;
-}
-
-// Set first card as active on load
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        updateNewsCarousel();
-    }, 100);
-});
-
-// Auto-slide news every 5 seconds
-setInterval(() => slideNews(1), 5000);
 
 // ============================================
 // MOBILE MENU
