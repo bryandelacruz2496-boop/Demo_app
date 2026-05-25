@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDynamicGallery();
 });
 
-// News Carousel - 3 visible with center focus
+// News Carousel - 3 visible with center focus, looping
 let newsSlideIndex = 0;
 
 function slideNews(direction) {
@@ -110,24 +110,29 @@ function slideNews(direction) {
 }
 
 function updateNewsCarousel() {
+    const container = document.querySelector('.news-cards');
     const cards = document.querySelectorAll('.news-cards .news-card');
-    const track = document.querySelector('.news-cards');
-    if (!track || cards.length === 0) return;
+    if (!container || cards.length === 0) return;
 
-    // Remove active from all, add to current
+    // Clone cards for infinite loop effect
+    const total = cards.length;
+
+    // Remove active from all
     cards.forEach(c => c.classList.remove('active'));
+
+    // Set active
     cards[newsSlideIndex].classList.add('active');
 
-    // Calculate offset to center the active card
-    const offset = newsSlideIndex * 61; // 60% width + 1% margins
-    track.style.transform = `translateX(-${offset}%)`;
+    // Calculate transform to center the active card
+    // Each side card is 22%, active is 56%, so offset to center active
+    const offset = newsSlideIndex * 22;
+    container.style.transform = `translateX(-${offset}%)`;
 }
 
 // Set first card as active on load
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
-        const firstCard = document.querySelector('.news-cards .news-card');
-        if (firstCard) firstCard.classList.add('active');
+        updateNewsCarousel();
     }, 100);
 });
 
