@@ -383,3 +383,115 @@ function openFullImage(src) {
     overlay.onclick = () => overlay.remove();
     document.body.appendChild(overlay);
 }
+
+// ============================================
+// PREMIUM ENHANCEMENTS
+// ============================================
+
+// --- Preloader ---
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        const preloader = document.getElementById('preloader');
+        if (preloader) preloader.classList.add('hidden');
+    }, 1500);
+});
+
+// --- Lenis Smooth Scroll ---
+if (typeof Lenis !== 'undefined') {
+    const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smooth: true });
+    function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+    requestAnimationFrame(raf);
+}
+
+// --- AOS Init with programmatic attributes ---
+document.addEventListener('DOMContentLoaded', () => {
+    // Add AOS attributes programmatically
+    document.querySelectorAll('.section-header').forEach(el => { el.setAttribute('data-aos', 'fade-up'); });
+    document.querySelectorAll('.news-card').forEach((el, i) => { el.setAttribute('data-aos', 'fade-up'); el.setAttribute('data-aos-delay', i * 100); });
+    document.querySelectorAll('.program-card').forEach((el, i) => { el.setAttribute('data-aos', 'flip-up'); el.setAttribute('data-aos-delay', i * 100); });
+    document.querySelectorAll('.gallery-item').forEach((el, i) => { el.setAttribute('data-aos', 'zoom-in'); el.setAttribute('data-aos-delay', i * 80); });
+    document.querySelectorAll('.value-item').forEach((el, i) => { el.setAttribute('data-aos', 'fade-up'); el.setAttribute('data-aos-delay', i * 100); });
+    document.querySelectorAll('.contact-card').forEach((el, i) => { el.setAttribute('data-aos', 'fade-up'); el.setAttribute('data-aos-delay', i * 80); });
+    const aboutText = document.querySelector('.about-text');
+    if (aboutText) aboutText.setAttribute('data-aos', 'fade-right');
+    const aboutImage = document.querySelector('.about-image');
+    if (aboutImage) aboutImage.setAttribute('data-aos', 'fade-left');
+    const statsBar = document.querySelector('.stats-bar');
+    if (statsBar) statsBar.setAttribute('data-aos', 'zoom-in');
+
+    // Init AOS
+    if (typeof AOS !== 'undefined') {
+        AOS.init({ duration: 800, easing: 'ease-out-cubic', once: true, offset: 80 });
+    }
+});
+
+// --- GSAP Hero Animation ---
+window.addEventListener('load', () => {
+    if (typeof gsap === 'undefined') return;
+    gsap.from('.hero-content h1', { y: 60, opacity: 0, duration: 1, delay: 1.8 });
+    gsap.from('.hero-content p', { y: 40, opacity: 0, duration: 0.8, delay: 2.2 });
+    gsap.from('.hero-actions', { y: 30, opacity: 0, duration: 0.8, delay: 2.5 });
+});
+
+// --- Animated Stats Counter ---
+const statsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.querySelectorAll('.stat-number').forEach(num => {
+                const target = parseInt(num.closest('.stat').dataset.target);
+                let current = 0;
+                const increment = target / 60;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) { current = target; clearInterval(timer); }
+                    num.textContent = Math.floor(current);
+                }, 30);
+            });
+            statsObserver.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.5 });
+
+const statsBar = document.querySelector('.stats-bar');
+if (statsBar) statsObserver.observe(statsBar);
+
+// --- Navigation Scroll Effect ---
+window.addEventListener('scroll', () => {
+    const header = document.getElementById('mainHeader');
+    if (header) {
+        if (window.scrollY > 50) {
+            header.classList.add('nav-scrolled');
+        } else {
+            header.classList.remove('nav-scrolled');
+        }
+    }
+});
+
+// --- Custom Cursor ---
+if (window.matchMedia('(pointer: fine)').matches) {
+    const dot = document.getElementById('cursorDot');
+    const ring = document.getElementById('cursorRing');
+    if (dot && ring) {
+        let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX; mouseY = e.clientY;
+            dot.style.left = mouseX + 'px'; dot.style.top = mouseY + 'px';
+        });
+        function animateRing() {
+            ringX += (mouseX - ringX) * 0.15; ringY += (mouseY - ringY) * 0.15;
+            ring.style.left = ringX + 'px'; ring.style.top = ringY + 'px';
+            requestAnimationFrame(animateRing);
+        }
+        animateRing();
+        document.querySelectorAll('a, button, .news-card, .program-card, .gallery-item, .btn').forEach(el => {
+            el.addEventListener('mouseenter', () => ring.classList.add('hover'));
+            el.addEventListener('mouseleave', () => ring.classList.remove('hover'));
+        });
+    }
+} else {
+    // Hide cursor on touch devices
+    const dot = document.getElementById('cursorDot');
+    const ring = document.getElementById('cursorRing');
+    if (dot) dot.style.display = 'none';
+    if (ring) ring.style.display = 'none';
+}
