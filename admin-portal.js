@@ -298,6 +298,39 @@ function calculateCollection() {
     }
 }
 
+function exportCollectionReport() {
+    const table = document.getElementById('collectionTable');
+    if (!table) return;
+    const month = document.getElementById('collectionMonth');
+    const year = document.getElementById('collectionYear');
+    const monthName = month.options[month.selectedIndex].text;
+    const yearVal = year.value;
+
+    let csv = '';
+    const rows = table.querySelectorAll('tr');
+    rows.forEach(row => {
+        const cols = row.querySelectorAll('th, td');
+        const rowData = [];
+        cols.forEach(col => {
+            let text = col.textContent.replace(/"/g, '""').trim();
+            rowData.push('"' + text + '"');
+        });
+        csv += rowData.join(',') + '\n';
+    });
+
+    // Add summary at top
+    const collected = document.getElementById('monthCollected').textContent;
+    const pending = document.getElementById('monthPending').textContent;
+    const total = document.getElementById('monthTotal').textContent;
+    const summary = `"Monthly Collection Report - ${monthName} ${yearVal}"\n"Total Collected","${collected}"\n"Pending","${pending}"\n"Total Expected","${total}"\n\n`;
+
+    const blob = new Blob(['\uFEFF' + summary + csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `collection-report-${yearVal}-${month.value}.csv`;
+    link.click();
+}
+
 function renderStudentList() {
     const filterGrade = document.getElementById('filterGrade') ? document.getElementById('filterGrade').value : 'all';
     const list = document.getElementById('studentList');
