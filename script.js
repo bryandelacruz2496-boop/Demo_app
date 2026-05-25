@@ -3,7 +3,7 @@
 // ============================================
 const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : '/api';
 
-// Load dynamic news from CMS (replaces static content, max 4 cards)
+// Load dynamic news from CMS (carousel format, max 3)
 async function loadDynamicNews() {
     const newsContainer = document.querySelector('.news-cards');
     if (!newsContainer) return;
@@ -14,23 +14,23 @@ async function loadDynamicNews() {
         if (res.ok) {
             const news = await res.json();
             if (news.length > 0) {
-                // Show max 4 cards
-                const display = news.slice(0, 4);
+                const display = news.slice(0, 3);
                 newsContainer.innerHTML = display.map((item, i) => `
                     <div class="news-card" onclick="openDynamicNewsModal(${i})">
                         <div class="news-card-image">
                             <img src="${item.imageUrl}" alt="${item.title}" class="news-card-img">
-                            ${item.badge ? `<span class="news-badge">${item.badge}</span>` : ''}
                         </div>
-                        <div class="news-card-body">
-                            <span class="news-date">📅 ${item.date}</span>
+                        <div class="news-card-overlay">
+                            ${item.badge ? `<span class="news-badge-carousel">${item.badge}</span>` : ''}
                             <h3>${item.title}</h3>
-                            <p class="news-desc">${item.description.substring(0, 120)}${item.description.length > 120 ? '...' : ''}</p>
-                            <span class="news-read-more">Read more →</span>
+                            <p>${item.description.substring(0, 100)}${item.description.length > 100 ? '...' : ''}</p>
+                            <span class="news-learn-more">LEARN MORE ▶</span>
                         </div>
                     </div>
                 `).join('');
                 window._dynamicNews = display;
+                newsSlideIndex = 0;
+                newsContainer.style.transform = 'translateX(0)';
             }
         }
     } catch (e) { }
@@ -92,6 +92,22 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDynamicNews();
     loadDynamicGallery();
 });
+
+// News Carousel
+let newsSlideIndex = 0;
+
+function slideNews(direction) {
+    const cards = document.querySelectorAll('.news-cards .news-card');
+    if (cards.length === 0) return;
+    newsSlideIndex += direction;
+    if (newsSlideIndex < 0) newsSlideIndex = cards.length - 1;
+    if (newsSlideIndex >= cards.length) newsSlideIndex = 0;
+    const track = document.querySelector('.news-cards');
+    track.style.transform = `translateX(-${newsSlideIndex * 100}%)`;
+}
+
+// Auto-slide news every 5 seconds
+setInterval(() => slideNews(1), 5000);
 
 // ============================================
 // MOBILE MENU
