@@ -660,13 +660,15 @@ h4 {
     background: linear-gradient(135deg, #1a237e, #3949ab);
     color: #fff;
     border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 10px;
+    padding: 0.55rem 1.2rem;
+    border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
+    font-size: 0.85rem;
+    font-family: inherit;
     white-space: nowrap;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 3px 8px rgba(26, 35, 126, 0.3);
+    box-shadow: 0 2px 6px rgba(26, 35, 126, 0.3);
     will-change: transform;
 }
 
@@ -683,20 +685,20 @@ h4 {
     background: linear-gradient(135deg, #1a237e, #3949ab);
     color: #fff;
     border: none;
-    padding: 0.6rem 1.5rem;
-    border-radius: 10px;
-    font-size: 0.9rem;
+    padding: 0.55rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
-    margin-top: 1rem;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 8px rgba(26, 35, 126, 0.3);
+    box-shadow: 0 2px 6px rgba(26, 35, 126, 0.3);
     will-change: transform;
     font-family: inherit;
+    white-space: nowrap;
 }
 
 .btn-save:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(26, 35, 126, 0.4);
 }
 
@@ -1143,19 +1145,20 @@ h4 {
     background: linear-gradient(135deg, #1a237e, #3949ab);
     color: #fff;
     border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 10px;
+    padding: 0.55rem 1.2rem;
+    border-radius: 8px;
     font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 8px rgba(26, 35, 126, 0.3);
+    box-shadow: 0 2px 6px rgba(26, 35, 126, 0.3);
     font-family: inherit;
     will-change: transform;
+    white-space: nowrap;
 }
 
 .btn-add-student:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(26, 35, 126, 0.4);
 }
 
@@ -1227,13 +1230,14 @@ h4 {
     background: #f0f0f0;
     color: #555;
     border: 1px solid #ddd;
-    padding: 0.6rem 1.5rem;
-    border-radius: 10px;
-    font-size: 0.9rem;
+    padding: 0.55rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     font-family: inherit;
+    white-space: nowrap;
 }
 
 .btn-cancel:hover {
@@ -2191,18 +2195,19 @@ h4 {
     background: linear-gradient(135deg, #1a237e, #3949ab);
     color: #fff;
     border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 10px;
+    padding: 0.55rem 1.2rem;
+    border-radius: 8px;
     font-weight: 600;
     font-size: 0.85rem;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 8px rgba(26, 35, 126, 0.3);
+    box-shadow: 0 2px 6px rgba(26, 35, 126, 0.3);
     font-family: inherit;
+    white-space: nowrap;
 }
 
 .btn-export:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(26, 35, 126, 0.4);
 }
 
@@ -2215,18 +2220,19 @@ h4 {
     background: linear-gradient(135deg, #1a237e, #3949ab);
     color: #fff;
     border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 10px;
+    padding: 0.55rem 1.2rem;
+    border-radius: 8px;
     font-weight: 600;
     font-size: 0.85rem;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 8px rgba(26, 35, 126, 0.3);
+    box-shadow: 0 2px 6px rgba(26, 35, 126, 0.3);
     font-family: inherit;
+    white-space: nowrap;
 }
 
 .btn-action:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(26, 35, 126, 0.4);
 }
 
