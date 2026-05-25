@@ -258,6 +258,25 @@ mongoose.connect(process.env.MONGO_URI, mongoOptions)
     } catch (e) {
       console.error('News seed error:', e.message);
     }
+
+    // Seed default gallery categories if none exist
+    try {
+      const GalleryCategory = require('./models/GalleryCategory');
+      const galCount = await GalleryCategory.countDocuments();
+      if (galCount === 0) {
+        await GalleryCategory.insertMany([
+          { name: 'Daily', icon: '📖', coverImage: '/daily1.jpg', photos: ['/daily1.jpg', '/daily2.jpg', '/daily3.jpeg', '/daily4.jpg', '/daily5.jpg'], order: 1 },
+          { name: 'Events', icon: '🎉', coverImage: '/event1.jpg', photos: ['/event1.jpg', '/event2.jpeg', '/event3.jpg', '/event4.jpg', '/event5.jpg'], order: 2 },
+          { name: 'Crossing Over', icon: '🎓', coverImage: '/crossingover1.png', photos: ['/crossingover1.png', '/crossingover2.jpg', '/crossingover3.png'], order: 3 },
+          { name: 'Rite of Passage', icon: '🕯️', coverImage: '/riteofpassage1.JPEG', photos: ['/riteofpassage1.JPEG', '/riteofpassage2.JPEG'], order: 4 },
+          { name: 'Camping', icon: '⛺', coverImage: '/camping1.png', photos: ['/camping1.png', '/camping2.jpg', '/camping3.jpg', '/camping4.JPEG', '/camping5.png'], order: 5 },
+          { name: 'Field Learning', icon: '🌿', coverImage: '/fieldlearning1.jpeg', photos: ['/fieldlearning1.jpeg', '/fieldlearning2.jpeg', '/fieldlearning3.jpg', '/fieldlearning4.jpeg', '/fieldlearning5.jpg'], order: 6 }
+        ]);
+        console.log('Seeded 6 default gallery categories');
+      }
+    } catch (e) {
+      console.error('Gallery seed error:', e.message);
+    }
   })
   .catch(err => console.error('MongoDB connection error:', err));
 
