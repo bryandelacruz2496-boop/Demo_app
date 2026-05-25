@@ -221,6 +221,43 @@ mongoose.connect(process.env.MONGO_URI, mongoOptions)
     } catch (e) {
       console.error('Admin role setup error:', e.message);
     }
+
+    // Seed default news if none exist
+    try {
+      const WebsiteNews = require('./models/WebsiteNews');
+      const newsCount = await WebsiteNews.countDocuments();
+      if (newsCount === 0) {
+        await WebsiteNews.insertMany([
+          {
+            title: 'ENROLL NOW! Admissions 2026-2027',
+            date: 'May 2026',
+            description: 'Beata Sai Integrated School 2026-2027 Admissions are still open!\n\nOur curriculum is Waldorf-inspired.\n• Air-conditioned Classrooms\n• School Service\n\nWe offer kindergarten to elementary.\n\nJust bring the following:\n• PSA\n• Form 138 (if transferee)\n• Report card (if transferee)\n\nFeel free to message us directly here on our page.\n\nContact us: 09272445030\nVisit us: Narra St. Brgy. Magsaysay Lopez Quezon',
+            imageUrl: '/news1.jpg',
+            badge: '🆕 New',
+            published: true
+          },
+          {
+            title: 'CONGRATULATIONS! John David R. Argente',
+            date: 'March 2026',
+            description: 'TOP 8 – LEPT MARCH 2026\n\nBeata Sai Integrated School proudly celebrates your outstanding achievement and success!\n\nYour excellence brings pride and honor to our institution.\n\nWe are proud of you!',
+            imageUrl: '/news2.jpg',
+            badge: '📢 Announcement',
+            published: true
+          },
+          {
+            title: 'CONGRATULATIONS! Mae Angelie P. Villapando',
+            date: 'March 2026',
+            description: 'LEPT MARCH 2026\n\nBeata Sai Integrated School proudly celebrates your outstanding achievement and success!\n\nYour excellence brings pride and honor to our institution.\n\nWe are proud of you!',
+            imageUrl: '/news3.jpg',
+            badge: '📢 Announcement',
+            published: true
+          }
+        ]);
+        console.log('Seeded 3 default news items');
+      }
+    } catch (e) {
+      console.error('News seed error:', e.message);
+    }
   })
   .catch(err => console.error('MongoDB connection error:', err));
 

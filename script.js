@@ -3,24 +3,20 @@
 // ============================================
 const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : '/api';
 
-// Load dynamic news from CMS (adds to existing, doesn't replace)
+// Load dynamic news from CMS (replaces static content, max 4 cards)
 async function loadDynamicNews() {
     const newsContainer = document.querySelector('.news-cards');
     if (!newsContainer) return;
 
-    // Keep the original static HTML as fallback
-    if (!window._originalNewsHTML) {
-        window._originalNewsHTML = newsContainer.innerHTML;
-    }
-
-    // Fetch fresh data
+    // Fetch from API
     try {
         const res = await fetch(`${API_URL}/website/news`);
         if (res.ok) {
             const news = await res.json();
             if (news.length > 0) {
-                // Prepend CMS news before the static ones
-                const cmsCards = news.map((item, i) => `
+                // Show max 4 cards
+                const display = news.slice(0, 4);
+                newsContainer.innerHTML = display.map((item, i) => `
                     <div class="news-card" onclick="openDynamicNewsModal(${i})">
                         <div class="news-card-image">
                             <img src="${item.imageUrl}" alt="${item.title}" class="news-card-img">
@@ -34,8 +30,7 @@ async function loadDynamicNews() {
                         </div>
                     </div>
                 `).join('');
-                newsContainer.innerHTML = cmsCards + window._originalNewsHTML;
-                window._dynamicNews = news;
+                window._dynamicNews = display;
             }
         }
     } catch (e) { }
@@ -53,24 +48,18 @@ function openDynamicNewsModal(index) {
     document.body.style.overflow = 'hidden';
 }
 
-// Load dynamic gallery from CMS (adds to existing, doesn't replace)
+// Load dynamic gallery from CMS (replaces static content)
 async function loadDynamicGallery() {
     const galleryGrid = document.querySelector('.gallery-grid');
     if (!galleryGrid) return;
 
-    // Keep the original static HTML as fallback
-    if (!window._originalGalleryHTML) {
-        window._originalGalleryHTML = galleryGrid.innerHTML;
-    }
-
-    // Fetch fresh data
+    // Fetch from API
     try {
         const res = await fetch(`${API_URL}/website/gallery`);
         if (res.ok) {
             const categories = await res.json();
             if (categories.length > 0) {
-                // Prepend CMS gallery before the static ones
-                const cmsItems = categories.map((cat, i) => `
+                galleryGrid.innerHTML = categories.map((cat, i) => `
                     <div class="gallery-item" onclick="openDynamicGalleryModal(${i})">
                         <img src="${cat.coverImage || cat.photos[0] || ''}" alt="${cat.name}">
                         <div class="gallery-overlay">
@@ -78,7 +67,6 @@ async function loadDynamicGallery() {
                         </div>
                     </div>
                 `).join('');
-                galleryGrid.innerHTML = cmsItems + window._originalGalleryHTML;
                 window._dynamicGallery = categories;
             }
         }
