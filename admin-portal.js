@@ -2244,9 +2244,9 @@ async function loadWebsiteNews() {
 
 async function createNews() {
     const title = document.getElementById('newsTitle').value.trim();
-    const date = document.getElementById('newsDate').value.trim();
+    const date = getDatePickerValue('newsDate');
     const description = document.getElementById('newsDescription').value.trim();
-    const badge = document.getElementById('newsBadge').value.trim();
+    const badge = document.getElementById('newsBadge').value;
     const imageFile = document.getElementById('newsImage').files[0];
 
     if (!title || !date || !description || !imageFile) {
@@ -2272,8 +2272,8 @@ async function createNews() {
         hideAddNewsForm();
         document.getElementById('newsTitle').value = '';
         document.getElementById('newsDate').value = '';
+        document.getElementById('newsDate').dataset.value = '';
         document.getElementById('newsDescription').value = '';
-        document.getElementById('newsBadge').value = '';
         document.getElementById('newsImage').value = '';
         loadWebsiteNews();
     } else {
@@ -2318,6 +2318,13 @@ async function loadWebsiteGallery() {
     const grid = document.getElementById('galleryAdminGrid');
     if (!grid) return;
 
+    // Populate the upload dropdown
+    const dropdown = document.getElementById('galleryUploadTarget');
+    if (dropdown) {
+        dropdown.innerHTML = '<option value="">Select a category...</option>' +
+            categories.map(cat => `<option value="${cat._id}">${cat.icon} ${cat.name}</option>`).join('');
+    }
+
     if (categories.length === 0) {
         grid.innerHTML = '<p style="text-align:center;color:#888;padding:2rem;grid-column:1/-1;">No gallery categories yet.</p>';
         return;
@@ -2332,15 +2339,46 @@ async function loadWebsiteGallery() {
                 <h4 style="font-size:0.9rem;margin-bottom:0.3rem;">${cat.icon} ${cat.name}</h4>
                 <p style="font-size:0.8rem;color:#888;">${cat.photos.length} photos</p>
                 <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
-                    <label class="btn-status btn-mark-paid" style="cursor:pointer;font-size:0.75rem;">
-                        Upload
-                        <input type="file" multiple accept="image/*" onchange="uploadGalleryPhotos('${cat._id}', this)" style="display:none;">
-                    </label>
                     <button class="btn-status btn-mark-pending" style="font-size:0.75rem;" onclick="deleteGalleryCategory('${cat._id}')">Delete</button>
                 </div>
             </div>
         </div>
     `).join('');
+}
+
+async function uploadToSelectedCategory() {
+    const categoryId = document.getElementById('galleryUploadTarget').value;
+    const files = document.getElementById('galleryUploadFiles').files;
+
+    if (!categoryId) {
+        showToast('Please select a category');
+        return;
+    }
+    if (!files || files.length === 0) {
+        showToast('Please select photos to upload');
+        return;
+    }
+
+    const formData = new FormData();
+    for (const file of files) {
+        formData.append('photos', file);
+    }
+
+    showToast('Uploading photos...');
+    const res = await fetch(`${API_URL}/website/admin/gallery/${categoryId}/photos`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${adminToken}` },
+        body: formData
+    });
+
+    if (res.ok) {
+        showToast(`${files.length} photos uploaded!`);
+        document.getElementById('galleryUploadFiles').value = '';
+        document.getElementById('galleryUploadTarget').value = '';
+        loadWebsiteGallery();
+    } else {
+        showToast('Error uploading photos');
+    }
 }
 
 async function createGalleryCategory() {

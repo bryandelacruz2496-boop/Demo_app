@@ -565,11 +565,15 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Date *</label>
-                                        <input type="text" id="newsDate" placeholder="e.g. May 2026">
+                                        <input type="text" id="newsDate" class="datepicker-input"
+                                            placeholder="Pick a date" readonly>
                                     </div>
                                     <div class="form-group">
-                                        <label>Badge (optional)</label>
-                                        <input type="text" id="newsBadge" placeholder="e.g. 🆕 New">
+                                        <label>Badge *</label>
+                                        <select id="newsBadge">
+                                            <option value="🆕 New">🆕 New</option>
+                                            <option value="📢 Announcement">📢 Announcement</option>
+                                        </select>
                                     </div>
                                     <div class="form-group">
                                         <label>Image *</label>
@@ -577,8 +581,8 @@
                                     </div>
                                     <div class="form-group full-width">
                                         <label>Description *</label>
-                                        <textarea id="newsDescription" rows="4"
-                                            placeholder="Full news content..."></textarea>
+                                        <textarea id="newsDescription" rows="4" placeholder="Full news content..."
+                                            style="resize:none;"></textarea>
                                     </div>
                                 </div>
                                 <div class="form-actions">
@@ -623,6 +627,24 @@
                                 <div class="form-actions">
                                     <button class="btn-save" onclick="createGalleryCategory()">Create Category</button>
                                     <button class="btn-cancel" onclick="hideAddGalleryForm()">Cancel</button>
+                                </div>
+                            </div>
+                            <div style="margin-top:1rem;margin-bottom:1rem;">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label>Upload to Category</label>
+                                        <select id="galleryUploadTarget">
+                                            <option value="">Select a category...</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Photos</label>
+                                        <input type="file" id="galleryUploadFiles" multiple accept="image/*">
+                                    </div>
+                                    <div class="form-group" style="display:flex;align-items:flex-end;">
+                                        <button class="btn-save" onclick="uploadToSelectedCategory()">Upload
+                                            Photos</button>
+                                    </div>
                                 </div>
                             </div>
                             <div id="galleryAdminGrid"
