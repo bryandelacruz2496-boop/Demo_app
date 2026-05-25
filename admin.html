@@ -86,6 +86,8 @@
                     onclick="switchAdminView('archivedView')">📦 Archived</button>
                 <button class="admin-nav-btn" data-view="staffView" data-roles="superadmin"
                     onclick="switchAdminView('staffView')">👥 Staff</button>
+                <button class="admin-nav-btn" data-view="websiteView" data-roles="superadmin"
+                    onclick="switchAdminView('websiteView')">🌐 Website</button>
                 <button class="admin-nav-btn" data-view="auditView" data-roles="superadmin"
                     onclick="switchAdminView('auditView')">📋 Audit Log</button>
             </div>
@@ -541,6 +543,94 @@
                         <div class="student-list" id="archivedStudentList"></div>
                     </div>
                     <!-- End Archived View -->
+
+                    <!-- Website CMS View (Superadmin only) -->
+                    <div class="admin-view" id="websiteView">
+                        <div class="dashboard-header">
+                            <h2>🌐 Website Content</h2>
+                        </div>
+
+                        <!-- News Management -->
+                        <div style="margin-bottom:2rem;">
+                            <div
+                                style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                                <h3 style="color:#1a237e;">📢 News & Announcements</h3>
+                                <button class="btn-add-student" onclick="showAddNewsForm()">+ Add News</button>
+                            </div>
+                            <div id="addNewsForm" class="expandable-panel" style="display:none;">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label>Title *</label>
+                                        <input type="text" id="newsTitle" placeholder="e.g. Enrollment Open 2026-2027">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Date *</label>
+                                        <input type="text" id="newsDate" placeholder="e.g. May 2026">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Badge (optional)</label>
+                                        <input type="text" id="newsBadge" placeholder="e.g. 🆕 New">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Image *</label>
+                                        <input type="file" id="newsImage" accept="image/*">
+                                    </div>
+                                    <div class="form-group full-width">
+                                        <label>Description *</label>
+                                        <textarea id="newsDescription" rows="4"
+                                            placeholder="Full news content..."></textarea>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn-save" onclick="createNews()">Publish News</button>
+                                    <button class="btn-cancel" onclick="hideAddNewsForm()">Cancel</button>
+                                </div>
+                            </div>
+                            <div class="table-wrapper">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Image</th>
+                                            <th>Title</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="websiteNewsBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Gallery Management -->
+                        <div>
+                            <div
+                                style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                                <h3 style="color:#1a237e;">📸 Gallery</h3>
+                                <button class="btn-add-student" onclick="showAddGalleryForm()">+ Add Category</button>
+                            </div>
+                            <div id="addGalleryForm" class="expandable-panel" style="display:none;">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label>Category Name *</label>
+                                        <input type="text" id="galleryCatName" placeholder="e.g. Field Trip 2026">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Icon</label>
+                                        <input type="text" id="galleryCatIcon" placeholder="e.g. 📸" value="📸">
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn-save" onclick="createGalleryCategory()">Create Category</button>
+                                    <button class="btn-cancel" onclick="hideAddGalleryForm()">Cancel</button>
+                                </div>
+                            </div>
+                            <div id="galleryAdminGrid"
+                                style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Website View -->
 
                     <!-- Staff Management View (Superadmin only) -->
                     <div class="admin-view" id="staffView">

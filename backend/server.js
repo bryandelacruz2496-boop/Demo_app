@@ -21,6 +21,7 @@ const eventRoutes = require('./routes/events');
 const projectRoutes = require('./routes/projects');
 const exportRoutes = require('./routes/exports');
 const auditRoutes = require('./routes/audit');
+const websiteRoutes = require('./routes/website');
 const { serveEncryptedFile } = require('./middleware/fileEncryption');
 
 const app = express();
@@ -235,6 +236,7 @@ app.use('/api/events', eventRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/exports', exportRoutes);
 app.use('/api/audit', auditRoutes);
+app.use('/api/website', websiteRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });

@@ -1015,6 +1015,7 @@ function switchAdminView(viewId) {
     if (viewId === 'collectionsView') calculateCollection();
     if (viewId === 'archivedView') loadArchivedStudents();
     if (viewId === 'staffView') loadStaffList();
+    if (viewId === 'websiteView') loadWebsiteContent();
 }
 
 // Toast notification
@@ -2197,6 +2198,218 @@ async function saveAllAttendance() {
     } catch (err) {
         showToast('Error saving attendance');
     }
+}
+
+// ============================================
+// WEBSITE CMS
+// ============================================
+
+function loadWebsiteContent() {
+    loadWebsiteNews();
+    loadWebsiteGallery();
+}
+
+function showAddNewsForm() { document.getElementById('addNewsForm').style.display = 'block'; }
+function hideAddNewsForm() { document.getElementById('addNewsForm').style.display = 'none'; }
+function showAddGalleryForm() { document.getElementById('addGalleryForm').style.display = 'block'; }
+function hideAddGalleryForm() { document.getElementById('addGalleryForm').style.display = 'none'; }
+
+async function loadWebsiteNews() {
+    const res = await fetch(`${API_URL}/website/admin/news`, {
+        headers: { 'Authorization': `Bearer ${adminToken}` }
+    });
+    if (!res.ok) return;
+    const news = await res.json();
+    const tbody = document.getElementById('websiteNewsBody');
+    if (!tbody) return;
+
+    if (news.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#888;padding:2rem;">No news yet. Add your first news item.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = news.map(n => `
+        <tr>
+            <td><img src="${n.imageUrl}" style="width:60px;height:40px;object-fit:cover;border-radius:6px;"></td>
+            <td>${n.title}</td>
+            <td>${n.date}</td>
+            <td><span class="status-${n.published ? 'paid' : 'pending'}">${n.published ? '✓ Published' : '⏸ Draft'}</span></td>
+            <td>
+                <button class="btn-status btn-mark-${n.published ? 'pending' : 'paid'}" onclick="toggleNewsPublish('${n._id}', ${!n.published})">${n.published ? 'Unpublish' : 'Publish'}</button>
+                <button class="btn-status btn-mark-pending" onclick="deleteNews('${n._id}')">Delete</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+async function createNews() {
+    const title = document.getElementById('newsTitle').value.trim();
+    const date = document.getElementById('newsDate').value.trim();
+    const description = document.getElementById('newsDescription').value.trim();
+    const badge = document.getElementById('newsBadge').value.trim();
+    const imageFile = document.getElementById('newsImage').files[0];
+
+    if (!title || !date || !description || !imageFile) {
+        showToast('Please fill in all required fields and select an image');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('date', date);
+    formData.append('description', description);
+    formData.append('badge', badge);
+    formData.append('image', imageFile);
+
+    const res = await fetch(`${API_URL}/website/admin/news`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${adminToken}` },
+        body: formData
+    });
+
+    if (res.ok) {
+        showToast('News published!');
+        hideAddNewsForm();
+        document.getElementById('newsTitle').value = '';
+        document.getElementById('newsDate').value = '';
+        document.getElementById('newsDescription').value = '';
+        document.getElementById('newsBadge').value = '';
+        document.getElementById('newsImage').value = '';
+        loadWebsiteNews();
+    } else {
+        const data = await res.json();
+        showToast(data.message || 'Error creating news');
+    }
+}
+
+async function toggleNewsPublish(id, published) {
+    const formData = new FormData();
+    formData.append('published', published);
+    const res = await fetch(`${API_URL}/website/admin/news/${id}`, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${adminToken}` },
+        body: formData
+    });
+    if (res.ok) {
+        showToast(published ? 'News published' : 'News unpublished');
+        loadWebsiteNews();
+    }
+}
+
+async function deleteNews(id) {
+    showConfirmPopup('Delete this news item?', async () => {
+        const res = await fetch(`${API_URL}/website/admin/news/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+        if (res.ok) {
+            showToast('News deleted');
+            loadWebsiteNews();
+        }
+    });
+}
+
+async function loadWebsiteGallery() {
+    const res = await fetch(`${API_URL}/website/admin/gallery`, {
+        headers: { 'Authorization': `Bearer ${adminToken}` }
+    });
+    if (!res.ok) return;
+    const categories = await res.json();
+    const grid = document.getElementById('galleryAdminGrid');
+    if (!grid) return;
+
+    if (categories.length === 0) {
+        grid.innerHTML = '<p style="text-align:center;color:#888;padding:2rem;grid-column:1/-1;">No gallery categories yet.</p>';
+        return;
+    }
+
+    grid.innerHTML = categories.map(cat => `
+        <div style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);border:1px solid #eee;">
+            <div style="height:120px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+                ${cat.coverImage ? `<img src="${cat.coverImage}" style="width:100%;height:100%;object-fit:cover;">` : `<span style="font-size:3rem;">${cat.icon}</span>`}
+            </div>
+            <div style="padding:1rem;">
+                <h4 style="font-size:0.9rem;margin-bottom:0.3rem;">${cat.icon} ${cat.name}</h4>
+                <p style="font-size:0.8rem;color:#888;">${cat.photos.length} photos</p>
+                <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
+                    <label class="btn-status btn-mark-paid" style="cursor:pointer;font-size:0.75rem;">
+                        Upload
+                        <input type="file" multiple accept="image/*" onchange="uploadGalleryPhotos('${cat._id}', this)" style="display:none;">
+                    </label>
+                    <button class="btn-status btn-mark-pending" style="font-size:0.75rem;" onclick="deleteGalleryCategory('${cat._id}')">Delete</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function createGalleryCategory() {
+    const name = document.getElementById('galleryCatName').value.trim();
+    const icon = document.getElementById('galleryCatIcon').value.trim() || '📸';
+
+    if (!name) {
+        showToast('Category name is required');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('icon', icon);
+
+    const res = await fetch(`${API_URL}/website/admin/gallery`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${adminToken}` },
+        body: formData
+    });
+
+    if (res.ok) {
+        showToast('Category created!');
+        hideAddGalleryForm();
+        document.getElementById('galleryCatName').value = '';
+        document.getElementById('galleryCatIcon').value = '📸';
+        loadWebsiteGallery();
+    } else {
+        const data = await res.json();
+        showToast(data.message || 'Error creating category');
+    }
+}
+
+async function uploadGalleryPhotos(categoryId, input) {
+    if (!input.files || input.files.length === 0) return;
+
+    const formData = new FormData();
+    for (const file of input.files) {
+        formData.append('photos', file);
+    }
+
+    showToast('Uploading photos...');
+    const res = await fetch(`${API_URL}/website/admin/gallery/${categoryId}/photos`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${adminToken}` },
+        body: formData
+    });
+
+    if (res.ok) {
+        const data = await res.json();
+        showToast(`${input.files.length} photos uploaded!`);
+        loadWebsiteGallery();
+    } else {
+        showToast('Error uploading photos');
+    }
+    input.value = '';
+}
+
+async function deleteGalleryCategory(id) {
+    showConfirmPopup('Delete this gallery category and all its photos?', async () => {
+        const res = await fetch(`${API_URL}/website/admin/gallery/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+        if (res.ok) {
+            showToast('Category deleted');
+            loadWebsiteGallery();
+        }
+    });
 }
 
 // ============================================
