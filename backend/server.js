@@ -69,21 +69,49 @@ app.use(cors({
 // ============================================
 app.use(express.json());
 app.use(cookieParser());
-app.use(mongoSanitize()); // Prevents NoSQL injection ($gt, $ne, etc.)
 
-// XSS sanitization middleware
+// Preserve password fields before mongo sanitization
 app.use((req, res, next) => {
   if (req.body) {
-    sanitizeObject(req.body);
-  }
-  if (req.query) {
-    sanitizeObject(req.query);
+    req._rawPasswords = {};
+    ['password', 'newPassword', 'adminPassword', 'newPw', 'confirmPw'].forEach(field => {
+      if (req.body[field] !== undefined) {
+        req._rawPasswords[field] = req.body[field];
+      }
+    });
   }
   next();
 });
 
-function sanitizeObject(obj) {
+app.use(mongoSanitize()); // Prevents NoSQL injection ($gt, $ne, etc.)
+
+// Restore password fields after mongo sanitization
+app.use((req, res, next) => {
+  if (req._rawPasswords) {
+    Object.keys(req._rawPasswords).forEach(field => {
+      req.body[field] = req._rawPasswords[field];
+    });
+    delete req._rawPasswords;
+  }
+  next();
+});
+
+// XSS sanitization middleware
+app.use((req, res, next) => {
+  if (req.body) {
+    sanitizeObject(req.body, req.path);
+  }
+  if (req.query) {
+    sanitizeObject(req.query, req.path);
+  }
+  next();
+});
+
+function sanitizeObject(obj, path) {
+  // Skip password fields - they need to be compared exactly as entered
+  const skipFields = ['password', 'newPassword', 'adminPassword', 'newPw', 'confirmPw'];
   for (const key in obj) {
+    if (skipFields.includes(key)) continue;
     if (typeof obj[key] === 'string') {
       obj[key] = obj[key]
         .replace(/</g, '&lt;')
@@ -91,7 +119,7 @@ function sanitizeObject(obj) {
         .replace(/javascript:/gi, '')
         .replace(/on\w+\s*=/gi, '');
     } else if (typeof obj[key] === 'object' && obj[key] !== null) {
-      sanitizeObject(obj[key]);
+      sanitizeObject(obj[key], path);
     }
   }
 }
