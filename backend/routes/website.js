@@ -11,10 +11,10 @@ const router = express.Router();
 // PUBLIC ROUTES (no auth needed - for homepage)
 // ============================================
 
-// GET /api/website/news - Get published news for homepage (max 4)
+// GET /api/website/news - Get published news for homepage (max 3)
 router.get('/news', async (req, res) => {
     try {
-        const news = await WebsiteNews.find({ published: true }).sort({ createdAt: -1 }).limit(4);
+        const news = await WebsiteNews.find({ published: true }).sort({ createdAt: -1 }).limit(3);
         res.json(news);
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
