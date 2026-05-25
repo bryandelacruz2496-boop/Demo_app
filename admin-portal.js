@@ -1976,20 +1976,46 @@ async function exportStudentPayments() {
 // ============================================
 // FEATURE: Audit Log
 // ============================================
+let auditLogs = [];
+let auditPage = 1;
+const auditPerPage = 15;
+
 async function loadAuditLog() {
     const res = await fetch(`${API_URL}/audit`, {
         headers: { 'Authorization': `Bearer ${adminToken}` }
     });
     if (!res.ok) return;
-    const logs = await res.json();
+    auditLogs = await res.json();
+    auditPage = 1;
+    renderAuditLog();
+}
+
+function renderAuditLog() {
     const list = document.getElementById('auditLogList');
-    if (logs.length === 0) {
+    if (auditLogs.length === 0) {
         list.innerHTML = '<p style="text-align:center;color:#888;padding:2rem;">No activity yet.</p>';
         return;
     }
+
+    const totalPages = Math.ceil(auditLogs.length / auditPerPage);
+    const start = (auditPage - 1) * auditPerPage;
+    const end = start + auditPerPage;
+    const pageLogs = auditLogs.slice(start, end);
+
+    let paginationHtml = '';
+    if (totalPages > 1) {
+        paginationHtml = '<div class="pagination">';
+        paginationHtml += `<button class="page-btn" onclick="changeAuditPage(${auditPage - 1})" ${auditPage === 1 ? 'disabled' : ''}>&lt;</button>`;
+        for (let i = 1; i <= totalPages; i++) {
+            paginationHtml += `<button class="page-btn ${i === auditPage ? 'active' : ''}" onclick="changeAuditPage(${i})">${i}</button>`;
+        }
+        paginationHtml += `<button class="page-btn" onclick="changeAuditPage(${auditPage + 1})" ${auditPage === totalPages ? 'disabled' : ''}>&gt;</button>`;
+        paginationHtml += '</div>';
+    }
+
     list.innerHTML = `
         <div style="margin-bottom:1rem;">
-            <button class="btn-export" onclick="exportAuditLog()">Export Excel</button>
+            <button class="btn-action" onclick="exportAuditLog()">Export Excel</button>
         </div>
         <div class="table-wrapper">
             <table class="admin-table" id="auditLogTable">
@@ -2004,7 +2030,7 @@ async function loadAuditLog() {
                     </tr>
                 </thead>
                 <tbody>
-                    ${logs.map(log => `
+                    ${pageLogs.map(log => `
                         <tr>
                             <td>${new Date(log.createdAt).toLocaleString()}</td>
                             <td>${log.action.replace(/_/g, ' ')}</td>
@@ -2017,7 +2043,18 @@ async function loadAuditLog() {
                 </tbody>
             </table>
         </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1rem;">
+            <span style="color:#888;font-size:0.85rem;">Showing ${start + 1}-${Math.min(end, auditLogs.length)} of ${auditLogs.length}</span>
+            ${paginationHtml}
+        </div>
     `;
+}
+
+function changeAuditPage(page) {
+    const totalPages = Math.ceil(auditLogs.length / auditPerPage);
+    if (page < 1 || page > totalPages) return;
+    auditPage = page;
+    renderAuditLog();
 }
 
 function exportAuditLog() {
