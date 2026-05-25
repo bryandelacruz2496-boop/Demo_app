@@ -3,15 +3,14 @@
 // ============================================
 const API_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000/api' : '/api';
 
-// Load dynamic news from CMS
+// Load dynamic news from CMS (adds to existing, doesn't replace)
 async function loadDynamicNews() {
     const newsContainer = document.querySelector('.news-cards');
     if (!newsContainer) return;
 
-    // Show cached content immediately
-    const cached = localStorage.getItem('websiteNews');
-    if (cached) {
-        try { renderNewsCards(JSON.parse(cached)); } catch (e) { }
+    // Keep the original static HTML as fallback
+    if (!window._originalNewsHTML) {
+        window._originalNewsHTML = newsContainer.innerHTML;
     }
 
     // Fetch fresh data
@@ -20,34 +19,26 @@ async function loadDynamicNews() {
         if (res.ok) {
             const news = await res.json();
             if (news.length > 0) {
-                localStorage.setItem('websiteNews', JSON.stringify(news));
-                renderNewsCards(news);
+                // Prepend CMS news before the static ones
+                const cmsCards = news.map((item, i) => `
+                    <div class="news-card" onclick="openDynamicNewsModal(${i})">
+                        <div class="news-card-image">
+                            <img src="${item.imageUrl}" alt="${item.title}" class="news-card-img">
+                            ${item.badge ? `<span class="news-badge">${item.badge}</span>` : ''}
+                        </div>
+                        <div class="news-card-body">
+                            <span class="news-date">📅 ${item.date}</span>
+                            <h3>${item.title}</h3>
+                            <p class="news-desc">${item.description.substring(0, 120)}${item.description.length > 120 ? '...' : ''}</p>
+                            <span class="news-read-more">Read more →</span>
+                        </div>
+                    </div>
+                `).join('');
+                newsContainer.innerHTML = cmsCards + window._originalNewsHTML;
+                window._dynamicNews = news;
             }
         }
     } catch (e) { }
-}
-
-function renderNewsCards(news) {
-    const newsContainer = document.querySelector('.news-cards');
-    if (!newsContainer || news.length === 0) return;
-
-    newsContainer.innerHTML = news.map((item, i) => `
-        <div class="news-card" onclick="openDynamicNewsModal(${i})">
-            <div class="news-card-image">
-                <img src="${item.imageUrl}" alt="${item.title}" class="news-card-img">
-                ${item.badge ? `<span class="news-badge">${item.badge}</span>` : ''}
-            </div>
-            <div class="news-card-body">
-                <span class="news-date">📅 ${item.date}</span>
-                <h3>${item.title}</h3>
-                <p class="news-desc">${item.description.substring(0, 120)}${item.description.length > 120 ? '...' : ''}</p>
-                <span class="news-read-more">Read more →</span>
-            </div>
-        </div>
-    `).join('');
-
-    // Store for modal use
-    window._dynamicNews = news;
 }
 
 function openDynamicNewsModal(index) {
@@ -62,15 +53,14 @@ function openDynamicNewsModal(index) {
     document.body.style.overflow = 'hidden';
 }
 
-// Load dynamic gallery from CMS
+// Load dynamic gallery from CMS (adds to existing, doesn't replace)
 async function loadDynamicGallery() {
     const galleryGrid = document.querySelector('.gallery-grid');
     if (!galleryGrid) return;
 
-    // Show cached content immediately
-    const cached = localStorage.getItem('websiteGallery');
-    if (cached) {
-        try { renderGalleryGrid(JSON.parse(cached)); } catch (e) { }
+    // Keep the original static HTML as fallback
+    if (!window._originalGalleryHTML) {
+        window._originalGalleryHTML = galleryGrid.innerHTML;
     }
 
     // Fetch fresh data
@@ -79,27 +69,20 @@ async function loadDynamicGallery() {
         if (res.ok) {
             const categories = await res.json();
             if (categories.length > 0) {
-                localStorage.setItem('websiteGallery', JSON.stringify(categories));
-                renderGalleryGrid(categories);
+                // Prepend CMS gallery before the static ones
+                const cmsItems = categories.map((cat, i) => `
+                    <div class="gallery-item" onclick="openDynamicGalleryModal(${i})">
+                        <img src="${cat.coverImage || cat.photos[0] || ''}" alt="${cat.name}">
+                        <div class="gallery-overlay">
+                            <span class="gallery-label">${cat.icon} ${cat.name}</span>
+                        </div>
+                    </div>
+                `).join('');
+                galleryGrid.innerHTML = cmsItems + window._originalGalleryHTML;
+                window._dynamicGallery = categories;
             }
         }
     } catch (e) { }
-}
-
-function renderGalleryGrid(categories) {
-    const galleryGrid = document.querySelector('.gallery-grid');
-    if (!galleryGrid || categories.length === 0) return;
-
-    galleryGrid.innerHTML = categories.map((cat, i) => `
-        <div class="gallery-item" onclick="openDynamicGalleryModal(${i})">
-            <img src="${cat.coverImage || cat.photos[0] || ''}" alt="${cat.name}">
-            <div class="gallery-overlay">
-                <span class="gallery-label">${cat.icon} ${cat.name}</span>
-            </div>
-        </div>
-    `).join('');
-
-    window._dynamicGallery = categories;
 }
 
 function openDynamicGalleryModal(index) {
