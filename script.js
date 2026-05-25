@@ -31,6 +31,10 @@ async function loadDynamicNews() {
                 window._dynamicNews = display;
                 newsSlideIndex = 0;
                 newsContainer.style.transform = 'translateX(0)';
+                setTimeout(() => {
+                    const firstCard = newsContainer.querySelector('.news-card');
+                    if (firstCard) firstCard.classList.add('active');
+                }, 50);
             }
         }
     } catch (e) { }
@@ -93,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDynamicGallery();
 });
 
-// News Carousel
+// News Carousel - 3 visible with center focus
 let newsSlideIndex = 0;
 
 function slideNews(direction) {
@@ -102,9 +106,30 @@ function slideNews(direction) {
     newsSlideIndex += direction;
     if (newsSlideIndex < 0) newsSlideIndex = cards.length - 1;
     if (newsSlideIndex >= cards.length) newsSlideIndex = 0;
-    const track = document.querySelector('.news-cards');
-    track.style.transform = `translateX(-${newsSlideIndex * 100}%)`;
+    updateNewsCarousel();
 }
+
+function updateNewsCarousel() {
+    const cards = document.querySelectorAll('.news-cards .news-card');
+    const track = document.querySelector('.news-cards');
+    if (!track || cards.length === 0) return;
+
+    // Remove active from all, add to current
+    cards.forEach(c => c.classList.remove('active'));
+    cards[newsSlideIndex].classList.add('active');
+
+    // Calculate offset to center the active card
+    const offset = newsSlideIndex * 61; // 60% width + 1% margins
+    track.style.transform = `translateX(-${offset}%)`;
+}
+
+// Set first card as active on load
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        const firstCard = document.querySelector('.news-cards .news-card');
+        if (firstCard) firstCard.classList.add('active');
+    }, 100);
+});
 
 // Auto-slide news every 5 seconds
 setInterval(() => slideNews(1), 5000);
