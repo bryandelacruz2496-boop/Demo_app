@@ -52,9 +52,9 @@ router.post('/login', async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
-        // Calculate total paid (exclude discounts which have negative amounts)
+        // Calculate total paid (exclude discounts and expenses from tuition total)
         const totalPaid = student.payments
-            .filter(p => p.status === 'paid' && p.amount > 0)
+            .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
             .reduce((sum, p) => sum + p.amount, 0);
 
         res.json({
@@ -167,9 +167,9 @@ router.get('/refresh', async (req, res) => {
             return res.status(401).json({ message: 'Session expired. You have been logged in on another device.' });
         }
 
-        // Calculate total paid (exclude discounts which have negative amounts)
+        // Calculate total paid (exclude discounts and expenses from tuition total)
         const totalPaid = student.payments
-            .filter(p => p.status === 'paid' && p.amount > 0)
+            .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
             .reduce((sum, p) => sum + p.amount, 0);
 
         const studentData = {

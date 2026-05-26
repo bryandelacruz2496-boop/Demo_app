@@ -874,6 +874,8 @@
                             <button class="btn-add" onclick="togglePaymentForm()">+ Add Payment</button>
                             <button class="btn-add" style="background:#2e7d32;" onclick="toggleDiscountForm()">+ Add
                                 Discount</button>
+                            <button class="btn-add" style="background:#e65100;" onclick="toggleExpenseForm()">+ Other
+                                Expense</button>
                         </div>
                         <div class="add-form" id="addPaymentForm" style="display:none;">
                             <h4>Add Payment</h4>
@@ -925,6 +927,23 @@
                                     <option value="Grade 9">Grade 9</option>
                                     <option value="Grade 10">Grade 10</option>
                                 </select>
+                            </div>
+                        </div>
+                        <div class="add-form" id="addExpenseForm" style="display:none; border-color: #e65100;">
+                            <h4 style="color:#e65100;">Other Expense</h4>
+                            <div class="form-row">
+                                <input type="text" id="expDate" class="datepicker-input" placeholder="Pick a date"
+                                    readonly required>
+                                <input type="text" id="expDesc" placeholder="Description (e.g. Books, Uniform, Bus)"
+                                    required>
+                                <input type="number" id="expAmount" placeholder="Amount" required inputmode="numeric"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                <select id="expStatus">
+                                    <option value="paid">Paid</option>
+                                    <option value="pending">Pending</option>
+                                </select>
+                                <button class="btn-add" style="background:#e65100;" onclick="addExpense()">+ Add
+                                    Expense</button>
                             </div>
                         </div>
                         <div class="table-wrapper">

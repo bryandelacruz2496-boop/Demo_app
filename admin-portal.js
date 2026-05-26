@@ -657,12 +657,14 @@ function renderPayments() {
 
     body.innerHTML = payments.map(p => {
         const isDiscount = p.amount < 0;
+        const isExpense = p.description && p.description.startsWith('[Expense]');
+        const displayDesc = isExpense ? p.description.replace('[Expense] ', '') : p.description;
         return `
-    <tr${isDiscount ? ' style="background:#e8f5e9;"' : ''}>
+    <tr${isDiscount ? ' style="background:#e8f5e9;"' : isExpense ? ' style="background:#fff3e0;"' : ''}>
       <td>${p.date}</td>
-      <td>${p.description}</td>
+      <td>${displayDesc}${isExpense ? ' 📋' : ''}</td>
       <td>${isDiscount ? '-₱' + Math.abs(p.amount).toLocaleString() : '₱' + p.amount.toLocaleString()}</td>
-      <td><span class="status-${p.status}">${isDiscount ? '✓ Discount' : (p.status === 'paid' ? '✓ Paid' : '⏳ Pending')}</span></td>
+      <td><span class="status-${p.status}">${isDiscount ? '✓ Discount' : isExpense ? '📋 Expense' : (p.status === 'paid' ? '✓ Paid' : '⏳ Pending')}</span></td>
       <td>${p.paidDate || '-'}</td>
       <td>
         ${isDiscount ? `<button class="btn-status btn-mark-pending" onclick="removeDiscount('${p._id}')">Remove</button>` :
@@ -721,9 +723,11 @@ function onDiscountTypeChange() {
 function togglePaymentForm() {
     const payForm = document.getElementById('addPaymentForm');
     const discForm = document.getElementById('addDiscountForm');
+    const expForm = document.getElementById('addExpenseForm');
     if (payForm.style.display === 'none') {
         payForm.style.display = 'block';
         discForm.style.display = 'none';
+        expForm.style.display = 'none';
     } else {
         payForm.style.display = 'none';
     }
@@ -732,12 +736,62 @@ function togglePaymentForm() {
 function toggleDiscountForm() {
     const payForm = document.getElementById('addPaymentForm');
     const discForm = document.getElementById('addDiscountForm');
+    const expForm = document.getElementById('addExpenseForm');
     if (discForm.style.display === 'none') {
         discForm.style.display = 'block';
         payForm.style.display = 'none';
+        expForm.style.display = 'none';
     } else {
         discForm.style.display = 'none';
     }
+}
+
+function toggleExpenseForm() {
+    const payForm = document.getElementById('addPaymentForm');
+    const discForm = document.getElementById('addDiscountForm');
+    const expForm = document.getElementById('addExpenseForm');
+    if (expForm.style.display === 'none') {
+        expForm.style.display = 'block';
+        payForm.style.display = 'none';
+        discForm.style.display = 'none';
+    } else {
+        expForm.style.display = 'none';
+    }
+}
+
+async function addExpense() {
+    const date = getDatePickerValue('expDate');
+    const description = document.getElementById('expDesc').value.trim();
+    const amount = Number(document.getElementById('expAmount').value);
+    const status = document.getElementById('expStatus').value;
+
+    if (!date || !description || !amount) {
+        showToast('Please fill in all expense fields');
+        return;
+    }
+
+    showPasswordPrompt(async (password) => {
+        const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/expense`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+            body: JSON.stringify({ date, description, amount, status, password })
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            selectedStudent.payments = data.payments;
+            if (data.totalTuition !== undefined) selectedStudent.totalTuition = data.totalTuition;
+            renderPayments();
+            showToast('Expense added!');
+            document.getElementById('expDate').value = '';
+            document.getElementById('expDate').dataset.value = '';
+            document.getElementById('expDesc').value = '';
+            document.getElementById('expAmount').value = '';
+        } else {
+            const data = await res.json();
+            showToast(data.message || 'Error adding expense');
+        }
+    });
 }
 
 async function addDiscount() {

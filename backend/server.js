@@ -173,7 +173,7 @@ mongoose.connect(process.env.MONGO_URI, mongoOptions)
       let fixed = 0;
       for (const student of students) {
         const paidTotal = student.payments
-          .filter(p => p.status === 'paid' && p.amount > 0)
+          .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
           .reduce((sum, p) => sum + p.amount, 0);
         const remainingBalance = (student.totalTuition || 0) - paidTotal;
         const pendingPayments = student.payments.filter(p => p.status === 'pending' && p.amount > 0);

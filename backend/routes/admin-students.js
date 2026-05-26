@@ -208,7 +208,7 @@ router.post('/students/:id/payments', authMiddleware, async (req, res) => {
 
         // Recalculate pending payment amounts to match remaining balance
         const paidTotal = student.payments
-            .filter(p => p.status === 'paid' && p.amount > 0)
+            .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
             .reduce((sum, p) => sum + p.amount, 0);
         const remainingBalance = (student.totalTuition || 0) - paidTotal;
         const pendingPayments = student.payments.filter(p => p.status === 'pending' && p.amount > 0);
@@ -230,7 +230,7 @@ router.post('/students/:id/payments', authMiddleware, async (req, res) => {
         }
 
         await student.save();
-        logAction('ADD_PAYMENT', req.admin.username, `Added payment ₱${amount} for ${student.fullName}`, student.studentNo, req.ip);
+        logAction('ADD_PAYMENT', req.admin.username, `Added payment â‚±${amount} for ${student.fullName}`, student.studentNo, req.ip);
         res.json({ message: 'Payment added', payments: student.payments, totalTuition: student.totalTuition });
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
@@ -277,7 +277,7 @@ router.post('/students/:id/discount', authMiddleware, async (req, res) => {
 
         // Recalculate pending payment amounts to match new totalTuition
         const paidTotal = student.payments
-            .filter(p => p.status === 'paid' && p.amount > 0)
+            .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
             .reduce((sum, p) => sum + p.amount, 0);
         const remainingBalance = student.totalTuition - paidTotal;
         const pendingPayments = student.payments.filter(p => p.status === 'pending' && p.amount > 0);
@@ -301,13 +301,13 @@ router.post('/students/:id/discount', authMiddleware, async (req, res) => {
         // Add notification
         if (!student.notifications) student.notifications = [];
         student.notifications.push({
-            message: `A discount of ₱${discountAmount.toLocaleString()} has been applied: ${description || 'Discount'}`,
+            message: `A discount of â‚±${discountAmount.toLocaleString()} has been applied: ${description || 'Discount'}`,
             type: 'payment',
             read: false
         });
 
         await student.save();
-        logAction('ADD_DISCOUNT', req.admin.username, `Applied discount ₱${discountAmount} to ${student.fullName}`, student.studentNo, req.ip);
+        logAction('ADD_DISCOUNT', req.admin.username, `Applied discount â‚±${discountAmount} to ${student.fullName}`, student.studentNo, req.ip);
         res.json({ message: 'Discount applied', payments: student.payments, totalTuition: student.totalTuition });
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
@@ -351,7 +351,7 @@ router.post('/students-discount-bulk', authMiddleware, async (req, res) => {
 
             // Recalculate pending payment amounts to match new totalTuition
             const paidTotal = student.payments
-                .filter(p => p.status === 'paid' && p.amount > 0)
+                .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
                 .reduce((sum, p) => sum + p.amount, 0);
             const remainingBalance = student.totalTuition - paidTotal;
             const pendingPayments = student.payments.filter(p => p.status === 'pending' && p.amount > 0);
@@ -374,7 +374,7 @@ router.post('/students-discount-bulk', authMiddleware, async (req, res) => {
 
             if (!student.notifications) student.notifications = [];
             student.notifications.push({
-                message: `A discount of ₱${discountAmount.toLocaleString()} has been applied: ${description || 'Discount'}`,
+                message: `A discount of â‚±${discountAmount.toLocaleString()} has been applied: ${description || 'Discount'}`,
                 type: 'payment',
                 read: false
             });
@@ -382,7 +382,7 @@ router.post('/students-discount-bulk', authMiddleware, async (req, res) => {
             updatedCount++;
         }
 
-        logAction('BULK_DISCOUNT', req.admin.username, `Applied discount ₱${discountAmount} to ${updatedCount} students`, 'BULK', req.ip);
+        logAction('BULK_DISCOUNT', req.admin.username, `Applied discount â‚±${discountAmount} to ${updatedCount} students`, 'BULK', req.ip);
         res.json({ message: `Discount applied to ${updatedCount} students`, updatedCount });
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
@@ -414,7 +414,7 @@ router.put('/students/:id/payments/:paymentId', authMiddleware, async (req, res)
 
         // Recalculate pending payment amounts to match remaining balance
         const paidTotal = student.payments
-            .filter(p => p.status === 'paid' && p.amount > 0)
+            .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
             .reduce((sum, p) => sum + p.amount, 0);
         const remainingBalance = (student.totalTuition || 0) - paidTotal;
         const pendingPayments = student.payments.filter(p => p.status === 'pending' && p.amount > 0);
@@ -439,7 +439,7 @@ router.put('/students/:id/payments/:paymentId', authMiddleware, async (req, res)
         if (!student.notifications) student.notifications = [];
         student.notifications.push({
             message: status === 'paid'
-                ? `Your payment of ₱${payment.amount.toLocaleString()} for "${payment.description}" has been confirmed as paid.`
+                ? `Your payment of â‚±${payment.amount.toLocaleString()} for "${payment.description}" has been confirmed as paid.`
                 : `Your payment for "${payment.description}" has been marked as pending.`,
             type: 'payment',
             read: false
@@ -483,7 +483,7 @@ router.delete('/students/:id/payments/:paymentId/remove-discount', authMiddlewar
 
         // Recalculate pending payment amounts
         const paidTotal = student.payments
-            .filter(p => p.status === 'paid' && p.amount > 0)
+            .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
             .reduce((sum, p) => sum + p.amount, 0);
         const remainingBalance = (student.totalTuition || 0) - paidTotal;
         const pendingPayments = student.payments.filter(p => p.status === 'pending' && p.amount > 0);
@@ -505,8 +505,46 @@ router.delete('/students/:id/payments/:paymentId/remove-discount', authMiddlewar
         }
 
         await student.save();
-        logAction('REMOVE_DISCOUNT', req.admin.username, `Removed discount ₱${discountAmount} from ${student.fullName}`, student.studentNo, req.ip);
+        logAction('REMOVE_DISCOUNT', req.admin.username, `Removed discount â‚±${discountAmount} from ${student.fullName}`, student.studentNo, req.ip);
         res.json({ message: 'Discount removed', payments: student.payments, totalTuition: student.totalTuition });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+// POST /api/admin/students/:id/expense - Add other expense (does NOT affect tuition)
+router.post('/students/:id/expense', authMiddleware, async (req, res) => {
+    try {
+        if (req.admin.role === 'staff') {
+            return res.status(403).json({ message: 'Staff cannot add expenses' });
+        }
+
+        const { date, description, amount, status, password } = req.body;
+
+        // Verify admin password
+        if (password) {
+            const Admin = require('../models/Admin');
+            const admin = await Admin.findById(req.admin.id);
+            if (!admin) return res.status(404).json({ message: 'Admin not found' });
+            const isMatch = await admin.comparePassword(password);
+            if (!isMatch) return res.status(401).json({ message: 'Incorrect password' });
+        }
+
+        const student = await Student.findById(req.params.id);
+        if (!student) return res.status(404).json({ message: 'Student not found' });
+
+        // Add expense as a payment record with type 'expense'
+        student.payments.push({
+            date,
+            description: `[Expense] ${description}`,
+            amount: Number(amount),
+            status: status || 'paid',
+            paidDate: status === 'paid' ? (date || new Date().toISOString().split('T')[0]) : null
+        });
+
+        await student.save();
+        logAction('ADD_EXPENSE', req.admin.username, `Added expense â‚±${amount} for ${student.fullName}: ${description}`, student.studentNo, req.ip);
+        res.json({ message: 'Expense added', payments: student.payments, totalTuition: student.totalTuition });
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
     }
@@ -833,7 +871,7 @@ router.post('/students-recalculate', authMiddleware, async (req, res) => {
 
         for (const student of students) {
             const paidTotal = student.payments
-                .filter(p => p.status === 'paid' && p.amount > 0)
+                .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
                 .reduce((sum, p) => sum + p.amount, 0);
 
             const remainingBalance = (student.totalTuition || 0) - paidTotal;
