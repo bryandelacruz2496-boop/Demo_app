@@ -457,10 +457,10 @@ h4 {
 }
 
 .info-avatar {
-    font-size: 4rem;
+    font-size: 5rem;
     background: linear-gradient(135deg, #ffebee, #ffcdd2);
-    width: 80px;
-    height: 80px;
+    width: 110px;
+    height: 110px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -471,11 +471,13 @@ h4 {
 .info-details h2 {
     color: #b71c1c;
     margin-bottom: 0.5rem;
+    font-size: 1.8rem;
 }
 
 .info-details p {
     color: #555;
     margin-bottom: 0.3rem;
+    font-size: 1.1rem;
 }
 
 .info-datetime {
@@ -554,7 +556,7 @@ h4 {
 /* Panels */
 .dash-panel {
     display: none;
-    background: #fff;
+    background: rgba(255, 255, 255, 0.85);
     border-radius: 16px;
     padding: 2rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.04);

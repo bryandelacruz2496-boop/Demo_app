@@ -124,7 +124,7 @@ function populateDashboard() {
   // Set profile image
   const avatarEl = document.querySelector('.info-avatar');
   if (currentStudent.profileImage) {
-    avatarEl.innerHTML = `<img src="${imgUrl(currentStudent.profileImage)}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">
+    avatarEl.innerHTML = `<img src="${imgUrl(currentStudent.profileImage)}" style="width:110px;height:110px;border-radius:50%;object-fit:cover;">
     <label class="avatar-upload-btn" title="Change photo">
       📷
       <input type="file" id="studentPhotoUpload" accept="image/*" onchange="uploadStudentPhoto(this)" style="display:none;">
@@ -521,7 +521,7 @@ async function uploadStudentPhoto(input) {
 
       // Update avatar display
       const avatarEl = document.querySelector('.info-avatar');
-      avatarEl.innerHTML = `<img src="${imgUrl(data.profileImage)}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">
+      avatarEl.innerHTML = `<img src="${imgUrl(data.profileImage)}" style="width:110px;height:110px;border-radius:50%;object-fit:cover;">
       <label class="avatar-upload-btn" title="Change photo">
         📷
         <input type="file" id="studentPhotoUpload" accept="image/*" onchange="uploadStudentPhoto(this)" style="display:none;">
