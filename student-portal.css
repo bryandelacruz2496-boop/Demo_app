@@ -376,6 +376,9 @@ h4 {
 
 .dash-logo-img {
     height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 .dash-user {
@@ -1005,7 +1008,7 @@ h4 {
 
 .pay-now-grid {
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: 1fr;
     gap: 2rem;
     align-items: start;
 }
@@ -1039,6 +1042,7 @@ h4 {
     padding: 1.2rem;
     border-radius: 12px;
     border: 1px solid #f0f0f0;
+    width: 100%;
 }
 
 .bank-details-box h5 {
