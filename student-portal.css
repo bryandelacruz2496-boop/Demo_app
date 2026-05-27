@@ -510,6 +510,22 @@ h4 {
     flex: 1;
     min-width: 0;
     padding-left: 2rem;
+    position: relative;
+}
+
+.dash-main-content::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: 400px;
+    background: url('logo.jpg') center/contain no-repeat;
+    opacity: 0.06;
+    pointer-events: none;
+    z-index: 0;
+    border-radius: 50%;
 }
 
 /* Panels */
