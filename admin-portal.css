@@ -2536,6 +2536,21 @@ h4 {
 /* Softer page background */
 body {
     background: #f4f6fa !important;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1200px;
+    height: 1200px;
+    background: url('logo.jpg') center/contain no-repeat;
+    opacity: 0.04;
+    pointer-events: none;
+    z-index: 0;
 }
 
 /* Sticky table headers */
