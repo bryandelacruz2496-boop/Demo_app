@@ -189,19 +189,6 @@ function populateDashboard() {
     `).join('');
   }
 
-  // Generate QR Code for payment
-  const qrContainer = document.getElementById('paymentQRCode');
-  if (qrContainer && typeof QRCode !== 'undefined') {
-    qrContainer.innerHTML = '';
-    QRCode.toCanvas(document.createElement('canvas'),
-      `BEATASAI-PAY|${currentStudent.studentNo}|${currentStudent.fullName}|BAL:${(currentStudent.totalTuition || 0) - (currentStudent.totalPaid || 0)}`,
-      { width: 180, margin: 1, color: { dark: '#b71c1c' } },
-      function (error, canvas) {
-        if (!error) qrContainer.appendChild(canvas);
-      }
-    );
-  }
-
   // Update notification badge
   updateNotifBadge();
 }
