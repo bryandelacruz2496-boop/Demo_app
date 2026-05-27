@@ -563,6 +563,11 @@ h4 {
     animation: cardEntrance 0.4s ease forwards;
 }
 
+#announcements,
+#attendance {
+    background: #fff;
+}
+
 .dash-panel.active {
     display: block;
     overflow: hidden;
