@@ -94,6 +94,22 @@ body {
     font-family: 'Nunito', sans-serif;
     background: #f0f2f5;
     min-height: 100vh;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1200px;
+    height: 1200px;
+    background: url('logo.jpg') center/contain no-repeat;
+    opacity: 0.06;
+    pointer-events: none;
+    z-index: 0;
+    border-radius: 50%;
 }
 
 h1,
@@ -520,23 +536,6 @@ h4 {
     padding: 2rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.04);
     animation: cardEntrance 0.4s ease forwards;
-    position: relative;
-    overflow: hidden;
-}
-
-.dash-panel::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 1200px;
-    height: 1200px;
-    background: url('logo.jpg') center/contain no-repeat;
-    opacity: 0.06;
-    pointer-events: none;
-    z-index: 0;
-    border-radius: 50%;
 }
 
 .dash-panel.active {
