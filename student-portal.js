@@ -191,6 +191,9 @@ function populateDashboard() {
 
   // Update notification badge
   updateNotifBadge();
+
+  // Start live date/time
+  updateDateTime();
 }
 
 function switchDashTab(event, tabId) {
@@ -723,3 +726,30 @@ async function handleFirstPasswordChange(event) {
     errorEl.textContent = 'Cannot connect to server';
   }
 }
+
+// ============================================
+// LIVE DATE, TIME & GREETING
+// ============================================
+function updateDateTime() {
+  const now = new Date();
+  const hour = now.getHours();
+  let greeting = 'Good Evening';
+  if (hour < 12) greeting = 'Good Morning';
+  else if (hour < 18) greeting = 'Good Afternoon';
+
+  const name = currentStudent ? currentStudent.fullName.split(' ')[0] : '';
+  const greetingEl = document.getElementById('greetingText');
+  const dateEl = document.getElementById('datetimeText');
+  const timeEl = document.getElementById('timeText');
+
+  if (greetingEl) greetingEl.textContent = `${greeting}, ${name}!`;
+  if (dateEl) {
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    dateEl.textContent = now.toLocaleDateString('en-US', options);
+  }
+  if (timeEl) {
+    timeEl.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }
+}
+
+setInterval(updateDateTime, 1000);

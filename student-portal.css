@@ -100,7 +100,7 @@ body {
 body::before {
     content: '';
     position: fixed;
-    top: 50%;
+    top: 60%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 1200px;
@@ -109,7 +109,6 @@ body::before {
     opacity: 0.06;
     pointer-events: none;
     z-index: 0;
-    border-radius: 50%;
 }
 
 h1,
@@ -477,6 +476,30 @@ h4 {
 .info-details p {
     color: #555;
     margin-bottom: 0.3rem;
+}
+
+.info-datetime {
+    margin-left: auto;
+    text-align: right;
+}
+
+.info-datetime .greeting-text {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #b71c1c;
+    margin-bottom: 0.3rem;
+}
+
+.info-datetime .datetime-text {
+    font-size: 0.95rem;
+    color: #555;
+    margin-bottom: 0.2rem;
+}
+
+.info-datetime .time-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
 }
 
 /* Tabs */
