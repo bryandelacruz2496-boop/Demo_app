@@ -8,4 +8,7 @@ const auditLogSchema = new mongoose.Schema({
     ip: { type: String }
 }, { timestamps: true });
 
+// Auto-delete logs after 1 week (7 days)
+auditLogSchema.index({ createdAt: 1 }, { expireAfterSeconds: 7 * 24 * 60 * 60 });
+
 module.exports = mongoose.model('AuditLog', auditLogSchema);
