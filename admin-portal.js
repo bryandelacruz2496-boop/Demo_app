@@ -103,7 +103,7 @@ async function loadAnnouncements() {
 
     list.innerHTML = `
         <h3 style="color:#b71c1c;margin-bottom:1rem;">📢 Recent Announcements</h3>
-        ${announcements.slice(0, 5).map(a => `
+        ${announcements.map(a => `
             <div class="announcement-card">
                 <div class="announcement-header">
                     <h4>${a.subject}</h4>
