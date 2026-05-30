@@ -9,13 +9,6 @@ router.get('/', async (req, res) => {
     try {
         const { grade } = req.query;
 
-        // Mark announcements older than 20 hours as done
-        const twentyHoursAgo = new Date(Date.now() - 20 * 60 * 60 * 1000);
-        await Announcement.updateMany(
-            { status: 'active', createdAt: { $lt: twentyHoursAgo } },
-            { $set: { status: 'done' } }
-        );
-
         let filter = { status: 'active' };
         if (grade) {
             filter = {
