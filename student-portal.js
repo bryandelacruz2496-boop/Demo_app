@@ -332,7 +332,12 @@ async function loadStudentAnnouncements() {
       list.innerHTML = '<p style="color:#888;text-align:center;">No announcements yet.</p>';
       return;
     }
-    list.innerHTML = announcements.map(a => `
+    list.innerHTML = announcements.map(a => {
+      const replies = a.replies || [];
+      const hasMore = replies.length > 3;
+      const visibleReplies = hasMore ? replies.slice(0, 2) : replies;
+      const hiddenReplies = hasMore ? replies.slice(2) : [];
+      return `
       <div class="activity-card" style="cursor:default;">
         <div style="display:flex;justify-content:space-between;align-items:center;">
           <h4>${a.subject}</h4>
@@ -341,25 +346,51 @@ async function loadStudentAnnouncements() {
         <p style="margin-top:0.5rem;">${a.body}</p>
         <span class="meta">${new Date(a.createdAt).toLocaleDateString()}</span>
         <div class="replies-section" style="margin-top:1rem;border-top:1px solid #eee;padding-top:0.8rem;">
-          ${(a.replies || []).map(r => `
+          ${visibleReplies.map(r => `
             <div style="margin-bottom:0.6rem;padding:0.5rem 0.8rem;background:${r.role === 'admin' ? '#fff3e0' : '#e8f5e9'};border-radius:8px;">
               <strong style="font-size:0.85rem;">${r.author}</strong> <span style="font-size:0.75rem;color:#888;">${r.role === 'admin' ? '(Admin)' : '(Student)'}</span>
               <p style="margin:0.3rem 0 0;font-size:0.9rem;">${r.message}</p>
               <span style="font-size:0.7rem;color:#aaa;">${new Date(r.createdAt).toLocaleString()}</span>
             </div>
           `).join('')}
+          ${hasMore ? `
+            <div id="student-replies-hidden-${a._id}" style="display:none;">
+              ${hiddenReplies.map(r => `
+                <div style="margin-bottom:0.6rem;padding:0.5rem 0.8rem;background:${r.role === 'admin' ? '#fff3e0' : '#e8f5e9'};border-radius:8px;">
+                  <strong style="font-size:0.85rem;">${r.author}</strong> <span style="font-size:0.75rem;color:#888;">${r.role === 'admin' ? '(Admin)' : '(Student)'}</span>
+                  <p style="margin:0.3rem 0 0;font-size:0.9rem;">${r.message}</p>
+                  <span style="font-size:0.7rem;color:#aaa;">${new Date(r.createdAt).toLocaleString()}</span>
+                </div>
+              `).join('')}
+            </div>
+            <button id="student-btn-toggle-${a._id}" onclick="toggleStudentReplies('${a._id}', ${hiddenReplies.length})" style="background:none;border:none;color:#b71c1c;font-size:0.85rem;font-weight:600;cursor:pointer;padding:0.4rem 0;margin-top:0.3rem;">
+              View ${hiddenReplies.length} more repl${hiddenReplies.length === 1 ? 'y' : 'ies'}
+            </button>
+          ` : ''}
           <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
             <input type="text" id="student-reply-${a._id}" placeholder="Write a reply..." style="flex:1;padding:0.5rem 0.8rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.9rem;" onkeydown="handleStudentReplyKey(event,'${a._id}')">
             <button onclick="studentReply('${a._id}')" style="background:#b71c1c;color:#fff;border:none;padding:0.5rem 1rem;border-radius:8px;font-weight:600;cursor:pointer;">Reply</button>
           </div>
         </div>
       </div>
-    `).join('');
+    `}).join('');
   }
 }
 
 function handleStudentReplyKey(e, id) {
   if (e.key === 'Enter') studentReply(id);
+}
+
+function toggleStudentReplies(announcementId, hiddenCount) {
+  const hidden = document.getElementById(`student-replies-hidden-${announcementId}`);
+  const btn = document.getElementById(`student-btn-toggle-${announcementId}`);
+  if (hidden.style.display === 'none') {
+    hidden.style.display = 'block';
+    btn.textContent = 'Show less';
+  } else {
+    hidden.style.display = 'none';
+    btn.textContent = `View ${hiddenCount} more repl${hiddenCount === 1 ? 'y' : 'ies'}`;
+  }
 }
 
 async function studentReply(announcementId) {

@@ -103,7 +103,12 @@ async function loadAnnouncements() {
 
     list.innerHTML = `
         <h3 style="color:#b71c1c;margin-bottom:1rem;">📢 Recent Announcements</h3>
-        ${announcements.map(a => `
+        ${announcements.map(a => {
+        const replies = a.replies || [];
+        const hasMore = replies.length > 3;
+        const visibleReplies = hasMore ? replies.slice(0, 2) : replies;
+        const hiddenReplies = hasMore ? replies.slice(2) : [];
+        return `
             <div class="announcement-card">
                 <div class="announcement-header">
                     <h4>${a.subject}</h4>
@@ -115,20 +120,34 @@ async function loadAnnouncements() {
                 <p>${a.body}</p>
                 <span class="announcement-date">${new Date(a.createdAt).toLocaleDateString()}</span>
                 <div class="replies-section">
-                    ${(a.replies || []).map(r => `
+                    ${visibleReplies.map(r => `
                         <div class="reply-item reply-${r.role}">
                             <strong>${r.author}</strong> <span class="reply-role">${r.role}</span>
                             <p>${r.message}</p>
                             <span class="reply-date">${new Date(r.createdAt).toLocaleString()}</span>
                         </div>
                     `).join('')}
+                    ${hasMore ? `
+                        <div class="replies-collapsed" id="replies-hidden-${a._id}" style="display:none;">
+                            ${hiddenReplies.map(r => `
+                                <div class="reply-item reply-${r.role}">
+                                    <strong>${r.author}</strong> <span class="reply-role">${r.role}</span>
+                                    <p>${r.message}</p>
+                                    <span class="reply-date">${new Date(r.createdAt).toLocaleString()}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button class="btn-view-more-replies" id="btn-toggle-replies-${a._id}" onclick="toggleReplies('${a._id}', ${hiddenReplies.length})">
+                            View ${hiddenReplies.length} more repl${hiddenReplies.length === 1 ? 'y' : 'ies'}
+                        </button>
+                    ` : ''}
                     <div class="reply-form">
                         <input type="text" id="reply-${a._id}" placeholder="Write a reply..." class="reply-input" onkeydown="handleAdminReplyKey(event,'${a._id}')">
                         <button class="btn-reply" onclick="adminReply('${a._id}')">Reply</button>
                     </div>
                 </div>
             </div>
-        `).join('')}
+        `}).join('')}
     `;
 }
 
@@ -139,6 +158,18 @@ function showAnnouncementForm() {
         return;
     }
     form.style.display = 'block';
+}
+
+function toggleReplies(announcementId, hiddenCount) {
+    const hidden = document.getElementById(`replies-hidden-${announcementId}`);
+    const btn = document.getElementById(`btn-toggle-replies-${announcementId}`);
+    if (hidden.style.display === 'none') {
+        hidden.style.display = 'block';
+        btn.textContent = 'Show less';
+    } else {
+        hidden.style.display = 'none';
+        btn.textContent = `View ${hiddenCount} more repl${hiddenCount === 1 ? 'y' : 'ies'}`;
+    }
 }
 
 function hideAnnouncementForm() {
