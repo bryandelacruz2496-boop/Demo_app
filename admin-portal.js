@@ -2244,6 +2244,14 @@ function cancelAttendanceEdit() {
 function selectAttendance(btn, status) {
     if (!attendanceEditMode) return;
     const group = btn.parentElement;
+
+    // Toggle off if clicking the same status that's already active
+    if (btn.classList.contains('active')) {
+        btn.classList.remove('active');
+        group.dataset.selectedStatus = '';
+        return;
+    }
+
     group.querySelectorAll('.att-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     group.dataset.selectedStatus = status;
@@ -2257,31 +2265,49 @@ async function saveAllAttendance() {
     }
 
     const groups = document.querySelectorAll('.attendance-btn-group');
-    const records = Array.from(groups).map(group => {
+    const records = [];
+    const removals = [];
+
+    groups.forEach(group => {
         const activeBtn = group.querySelector('.att-btn.active');
-        return {
-            studentId: group.dataset.studentId,
-            status: activeBtn ? activeBtn.textContent.trim() : 'P'
-        };
-    }).filter(r => r.status);
+        const studentId = group.dataset.studentId;
+        if (activeBtn) {
+            records.push({ studentId, status: activeBtn.textContent.trim() });
+        } else {
+            // No status selected — remove attendance for this date
+            removals.push(studentId);
+        }
+    });
 
     try {
-        const res = await fetch(`${API_URL}/admin/attendance/bulk`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${adminToken}`
-            },
-            body: JSON.stringify({ date, records })
-        });
+        // Save students that have a status selected
+        if (records.length > 0) {
+            const res = await fetch(`${API_URL}/admin/attendance/bulk`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${adminToken}`
+                },
+                body: JSON.stringify({ date, records })
+            });
 
-        if (res.ok) {
-            showToast('Attendance saved successfully');
-            loadAttendance();
-        } else {
-            const data = await res.json();
-            showToast(data.message || 'Error saving attendance');
+            if (!res.ok) {
+                const data = await res.json();
+                showToast(data.message || 'Error saving attendance');
+                return;
+            }
         }
+
+        // Remove attendance for students with no status selected
+        for (const studentId of removals) {
+            await fetch(`${API_URL}/admin/students/${studentId}/attendance/${date}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${adminToken}` }
+            });
+        }
+
+        showToast('Attendance saved successfully');
+        loadAttendance();
     } catch (err) {
         showToast('Error saving attendance');
     }

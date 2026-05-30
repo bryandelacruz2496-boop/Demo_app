@@ -815,6 +815,7 @@ router.post('/students/:id/attendance', authMiddleware, async (req, res) => {
         }
 
         await student.save();
+        logAction('UPDATE_ATTENDANCE', req.admin.username, `Marked ${student.fullName} as ${status} on ${date}`, student.studentNo, req.ip);
         res.json({ message: 'Attendance updated', attendance: student.attendance });
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
@@ -830,6 +831,7 @@ router.post('/attendance/bulk', authMiddleware, async (req, res) => {
             return res.status(400).json({ message: 'Date and records array required' });
         }
 
+        const statusSummary = { P: 0, L: 0, E: 0, U: 0 };
         for (const record of records) {
             const student = await Student.findById(record.studentId);
             if (!student) continue;
@@ -841,8 +843,11 @@ router.post('/attendance/bulk', authMiddleware, async (req, res) => {
                 student.attendance.push({ date, status: record.status });
             }
             await student.save();
+            if (statusSummary[record.status] !== undefined) statusSummary[record.status]++;
         }
 
+        const summary = Object.entries(statusSummary).filter(([, v]) => v > 0).map(([k, v]) => `${k}:${v}`).join(', ');
+        logAction('BULK_ATTENDANCE', req.admin.username, `Bulk attendance on ${date} for ${records.length} students (${summary})`, 'BULK', req.ip);
         res.json({ message: 'Bulk attendance updated' });
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
@@ -857,6 +862,7 @@ router.delete('/students/:id/attendance/:date', authMiddleware, async (req, res)
 
         student.attendance = student.attendance.filter(a => a.date !== req.params.date);
         await student.save();
+        logAction('REMOVE_ATTENDANCE', req.admin.username, `Removed attendance for ${student.fullName} on ${req.params.date}`, student.studentNo, req.ip);
         res.json({ message: 'Attendance record removed', attendance: student.attendance });
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
