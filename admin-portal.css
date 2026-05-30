@@ -2297,6 +2297,13 @@ h4 {
     cursor: not-allowed;
 }
 
+.page-ellipsis {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.85rem;
+    color: #888;
+    font-weight: 600;
+}
+
 /* ============================================
    AUDIT LOG
    ============================================ */

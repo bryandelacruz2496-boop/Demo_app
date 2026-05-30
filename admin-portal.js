@@ -2123,12 +2123,11 @@ async function loadAuditLog() {
     }
 
     auditPage = 1;
-    auditFilterAction = 'all';
+    auditFilterAction = allAuditActions.length > 0 ? allAuditActions[0] : '';
     renderAuditLog();
 }
 
 function getFilteredAuditLogs() {
-    if (auditFilterAction === 'all') return auditLogs;
     return auditLogs.filter(log => log.action === auditFilterAction);
 }
 
@@ -2158,9 +2157,24 @@ function renderAuditLog() {
     if (totalPages > 1) {
         paginationHtml = '<div class="pagination">';
         paginationHtml += `<button class="page-btn" onclick="changeAuditPage(${auditPage - 1})" ${auditPage === 1 ? 'disabled' : ''}>&lt;</button>`;
+
+        // Smart pagination: show first, last, current, and neighbors
+        const pages = [];
         for (let i = 1; i <= totalPages; i++) {
-            paginationHtml += `<button class="page-btn ${i === auditPage ? 'active' : ''}" onclick="changeAuditPage(${i})">${i}</button>`;
+            if (i === 1 || i === totalPages || (i >= auditPage - 1 && i <= auditPage + 1)) {
+                pages.push(i);
+            } else if (pages[pages.length - 1] !== '...') {
+                pages.push('...');
+            }
         }
+        pages.forEach(p => {
+            if (p === '...') {
+                paginationHtml += `<span class="page-ellipsis">...</span>`;
+            } else {
+                paginationHtml += `<button class="page-btn ${p === auditPage ? 'active' : ''}" onclick="changeAuditPage(${p})">${p}</button>`;
+            }
+        });
+
         paginationHtml += `<button class="page-btn" onclick="changeAuditPage(${auditPage + 1})" ${auditPage === totalPages ? 'disabled' : ''}>&gt;</button>`;
         paginationHtml += '</div>';
     }
@@ -2171,7 +2185,6 @@ function renderAuditLog() {
             <div style="display:flex;align-items:center;gap:0.5rem;">
                 <label style="font-weight:600;font-size:0.9rem;">Filter Action:</label>
                 <select id="auditActionFilter" onchange="onAuditFilterChange()" style="padding:0.4rem 0.8rem;border:2px solid #ddd;border-radius:8px;font-size:0.9rem;">
-                    <option value="all">All Actions</option>
                     ${uniqueActions.map(a => `<option value="${a}" ${auditFilterAction === a ? 'selected' : ''}>${a.replace(/_/g, ' ')}</option>`).join('')}
                 </select>
             </div>
