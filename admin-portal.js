@@ -2066,6 +2066,7 @@ async function exportStudentPayments() {
 // ============================================
 let auditLogs = [];
 let auditPage = 1;
+let auditFilterAction = 'all';
 const auditPerPage = 15;
 
 async function loadAuditLog() {
@@ -2074,6 +2075,18 @@ async function loadAuditLog() {
     });
     if (!res.ok) return;
     auditLogs = await res.json();
+    auditPage = 1;
+    auditFilterAction = 'all';
+    renderAuditLog();
+}
+
+function getFilteredAuditLogs() {
+    if (auditFilterAction === 'all') return auditLogs;
+    return auditLogs.filter(log => log.action === auditFilterAction);
+}
+
+function onAuditFilterChange() {
+    auditFilterAction = document.getElementById('auditActionFilter').value;
     auditPage = 1;
     renderAuditLog();
 }
@@ -2085,10 +2098,14 @@ function renderAuditLog() {
         return;
     }
 
-    const totalPages = Math.ceil(auditLogs.length / auditPerPage);
+    // Get unique actions for the filter dropdown
+    const uniqueActions = [...new Set(auditLogs.map(log => log.action))].sort();
+
+    const filtered = getFilteredAuditLogs();
+    const totalPages = Math.ceil(filtered.length / auditPerPage);
     const start = (auditPage - 1) * auditPerPage;
     const end = start + auditPerPage;
-    const pageLogs = auditLogs.slice(start, end);
+    const pageLogs = filtered.slice(start, end);
 
     let paginationHtml = '';
     if (totalPages > 1) {
@@ -2102,8 +2119,16 @@ function renderAuditLog() {
     }
 
     list.innerHTML = `
-        <div style="margin-bottom:1rem;">
+        <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap;">
             <button class="btn-action" onclick="exportAuditLog()">Export Excel</button>
+            <div style="display:flex;align-items:center;gap:0.5rem;">
+                <label style="font-weight:600;font-size:0.9rem;">Filter Action:</label>
+                <select id="auditActionFilter" onchange="onAuditFilterChange()" style="padding:0.4rem 0.8rem;border:2px solid #ddd;border-radius:8px;font-size:0.9rem;">
+                    <option value="all">All Actions</option>
+                    ${uniqueActions.map(a => `<option value="${a}" ${auditFilterAction === a ? 'selected' : ''}>${a.replace(/_/g, ' ')}</option>`).join('')}
+                </select>
+            </div>
+            <span style="color:#888;font-size:0.85rem;">${filtered.length} record${filtered.length !== 1 ? 's' : ''}</span>
         </div>
         <div class="table-wrapper">
             <table class="admin-table" id="auditLogTable">
@@ -2132,14 +2157,14 @@ function renderAuditLog() {
             </table>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1rem;">
-            <span style="color:#888;font-size:0.85rem;">Showing ${start + 1}-${Math.min(end, auditLogs.length)} of ${auditLogs.length}</span>
+            <span style="color:#888;font-size:0.85rem;">Showing ${start + 1}-${Math.min(end, filtered.length)} of ${filtered.length}</span>
             ${paginationHtml}
         </div>
     `;
 }
 
 function changeAuditPage(page) {
-    const totalPages = Math.ceil(auditLogs.length / auditPerPage);
+    const totalPages = Math.ceil(getFilteredAuditLogs().length / auditPerPage);
     if (page < 1 || page > totalPages) return;
     auditPage = page;
     renderAuditLog();
