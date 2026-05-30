@@ -2096,6 +2096,7 @@ async function exportStudentPayments() {
 // FEATURE: Audit Log
 // ============================================
 let auditLogs = [];
+let allAuditActions = [];
 let auditPage = 1;
 let auditFilterAction = 'all';
 const auditPerPage = 15;
@@ -2106,6 +2107,21 @@ async function loadAuditLog() {
     });
     if (!res.ok) return;
     auditLogs = await res.json();
+
+    // Fetch all distinct action types from the database
+    try {
+        const actionsRes = await fetch(`${API_URL}/audit/actions`, {
+            headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+        if (actionsRes.ok) {
+            allAuditActions = await actionsRes.json();
+        } else {
+            allAuditActions = [...new Set(auditLogs.map(log => log.action))].sort();
+        }
+    } catch (e) {
+        allAuditActions = [...new Set(auditLogs.map(log => log.action))].sort();
+    }
+
     auditPage = 1;
     auditFilterAction = 'all';
     renderAuditLog();
@@ -2130,7 +2146,7 @@ function renderAuditLog() {
     }
 
     // Get unique actions for the filter dropdown
-    const uniqueActions = [...new Set(auditLogs.map(log => log.action))].sort();
+    const uniqueActions = allAuditActions.length > 0 ? allAuditActions : [...new Set(auditLogs.map(log => log.action))].sort();
 
     const filtered = getFilteredAuditLogs();
     const totalPages = Math.ceil(filtered.length / auditPerPage);
