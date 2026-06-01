@@ -260,14 +260,16 @@ async function createAnnouncement() {
 }
 
 async function deleteAnnouncement(id) {
-    const res = await fetch(`${API_URL}/announcements/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${adminToken}` }
+    showConfirmPopup('Are you sure you want to delete this announcement?', async () => {
+        const res = await fetch(`${API_URL}/announcements/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+        if (res.ok) {
+            showSuccessToast('Announcement deleted successfully');
+            loadAnnouncements();
+        }
     });
-    if (res.ok) {
-        showToast('Announcement deleted');
-        loadAnnouncements();
-    }
 }
 
 function handleAdminReplyKey(e, id) {

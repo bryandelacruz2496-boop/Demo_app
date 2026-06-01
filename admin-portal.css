@@ -1769,7 +1769,7 @@ h4 {
 
 .btn-confirm-yes {
     padding: 0.7rem 2rem;
-    background: linear-gradient(135deg, #1a237e, #3949ab);
+    background: linear-gradient(135deg, #2e7d32, #43a047);
     color: #fff;
     border: none;
     border-radius: 10px;
@@ -1777,12 +1777,12 @@ h4 {
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 3px 10px rgba(26, 35, 126, 0.3);
+    box-shadow: 0 3px 10px rgba(46, 125, 50, 0.3);
 }
 
 .btn-confirm-yes:hover {
     transform: translateY(-1px);
-    box-shadow: 0 5px 16px rgba(26, 35, 126, 0.4);
+    box-shadow: 0 5px 16px rgba(46, 125, 50, 0.4);
 }
 
 .btn-confirm-yes:active {
@@ -1791,20 +1791,20 @@ h4 {
 
 .btn-confirm-no {
     padding: 0.7rem 2rem;
-    background: transparent;
-    color: #555;
-    border: 2px solid #ddd;
+    background: linear-gradient(135deg, #b71c1c, #e53935);
+    color: #fff;
+    border: none;
     border-radius: 10px;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
+    box-shadow: 0 3px 10px rgba(183, 28, 28, 0.3);
 }
 
 .btn-confirm-no:hover {
-    background: #f5f5f5;
-    border-color: #bbb;
-    color: #333;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 16px rgba(183, 28, 28, 0.4);
 }
 
 .btn-confirm-no:active {
