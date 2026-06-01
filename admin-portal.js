@@ -1024,17 +1024,18 @@ function renderActivities() {
 }
 
 async function deleteActivity(activityId) {
-    if (!confirm('Delete this activity?')) return;
-    const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/activities/${activityId}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${adminToken}` }
+    showConfirmPopup('Are you sure you want to delete this activity?', async () => {
+        const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/activities/${activityId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+        if (res.ok) {
+            const data = await res.json();
+            selectedStudent.activities = data.activities;
+            renderActivities();
+            showSuccessToast('Activity deleted successfully');
+        }
     });
-    if (res.ok) {
-        const data = await res.json();
-        selectedStudent.activities = data.activities;
-        renderActivities();
-        showToast('Activity deleted');
-    }
 }
 
 function previewImage(input) {
@@ -1123,17 +1124,18 @@ function renderProjects() {
 }
 
 async function deleteProject(projectId) {
-    if (!confirm('Delete this project?')) return;
-    const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/projects/${projectId}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${adminToken}` }
+    showConfirmPopup('Are you sure you want to delete this project?', async () => {
+        const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/projects/${projectId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+        if (res.ok) {
+            const data = await res.json();
+            selectedStudent.projects = data.projects;
+            renderProjects();
+            showSuccessToast('Project deleted successfully');
+        }
     });
-    if (res.ok) {
-        const data = await res.json();
-        selectedStudent.projects = data.projects;
-        renderProjects();
-        showToast('Project deleted');
-    }
 }
 
 async function addProject() {
