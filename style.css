@@ -1784,3 +1784,73 @@ button,
         display: none;
     }
 }
+
+
+/* ============================================
+   SCHOOL CALENDAR SECTION
+   ============================================ */
+.school-calendar {
+    padding: 6rem 0;
+    background: linear-gradient(180deg, #fff, #fff5f5);
+}
+
+.calendar-months {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.month-tab {
+    padding: 0.6rem 1.2rem;
+    border: 2px solid #ffcdd2;
+    background: #fff;
+    color: #b71c1c;
+    border-radius: 12px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.month-tab:hover {
+    background: #ffebee;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(183, 28, 28, 0.1);
+}
+
+.month-tab.active {
+    background: linear-gradient(135deg, #b71c1c, #e53935);
+    color: #fff;
+    border-color: #b71c1c;
+    box-shadow: 0 4px 16px rgba(183, 28, 28, 0.3);
+}
+
+.calendar-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(183, 28, 28, 0.1);
+    border: 2px solid #ffebee;
+}
+
+.calendar-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: opacity 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .calendar-months {
+        gap: 0.4rem;
+    }
+
+    .month-tab {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.8rem;
+    }
+}

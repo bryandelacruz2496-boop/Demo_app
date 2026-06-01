@@ -488,3 +488,20 @@ if (window.matchMedia('(pointer: fine)').matches) {
     if (dot) dot.style.display = 'none';
     if (ring) ring.style.display = 'none';
 }
+
+// ============================================
+// SCHOOL CALENDAR
+// ============================================
+function showMonth(month) {
+    const img = document.getElementById('calendarImage');
+    if (img) {
+        img.style.opacity = '0';
+        setTimeout(() => {
+            img.src = 'school-calendar/' + month + '.png';
+            img.alt = 'BSIS School Calendar ' + month.replace('-', ' ');
+            img.style.opacity = '1';
+        }, 200);
+    }
+    document.querySelectorAll('.month-tab').forEach(tab => tab.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+}
