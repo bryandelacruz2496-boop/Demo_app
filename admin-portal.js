@@ -1793,12 +1793,12 @@ function showPasswordPrompt(onConfirm) {
     const overlay = document.createElement('div');
     overlay.className = 'confirm-overlay';
     overlay.innerHTML = `
-        <div class="confirm-box">
+        <div class="confirm-modal">
             <p>Enter your admin password to confirm:</p>
-            <input type="password" id="deletePasswordInput" placeholder="Admin password" style="width:100%;padding:0.7rem 1rem;border:2px solid #eee;border-radius:8px;font-size:1rem;margin-bottom:1rem;">
-            <div class="confirm-buttons">
-                <button class="confirm-yes" id="passwordConfirmBtn">Confirm</button>
-                <button class="confirm-no" id="passwordCancelBtn">Cancel</button>
+            <input type="password" id="deletePasswordInput" placeholder="Admin password" class="password-prompt-input">
+            <div class="confirm-modal-actions">
+                <button class="btn-confirm-yes" id="passwordConfirmBtn">Yes</button>
+                <button class="btn-confirm-no" id="passwordCancelBtn">No</button>
             </div>
         </div>
     `;

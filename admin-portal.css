@@ -2936,3 +2936,22 @@ textarea:focus {
     font-weight: 700 !important;
     box-shadow: 0 8px 32px rgba(46, 125, 50, 0.4) !important;
 }
+
+
+/* Password Prompt Input */
+.password-prompt-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-family: inherit;
+    margin-bottom: 1.2rem;
+    transition: all 0.2s ease;
+}
+
+.password-prompt-input:focus {
+    outline: none;
+    border-color: #1a237e;
+    box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
+}
