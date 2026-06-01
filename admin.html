@@ -998,13 +998,11 @@
 
     <!-- Logout Confirmation Modal -->
     <div class="logout-modal-overlay" id="logoutModal" style="display:none;">
-        <div class="logout-modal">
-            <div class="logout-modal-icon">👋</div>
-            <h3>Are you sure you want to log out?</h3>
-            <p>You will need to enter your credentials again to access the portal.</p>
-            <div class="logout-modal-actions">
-                <button class="btn-logout-confirm" onclick="adminLogout(); closeLogoutModal();">Yes, Log Out</button>
-                <button class="btn-logout-cancel" onclick="closeLogoutModal()">No, Stay Logged In</button>
+        <div class="confirm-modal">
+            <p>Are you sure you want to log out?</p>
+            <div class="confirm-modal-actions">
+                <button class="btn-confirm-yes" onclick="adminLogout(); closeLogoutModal();">Yes</button>
+                <button class="btn-confirm-no" onclick="closeLogoutModal()">No</button>
             </div>
         </div>
     </div>

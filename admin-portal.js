@@ -1675,12 +1675,10 @@ function showConfirmPopup(message, onConfirm) {
     overlay.className = 'confirm-overlay';
     overlay.innerHTML = `
         <div class="confirm-modal">
-            <div class="confirm-modal-icon">⚠️</div>
-            <h3>Confirm Action</h3>
             <p>${message}</p>
             <div class="confirm-modal-actions">
-                <button class="btn-confirm-yes" id="confirmYes">Yes, Proceed</button>
-                <button class="btn-confirm-no" id="confirmNo">Cancel</button>
+                <button class="btn-confirm-yes" id="confirmYes">Yes</button>
+                <button class="btn-confirm-no" id="confirmNo">No</button>
             </div>
         </div>
     `;
