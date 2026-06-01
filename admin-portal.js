@@ -231,19 +231,30 @@ async function createAnnouncement() {
     }
 
     showConfirmPopup('Are you sure you want to post this announcement?', async () => {
-        const res = await fetch(`${API_URL}/announcements`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
-            body: JSON.stringify({ subject, body, targetGrade })
-        });
+        showUploadingOverlay('Posting announcement...');
 
-        if (res.ok) {
-            showToast('Announcement posted!');
-            document.getElementById('annSubject').value = '';
-            document.getElementById('annBody').value = '';
-            document.getElementById('annGrade').value = 'all';
-            hideAnnouncementForm();
-            loadAnnouncements();
+        try {
+            const res = await fetch(`${API_URL}/announcements`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+                body: JSON.stringify({ subject, body, targetGrade })
+            });
+
+            hideUploadingOverlay();
+
+            if (res.ok) {
+                showSuccessToast('✓ Announcement posted successfully!');
+                document.getElementById('annSubject').value = '';
+                document.getElementById('annBody').value = '';
+                document.getElementById('annGrade').value = 'all';
+                hideAnnouncementForm();
+                loadAnnouncements();
+            } else {
+                showToast('Failed to post announcement');
+            }
+        } catch (err) {
+            hideUploadingOverlay();
+            showToast('Error: Cannot connect to server');
         }
     });
 }
@@ -1055,6 +1066,9 @@ async function addActivity() {
     if (!title || !subject || !date || !description) return;
 
     showConfirmPopup('Are you sure you want to add this activity?', async () => {
+        // Show uploading overlay
+        showUploadingOverlay(imageFile ? 'Uploading activity with photo...' : 'Adding activity...');
+
         const formData = new FormData();
         formData.append('title', title);
         formData.append('subject', subject);
@@ -1062,24 +1076,33 @@ async function addActivity() {
         formData.append('description', description);
         if (imageFile) formData.append('image', imageFile);
 
-        const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/activities`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${adminToken}` },
-            body: formData
-        });
+        try {
+            const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/activities`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${adminToken}` },
+                body: formData
+            });
 
-        if (res.ok) {
-            const data = await res.json();
-            selectedStudent.activities = data.activities;
-            renderActivities();
-            showToast('Activity added!');
-            document.getElementById('actTitle').value = '';
-            document.getElementById('actSubject').value = '';
-            document.getElementById('actDate').value = '';
-            document.getElementById('actDate').dataset.value = '';
-            document.getElementById('actDesc').value = '';
-            document.getElementById('actImage').value = '';
-            document.getElementById('actImagePreview').style.display = 'none';
+            hideUploadingOverlay();
+
+            if (res.ok) {
+                const data = await res.json();
+                selectedStudent.activities = data.activities;
+                renderActivities();
+                showSuccessToast('✓ Activity added successfully!');
+                document.getElementById('actTitle').value = '';
+                document.getElementById('actSubject').value = '';
+                document.getElementById('actDate').value = '';
+                document.getElementById('actDate').dataset.value = '';
+                document.getElementById('actDesc').value = '';
+                document.getElementById('actImage').value = '';
+                document.getElementById('actImagePreview').style.display = 'none';
+            } else {
+                showToast('Failed to add activity');
+            }
+        } catch (err) {
+            hideUploadingOverlay();
+            showToast('Error: Cannot connect to server');
         }
     });
 }
@@ -1191,6 +1214,32 @@ function showToast(message) {
     toast.textContent = message;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 3000);
+}
+
+function showSuccessToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-success';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 4000);
+}
+
+function showUploadingOverlay(message) {
+    const overlay = document.createElement('div');
+    overlay.className = 'uploading-overlay';
+    overlay.id = 'uploadingOverlay';
+    overlay.innerHTML = `
+        <div class="uploading-modal">
+            <div class="uploading-spinner"></div>
+            <p>${message || 'Uploading...'}</p>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+}
+
+function hideUploadingOverlay() {
+    const overlay = document.getElementById('uploadingOverlay');
+    if (overlay) overlay.remove();
 }
 
 // Add Student

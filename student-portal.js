@@ -191,7 +191,7 @@ function populateDashboard() {
       <h4>${a.title}</h4>
       <div class="meta">${a.subject} • ${a.date}</div>
       <p>${a.description}</p>
-      ${a.imageUrl ? `<div class="activity-photo-wrapper" style="display:none;"><img src="${imgUrl(a.imageUrl)}" class="activity-photo" onclick="event.stopPropagation(); openActivityImage('${imgUrl(a.imageUrl)}')"><p class="photo-hint">Click image to enlarge</p></div>` : ''}
+      ${a.imageUrl ? `<div class="activity-photo-wrapper"><img src="${imgUrl(a.imageUrl)}" class="activity-photo" onclick="event.stopPropagation(); openActivityImage('${imgUrl(a.imageUrl)}')"><p class="photo-hint">Click image to enlarge</p></div>` : ''}
     </div>
   `).join('');
 
