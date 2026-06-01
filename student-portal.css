@@ -1508,3 +1508,26 @@ h4 {
     color: #666;
     font-size: 0.9rem;
 }
+
+
+/* ============================================
+   SCHOOL CALENDAR IN STUDENT PORTAL
+   ============================================ */
+.dash-panel .cal-subtitle {
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.dash-panel .cal-month-nav {
+    margin-bottom: 1.5rem;
+}
+
+.dash-panel .cal-grid-wrapper {
+    max-width: 100%;
+}
+
+.dash-panel .cal-month-title {
+    font-size: 1.4rem;
+}

@@ -11,6 +11,7 @@
         href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="student-portal.css">
+    <link rel="stylesheet" href="school-calendar-page.css">
 </head>
 
 <body>
@@ -135,6 +136,8 @@
                     <button class="dash-tab" onclick="switchDashTab(event, 'activities')">📋 Activities</button>
                     <button class="dash-tab" onclick="switchDashTab(event, 'projects')">📁 Projects</button>
                     <button class="dash-tab" onclick="switchDashTab(event, 'assessments')">📝 Assessments</button>
+                    <button class="dash-tab" onclick="switchDashTab(event, 'school-calendar')">📅 School
+                        Calendar</button>
                 </div>
 
                 <div class="dash-main-content">
@@ -301,6 +304,39 @@
                         <div id="assessmentsList"></div>
                     </div>
 
+                    <!-- School Calendar Tab -->
+                    <div class="dash-panel" id="school-calendar">
+                        <h3>School Calendar</h3>
+                        <p class="cal-subtitle">BSIS School Calendar 2026-2027</p>
+                        <div class="cal-month-nav">
+                            <button class="cal-nav-btn" id="calPrevBtn" onclick="calPrevMonth()">‹</button>
+                            <h3 class="cal-month-title" id="calMonthTitle">JUNE, 2026</h3>
+                            <button class="cal-nav-btn" id="calNextBtn" onclick="calNextMonth()">›</button>
+                        </div>
+                        <div class="cal-grid-wrapper">
+                            <div class="cal-grid">
+                                <div class="cal-header cal-sun">Sunday</div>
+                                <div class="cal-header">Monday</div>
+                                <div class="cal-header">Tuesday</div>
+                                <div class="cal-header">Wednesday</div>
+                                <div class="cal-header">Thursday</div>
+                                <div class="cal-header">Friday</div>
+                                <div class="cal-header cal-sat">Saturday</div>
+                            </div>
+                            <div class="cal-grid cal-days" id="calDaysGrid"></div>
+                        </div>
+                        <div class="cal-legend">
+                            <div class="cal-legend-item">
+                                <span class="cal-legend-dot cal-legend-event"></span>
+                                <span>School Event</span>
+                            </div>
+                            <div class="cal-legend-item">
+                                <span class="cal-legend-dot cal-legend-holiday"></span>
+                                <span>Holiday / No Classes</span>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 <!-- end dash-main-content -->
 
@@ -310,6 +346,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script src="student-portal.js"></script>
+    <script src="school-calendar-page.js"></script>
 </body>
 
 </html>
