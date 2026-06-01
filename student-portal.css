@@ -1601,42 +1601,46 @@ body.dark-mode {
     background: #1a1a2e;
 }
 
+body.dark-mode::before {
+    opacity: 0.02;
+}
+
 body.dark-mode .dashboard {
     background: #1a1a2e;
 }
 
 body.dark-mode .info-card {
-    background: #16213e;
+    background: #1e1e3a;
     border-left-color: #e53935;
 }
 
 body.dark-mode .info-details h2 {
-    color: #ff6b6b;
+    color: #ff8a80;
 }
 
 body.dark-mode .info-details p {
-    color: #ccc;
+    color: #b0b0c0;
 }
 
 body.dark-mode .info-datetime .greeting-text {
-    color: #ff6b6b;
+    color: #ff8a80;
 }
 
 body.dark-mode .info-datetime .datetime-text {
-    color: #aaa;
+    color: #9e9eb0;
 }
 
 body.dark-mode .info-datetime .time-text {
-    color: #eee;
+    color: #e8e8f0;
 }
 
 body.dark-mode .dash-tabs {
-    background: #16213e;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    background: #1e1e3a;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
 }
 
 body.dark-mode .dash-tab {
-    color: #ccc;
+    color: #b0b0c0;
 }
 
 body.dark-mode .dash-tab.active,
@@ -1646,76 +1650,76 @@ body.dark-mode .dash-tab:hover {
 }
 
 body.dark-mode .dash-panel {
-    background: #16213e;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    background: #1e1e3a;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
 }
 
 body.dark-mode .dash-panel h3 {
-    background: linear-gradient(135deg, #ff6b6b, #e53935);
+    background: linear-gradient(135deg, #ff8a80, #e53935);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
 
 body.dark-mode .data-table td {
-    color: #ddd;
+    color: #d0d0e0;
     border-bottom-color: #2a2a4a;
 }
 
 body.dark-mode .data-table tr:hover td {
-    background: #1f2b47;
+    background: #252545;
 }
 
 body.dark-mode .summary-item {
-    background: #0f3460;
+    background: #252545;
 }
 
 body.dark-mode .summary-label {
-    color: #aaa;
+    color: #9e9eb0;
 }
 
 body.dark-mode .summary-value {
-    color: #eee;
+    color: #e8e8f0;
 }
 
 body.dark-mode .activity-card,
 body.dark-mode .project-card,
 body.dark-mode .assessment-view-card {
-    background: #0f3460;
+    background: #252545;
     border-left-color: #e53935;
 }
 
 body.dark-mode .activity-card h4,
 body.dark-mode .project-card h4 {
-    color: #eee;
+    color: #e8e8f0;
 }
 
 body.dark-mode .activity-card p,
 body.dark-mode .project-card p {
-    color: #bbb;
+    color: #b0b0c0;
 }
 
 body.dark-mode .activity-card .meta,
 body.dark-mode .project-card .meta {
-    color: #999;
+    color: #8888a0;
 }
 
 body.dark-mode .contact-card,
 body.dark-mode .bank-details-box {
-    background: #0f3460;
+    background: #252545;
     border-color: #2a2a4a;
 }
 
 body.dark-mode .bank-details-box h5 {
-    color: #eee;
+    color: #e8e8f0;
 }
 
 body.dark-mode .bank-detail-row span {
-    color: #aaa;
+    color: #9e9eb0;
 }
 
 body.dark-mode .bank-detail-row strong {
-    color: #eee;
+    color: #e8e8f0;
 }
 
 body.dark-mode .bank-detail-row {
@@ -1723,12 +1727,12 @@ body.dark-mode .bank-detail-row {
 }
 
 body.dark-mode .sort-row label {
-    color: #ff6b6b;
+    color: #ff8a80;
 }
 
 body.dark-mode .sort-row select {
-    background: #0f3460;
-    color: #eee;
+    background: #252545;
+    color: #e8e8f0;
     border-color: #e53935;
 }
 
@@ -1737,15 +1741,15 @@ body.dark-mode .payment-options-section {
 }
 
 body.dark-mode .payment-options-section h4 {
-    color: #ff6b6b;
+    color: #ff8a80;
 }
 
 body.dark-mode .pay-now-desc {
-    color: #aaa;
+    color: #9e9eb0;
 }
 
 body.dark-mode .bank-note {
-    color: #888;
+    color: #7a7a90;
 }
 
 /* Dark mode calendar overrides */
@@ -1754,38 +1758,38 @@ body.dark-mode .cal-grid-wrapper {
 }
 
 body.dark-mode .cal-day {
-    background: #16213e;
+    background: #1e1e3a;
     border-color: #2a2a4a;
 }
 
 body.dark-mode .cal-day:hover {
-    background: #1f2b47;
+    background: #252545;
 }
 
 body.dark-mode .cal-day-number {
-    color: #ddd;
+    color: #d0d0e0;
 }
 
 body.dark-mode .cal-day.cal-other-month {
-    background: #111a2e;
+    background: #16162e;
 }
 
 body.dark-mode .cal-day.cal-other-month .cal-day-number {
-    color: #555;
+    color: #4a4a60;
 }
 
 body.dark-mode .cal-day.cal-has-event {
-    background: #1f2b47;
+    background: #252545;
 }
 
 body.dark-mode .cal-month-title {
-    color: #eee;
+    color: #e8e8f0;
 }
 
 body.dark-mode .cal-nav-btn {
-    background: #0f3460;
-    border-color: #2a2a4a;
-    color: #ff6b6b;
+    background: #252545;
+    border-color: #3a3a55;
+    color: #ff8a80;
 }
 
 body.dark-mode .cal-nav-btn:hover {
@@ -1794,29 +1798,29 @@ body.dark-mode .cal-nav-btn:hover {
 }
 
 body.dark-mode .cal-legend-item span:last-child {
-    color: #aaa;
+    color: #9e9eb0;
 }
 
 body.dark-mode .cal-subtitle {
-    color: #aaa;
+    color: #9e9eb0;
 }
 
 body.dark-mode .assessment-view-quarter {
-    background: #16213e;
+    background: #1e1e3a;
     border-color: #2a2a4a;
 }
 
 body.dark-mode .quarter-label {
-    color: #ff6b6b;
+    color: #ff8a80;
 }
 
 body.dark-mode .assessment-view-quarter p {
-    color: #ddd;
+    color: #d0d0e0;
 }
 
 body.dark-mode .notif-center {
-    background: #16213e;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    background: #1e1e3a;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
 body.dark-mode .notif-center-header {
@@ -1824,7 +1828,7 @@ body.dark-mode .notif-center-header {
 }
 
 body.dark-mode .notif-center-header h4 {
-    color: #eee;
+    color: #e8e8f0;
 }
 
 body.dark-mode .notif-item {
@@ -1832,9 +1836,9 @@ body.dark-mode .notif-item {
 }
 
 body.dark-mode .notif-item.unread {
-    background: #1f2b47;
+    background: #252545;
 }
 
 body.dark-mode .notif-item p {
-    color: #ddd;
+    color: #d0d0e0;
 }
