@@ -51,6 +51,14 @@ async function handleAdminLogin(event) {
     const username = document.getElementById('adminUsername').value;
     const password = document.getElementById('adminPassword').value;
     const errorEl = document.getElementById('loginError');
+    const loginBtn = document.querySelector('.btn-login');
+    const loginForm = document.querySelector('.login-left form');
+
+    // Show loading state
+    const originalText = loginBtn.textContent;
+    loginBtn.disabled = true;
+    loginBtn.innerHTML = '<span class="btn-spinner"></span> Logging in...';
+    errorEl.textContent = '';
 
     try {
         const res = await fetch(`${API_URL}/auth/login`, {
@@ -67,17 +75,44 @@ async function handleAdminLogin(event) {
             localStorage.setItem('adminName', data.admin.name);
             localStorage.setItem('adminRole', data.admin.role || 'staff');
             document.getElementById('adminName').textContent = data.admin.name;
-            document.getElementById('loginWrapper').style.display = 'none';
-            document.getElementById('adminDashboard').style.display = 'block';
-            applyRoleUI();
-            loadStudents();
-            startReplyNotificationCheck();
+
+            // Show success state
+            loginBtn.innerHTML = '✓ Login Successful!';
+            loginBtn.classList.add('btn-login-success');
+            showAdminLoginNotification('✓ Welcome, ' + data.admin.name + '!');
+
+            setTimeout(() => {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = originalText;
+                loginBtn.classList.remove('btn-login-success');
+                document.getElementById('loginWrapper').style.display = 'none';
+                document.getElementById('adminDashboard').style.display = 'block';
+                applyRoleUI();
+                loadStudents();
+                startReplyNotificationCheck();
+            }, 1200);
         } else {
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = originalText;
             errorEl.textContent = data.message;
+            loginForm.classList.add('shake');
+            setTimeout(() => loginForm.classList.remove('shake'), 600);
         }
     } catch (err) {
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = originalText;
         errorEl.textContent = 'Cannot connect to server';
+        loginForm.classList.add('shake');
+        setTimeout(() => loginForm.classList.remove('shake'), 600);
     }
+}
+
+function showAdminLoginNotification(message) {
+    const notif = document.createElement('div');
+    notif.className = 'login-success-notif';
+    notif.textContent = message;
+    document.body.appendChild(notif);
+    setTimeout(() => { if (notif.parentElement) notif.remove(); }, 3000);
 }
 
 // Load students
