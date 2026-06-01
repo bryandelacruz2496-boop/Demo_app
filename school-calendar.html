@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Calendar - Beata Sai Integrated School</title>
+    <link rel="icon" type="image/png" href="logo.jpg">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#b71c1c">
+    <link rel="apple-touch-icon" href="logo.jpg">
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Navigation -->
+    <header id="mainHeader">
+        <nav>
+            <div class="logo">
+                <img src="logo.jpg" alt="Beata Sai Logo" class="logo-img">
+                <span class="logo-text">Beata Sai Integrated School</span>
+            </div>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#programs">Programs</a></li>
+                <li><a href="index.html#gallery">Gallery</a></li>
+                <li><a href="index.html#announcements">News</a></li>
+                <li><a href="school-calendar.html" class="portal-link">📅 Calendar</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+                <li><a href="student-login.html" class="portal-link">🎓 Student Portal</a></li>
+            </ul>
+            <div class="hamburger" onclick="toggleMenu()" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- School Calendar Page -->
+    <section class="school-calendar school-calendar-page">
+        <div class="container">
+            <div class="section-header">
+                <span class="emoji-badge">📅</span>
+                <h2>School Calendar</h2>
+                <p class="subtitle">BSIS School Calendar 2026-2027</p>
+            </div>
+            <div class="calendar-picker-wrapper">
+                <button class="calendar-picker-toggle" id="calendarPickerToggle" onclick="toggleCalendarPicker()">
+                    <span id="calendarPickerLabel">June 2026</span>
+                    <span class="picker-arrow-icon">▾</span>
+                </button>
+                <div class="calendar-picker-dropdown" id="calendarPickerDropdown">
+                    <div class="picker-header">
+                        <span class="picker-month-title" id="pickerMonthTitle">June 2026</span>
+                        <div class="picker-nav">
+                            <button onclick="pickerPrevMonth()" aria-label="Previous month">‹</button>
+                            <button onclick="pickerNextMonth()" aria-label="Next month">›</button>
+                        </div>
+                    </div>
+                    <div class="picker-days-header">
+                        <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+                    </div>
+                    <div class="picker-days-grid" id="pickerDaysGrid"></div>
+                </div>
+            </div>
+            <div class="calendar-wrapper">
+                <img id="calendarImage" src="school-calendar/June-2026.png" alt="BSIS School Calendar June 2026"
+                    class="calendar-image">
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-wave">
+            <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
+                <path d="M0,50 C360,100 720,0 1080,50 C1260,75 1380,50 1440,50 L1440,100 L0,100 Z" fill="#b71c1c" />
+            </svg>
+        </div>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>🎓 Beata Sai Integrated School</h3>
+                <p>Nurturing Minds, Building Futures since 2011.</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Facebook">📘</a>
+                    <a href="#" aria-label="Instagram">📷</a>
+                    <a href="#" aria-label="YouTube">▶️</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="index.html#about">About Us</a>
+                <a href="index.html#programs">Programs</a>
+                <a href="index.html#admissions">Admissions</a>
+                <a href="index.html#contact">Contact</a>
+            </div>
+            <div class="footer-section">
+                <h3>School Hours</h3>
+                <p>Monday - Friday</p>
+                <p>7:00 AM - 5:00 PM</p>
+                <p class="footer-note">🌟 Where every day is a new adventure!</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Beata Sai Integrated School. Made with ❤️ for our students.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1849,6 +1849,11 @@ button,
     background: linear-gradient(180deg, #fff, #fff5f5);
 }
 
+.school-calendar-page {
+    padding-top: 10rem;
+    min-height: 100vh;
+}
+
 .calendar-picker-wrapper {
     position: relative;
     display: flex;

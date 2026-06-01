@@ -14,6 +14,7 @@ RUN mkdir -p /app/public
 COPY index.html /app/public/
 COPY admin.html /app/public/
 COPY student-login.html /app/public/
+COPY school-calendar.html /app/public/
 COPY style.css /app/public/
 COPY script.js /app/public/
 COPY student-portal.css /app/public/
