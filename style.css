@@ -1167,7 +1167,7 @@ nav ul li a:hover {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 2rem;
-    align-items: stretch;
+    align-items: start;
 }
 
 .contact-cards {
