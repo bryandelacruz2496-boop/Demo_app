@@ -59,6 +59,7 @@ COPY datepicker.css /app/public/
 COPY datepicker.js /app/public/
 COPY manifest.json /app/public/
 COPY sw.js /app/public/
+COPY school-calendar/ /app/public/school-calendar/
 
 RUN mkdir -p /app/uploads
 
