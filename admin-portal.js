@@ -2877,7 +2877,9 @@ async function loadStaffList() {
             <td><span class="status-${s.status === 'active' ? 'paid' : 'pending'}">${s.status === 'active' ? '✓ Active' : '⏸ Inactive'}</span></td>
             <td>${new Date(s.createdAt).toLocaleDateString()}</td>
             <td>
-                ${s.role === 'superadmin' ? '-' : `
+                ${s.role === 'superadmin' ? `
+                    <button class="btn-status btn-mark-paid" onclick="openStaffDetail('${s._id}')">Edit</button>
+                ` : `
                     <button class="btn-status btn-mark-paid" onclick="openStaffDetail('${s._id}')">Edit</button>
                     <button class="btn-status btn-mark-pending" onclick="deleteStaffAccount('${s._id}')">Delete</button>
                 `}
@@ -2894,49 +2896,55 @@ function openStaffDetail(id) {
         const s = staff.find(x => x._id === id);
         if (!s) return;
 
+        const isSuperAdmin = s.role === 'superadmin';
+
         const overlay = document.createElement('div');
         overlay.className = 'confirm-overlay';
         overlay.innerHTML = `
-            <div class="confirm-box" style="max-width:450px;width:90%;">
-                <h3 style="margin-bottom:1rem;">Edit Account: ${s.name}</h3>
+            <div class="confirm-modal" style="max-width:450px;width:90%;text-align:left;">
+                <p style="font-size:1.1rem;font-weight:700;text-align:center;margin-bottom:1.2rem;">Edit Account: ${s.name}</p>
                 <div style="display:flex;flex-direction:column;gap:0.8rem;">
                     <div>
                         <label style="font-weight:600;font-size:0.85rem;">Full Name</label>
-                        <input type="text" id="editStaffName" value="${s.name}" style="width:100%;padding:0.6rem 0.8rem;border:2px solid #eee;border-radius:8px;font-size:0.95rem;">
+                        <input type="text" id="editStaffName" value="${s.name}" class="password-prompt-input" style="margin-bottom:0;">
                     </div>
                     <div>
                         <label style="font-weight:600;font-size:0.85rem;">Username</label>
-                        <input type="text" id="editStaffUsername" value="${s.username}" style="width:100%;padding:0.6rem 0.8rem;border:2px solid #eee;border-radius:8px;font-size:0.95rem;">
+                        <input type="text" id="editStaffUsername" value="${s.username}" class="password-prompt-input" style="margin-bottom:0;">
                     </div>
                     <div>
                         <label style="font-weight:600;font-size:0.85rem;">New Password (leave blank to keep current)</label>
-                        <input type="password" id="editStaffPassword" placeholder="Enter new password" style="width:100%;padding:0.6rem 0.8rem;border:2px solid #eee;border-radius:8px;font-size:0.95rem;">
+                        <input type="password" id="editStaffPassword" placeholder="Enter new password" class="password-prompt-input" style="margin-bottom:0;">
                     </div>
+                    ${!isSuperAdmin ? `
                     <div>
                         <label style="font-weight:600;font-size:0.85rem;">Role</label>
-                        <select id="editStaffRole" style="width:100%;padding:0.6rem 0.8rem;border:2px solid #eee;border-radius:8px;font-size:0.95rem;">
+                        <select id="editStaffRole" class="password-prompt-input" style="margin-bottom:0;">
                             <option value="staff" ${s.role === 'staff' ? 'selected' : ''}>Staff</option>
                             <option value="admin" ${s.role === 'admin' ? 'selected' : ''}>Admin</option>
                         </select>
                     </div>
                     <div>
                         <label style="font-weight:600;font-size:0.85rem;">Status</label>
-                        <select id="editStaffStatus" style="width:100%;padding:0.6rem 0.8rem;border:2px solid #eee;border-radius:8px;font-size:0.95rem;">
+                        <select id="editStaffStatus" class="password-prompt-input" style="margin-bottom:0;">
                             <option value="active" ${s.status === 'active' ? 'selected' : ''}>Active</option>
                             <option value="inactive" ${s.status === 'inactive' ? 'selected' : ''}>Inactive</option>
                         </select>
                     </div>
+                    ` : `
+                    <input type="hidden" id="editStaffRole" value="superadmin">
+                    <input type="hidden" id="editStaffStatus" value="active">
+                    `}
                 </div>
-                <div class="confirm-buttons" style="margin-top:1.2rem;">
-                    <button class="confirm-yes" onclick="saveStaffDetail('${s._id}')">Save Changes</button>
-                    <button class="confirm-no" onclick="this.closest('.confirm-overlay').remove()">Cancel</button>
+                <div class="confirm-modal-actions" style="margin-top:1.2rem;">
+                    <button class="btn-confirm-yes" onclick="saveStaffDetail('${s._id}')">Yes</button>
+                    <button class="btn-confirm-no" onclick="this.closest('.confirm-overlay').remove()">No</button>
                 </div>
             </div>
         `;
         document.body.appendChild(overlay);
     });
 }
-
 async function saveStaffDetail(id) {
     const name = document.getElementById('editStaffName').value.trim();
     const username = document.getElementById('editStaffUsername').value.trim();
@@ -2985,9 +2993,9 @@ async function toggleStaffStatus(id, status) {
 async function deleteStaffAccount(id) {
     showConfirmPopup('Are you sure you want to delete this account?', () => {
         showPasswordPrompt(async (password) => {
-            const res = await fetch(`${API_URL}/auth/staff/${id}`, {
+            const res = await fetch(`${API_URL} /auth/staff / ${id} `, {
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken} ` },
                 body: JSON.stringify({ password })
             });
             if (res.ok) {
