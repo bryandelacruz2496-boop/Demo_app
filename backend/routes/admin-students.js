@@ -734,6 +734,16 @@ router.put('/students/:id/archive', authMiddleware, async (req, res) => {
             return res.status(403).json({ message: 'Only Super Admin can archive students' });
         }
 
+        // Verify admin password
+        const { password } = req.body;
+        if (password) {
+            const Admin = require('../models/Admin');
+            const admin = await Admin.findById(req.admin.id);
+            if (!admin) return res.status(404).json({ message: 'Admin not found' });
+            const isMatch = await admin.comparePassword(password);
+            if (!isMatch) return res.status(401).json({ message: 'Incorrect password' });
+        }
+
         const student = await Student.findById(req.params.id);
         if (!student) return res.status(404).json({ message: 'Student not found' });
 

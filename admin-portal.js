@@ -1913,18 +1913,21 @@ async function deleteInquiry(id) {
 // Archive / Unarchive
 function archiveStudent() {
     if (!selectedStudent) return;
-    showConfirmPopup(`Are you sure you want to archive ${selectedStudent.fullName}? The student will be hidden from the active list.`, async () => {
-        const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/archive`, {
-            method: 'PUT',
-            headers: { 'Authorization': `Bearer ${adminToken}` }
+    showConfirmPopup(`Are you sure you want to archive ${selectedStudent.fullName}? The student will be hidden from the active list.`, () => {
+        showPasswordPrompt(async (password) => {
+            const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/archive`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+                body: JSON.stringify({ password })
+            });
+            if (res.ok) {
+                showSuccessToast('Student archived successfully');
+                backToList();
+            } else {
+                const data = await res.json();
+                showToast(data.message || 'Error archiving student');
+            }
         });
-        if (res.ok) {
-            showToast('Student archived');
-            backToList();
-        } else {
-            const data = await res.json();
-            showToast(data.message || 'Error archiving student');
-        }
     });
 }
 
