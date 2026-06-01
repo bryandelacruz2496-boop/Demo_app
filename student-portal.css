@@ -1531,3 +1531,310 @@ h4 {
 .dash-panel .cal-month-title {
     font-size: 1.4rem;
 }
+
+
+/* ============================================
+   DARK MODE TOGGLE SWITCH
+   ============================================ */
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 0.8rem;
+}
+
+.theme-icon {
+    font-size: 1rem;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #ccc;
+    border-radius: 24px;
+    transition: all 0.3s ease;
+}
+
+.toggle-slider::before {
+    content: '';
+    position: absolute;
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background: #fff;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch input:checked+.toggle-slider {
+    background: #1a237e;
+}
+
+.toggle-switch input:checked+.toggle-slider::before {
+    transform: translateX(20px);
+}
+
+/* ============================================
+   DARK MODE THEME
+   ============================================ */
+body.dark-mode {
+    background: #1a1a2e;
+}
+
+body.dark-mode .dashboard {
+    background: #1a1a2e;
+}
+
+body.dark-mode .info-card {
+    background: #16213e;
+    border-left-color: #e53935;
+}
+
+body.dark-mode .info-details h2 {
+    color: #ff6b6b;
+}
+
+body.dark-mode .info-details p {
+    color: #ccc;
+}
+
+body.dark-mode .info-datetime .greeting-text {
+    color: #ff6b6b;
+}
+
+body.dark-mode .info-datetime .datetime-text {
+    color: #aaa;
+}
+
+body.dark-mode .info-datetime .time-text {
+    color: #eee;
+}
+
+body.dark-mode .dash-tabs {
+    background: #16213e;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .dash-tab {
+    color: #ccc;
+}
+
+body.dark-mode .dash-tab.active,
+body.dark-mode .dash-tab:hover {
+    background: linear-gradient(135deg, #b71c1c, #e53935);
+    color: #fff;
+}
+
+body.dark-mode .dash-panel {
+    background: #16213e;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .dash-panel h3 {
+    background: linear-gradient(135deg, #ff6b6b, #e53935);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+body.dark-mode .data-table td {
+    color: #ddd;
+    border-bottom-color: #2a2a4a;
+}
+
+body.dark-mode .data-table tr:hover td {
+    background: #1f2b47;
+}
+
+body.dark-mode .summary-item {
+    background: #0f3460;
+}
+
+body.dark-mode .summary-label {
+    color: #aaa;
+}
+
+body.dark-mode .summary-value {
+    color: #eee;
+}
+
+body.dark-mode .activity-card,
+body.dark-mode .project-card,
+body.dark-mode .assessment-view-card {
+    background: #0f3460;
+    border-left-color: #e53935;
+}
+
+body.dark-mode .activity-card h4,
+body.dark-mode .project-card h4 {
+    color: #eee;
+}
+
+body.dark-mode .activity-card p,
+body.dark-mode .project-card p {
+    color: #bbb;
+}
+
+body.dark-mode .activity-card .meta,
+body.dark-mode .project-card .meta {
+    color: #999;
+}
+
+body.dark-mode .contact-card,
+body.dark-mode .bank-details-box {
+    background: #0f3460;
+    border-color: #2a2a4a;
+}
+
+body.dark-mode .bank-details-box h5 {
+    color: #eee;
+}
+
+body.dark-mode .bank-detail-row span {
+    color: #aaa;
+}
+
+body.dark-mode .bank-detail-row strong {
+    color: #eee;
+}
+
+body.dark-mode .bank-detail-row {
+    border-bottom-color: #2a2a4a;
+}
+
+body.dark-mode .sort-row label {
+    color: #ff6b6b;
+}
+
+body.dark-mode .sort-row select {
+    background: #0f3460;
+    color: #eee;
+    border-color: #e53935;
+}
+
+body.dark-mode .payment-options-section {
+    border-top-color: #2a2a4a;
+}
+
+body.dark-mode .payment-options-section h4 {
+    color: #ff6b6b;
+}
+
+body.dark-mode .pay-now-desc {
+    color: #aaa;
+}
+
+body.dark-mode .bank-note {
+    color: #888;
+}
+
+/* Dark mode calendar overrides */
+body.dark-mode .cal-grid-wrapper {
+    border-color: #2a2a4a;
+}
+
+body.dark-mode .cal-day {
+    background: #16213e;
+    border-color: #2a2a4a;
+}
+
+body.dark-mode .cal-day:hover {
+    background: #1f2b47;
+}
+
+body.dark-mode .cal-day-number {
+    color: #ddd;
+}
+
+body.dark-mode .cal-day.cal-other-month {
+    background: #111a2e;
+}
+
+body.dark-mode .cal-day.cal-other-month .cal-day-number {
+    color: #555;
+}
+
+body.dark-mode .cal-day.cal-has-event {
+    background: #1f2b47;
+}
+
+body.dark-mode .cal-month-title {
+    color: #eee;
+}
+
+body.dark-mode .cal-nav-btn {
+    background: #0f3460;
+    border-color: #2a2a4a;
+    color: #ff6b6b;
+}
+
+body.dark-mode .cal-nav-btn:hover {
+    background: #e53935;
+    color: #fff;
+}
+
+body.dark-mode .cal-legend-item span:last-child {
+    color: #aaa;
+}
+
+body.dark-mode .cal-subtitle {
+    color: #aaa;
+}
+
+body.dark-mode .assessment-view-quarter {
+    background: #16213e;
+    border-color: #2a2a4a;
+}
+
+body.dark-mode .quarter-label {
+    color: #ff6b6b;
+}
+
+body.dark-mode .assessment-view-quarter p {
+    color: #ddd;
+}
+
+body.dark-mode .notif-center {
+    background: #16213e;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .notif-center-header {
+    border-bottom-color: #2a2a4a;
+}
+
+body.dark-mode .notif-center-header h4 {
+    color: #eee;
+}
+
+body.dark-mode .notif-item {
+    border-bottom-color: #2a2a4a;
+}
+
+body.dark-mode .notif-item.unread {
+    background: #1f2b47;
+}
+
+body.dark-mode .notif-item p {
+    color: #ddd;
+}

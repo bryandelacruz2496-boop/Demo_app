@@ -784,3 +784,27 @@ function updateDateTime() {
 }
 
 setInterval(updateDateTime, 1000);
+
+// ============================================
+// DARK MODE TOGGLE
+// ============================================
+function toggleDarkMode() {
+  const toggle = document.getElementById('themeToggle');
+  if (toggle.checked) {
+    document.body.classList.add('dark-mode');
+    localStorage.setItem('studentTheme', 'dark');
+  } else {
+    document.body.classList.remove('dark-mode');
+    localStorage.setItem('studentTheme', 'light');
+  }
+}
+
+// Load saved theme on page load
+(function loadSavedTheme() {
+  const saved = localStorage.getItem('studentTheme');
+  if (saved === 'dark') {
+    document.body.classList.add('dark-mode');
+    const toggle = document.getElementById('themeToggle');
+    if (toggle) toggle.checked = true;
+  }
+})();
