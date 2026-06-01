@@ -10,6 +10,7 @@
     <meta name="theme-color" content="#b71c1c">
     <link rel="apple-touch-icon" href="logo.jpg">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="school-calendar-page.css">
     <link
         href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
@@ -49,28 +50,40 @@
                 <h2>School Calendar</h2>
                 <p class="subtitle">BSIS School Calendar 2026-2027</p>
             </div>
-            <div class="calendar-picker-wrapper">
-                <button class="calendar-picker-toggle" id="calendarPickerToggle" onclick="toggleCalendarPicker()">
-                    <span id="calendarPickerLabel">June 2026</span>
-                    <span class="picker-arrow-icon">▾</span>
-                </button>
-                <div class="calendar-picker-dropdown" id="calendarPickerDropdown">
-                    <div class="picker-header">
-                        <span class="picker-month-title" id="pickerMonthTitle">June 2026</span>
-                        <div class="picker-nav">
-                            <button onclick="pickerPrevMonth()" aria-label="Previous month">‹</button>
-                            <button onclick="pickerNextMonth()" aria-label="Next month">›</button>
-                        </div>
-                    </div>
-                    <div class="picker-days-header">
-                        <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
-                    </div>
-                    <div class="picker-days-grid" id="pickerDaysGrid"></div>
+
+            <!-- Month Navigation -->
+            <div class="cal-month-nav">
+                <button class="cal-nav-btn" id="calPrevBtn" onclick="calPrevMonth()">‹</button>
+                <h3 class="cal-month-title" id="calMonthTitle">JUNE, 2026</h3>
+                <button class="cal-nav-btn" id="calNextBtn" onclick="calNextMonth()">›</button>
+            </div>
+
+            <!-- Calendar Grid -->
+            <div class="cal-grid-wrapper">
+                <div class="cal-grid">
+                    <div class="cal-header cal-sun">Sunday</div>
+                    <div class="cal-header">Monday</div>
+                    <div class="cal-header">Tuesday</div>
+                    <div class="cal-header">Wednesday</div>
+                    <div class="cal-header">Thursday</div>
+                    <div class="cal-header">Friday</div>
+                    <div class="cal-header cal-sat">Saturday</div>
+                </div>
+                <div class="cal-grid cal-days" id="calDaysGrid">
+                    <!-- Days will be rendered by JS -->
                 </div>
             </div>
-            <div class="calendar-wrapper">
-                <img id="calendarImage" src="school-calendar/June-2026.png" alt="BSIS School Calendar June 2026"
-                    class="calendar-image">
+
+            <!-- Legend -->
+            <div class="cal-legend">
+                <div class="cal-legend-item">
+                    <span class="cal-legend-dot cal-legend-event"></span>
+                    <span>School Event</span>
+                </div>
+                <div class="cal-legend-item">
+                    <span class="cal-legend-dot cal-legend-holiday"></span>
+                    <span>Holiday / No Classes</span>
+                </div>
             </div>
         </div>
     </section>
@@ -112,6 +125,7 @@
     </footer>
 
     <script src="script.js"></script>
+    <script src="school-calendar-page.js"></script>
 </body>
 
 </html>

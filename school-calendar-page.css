@@ -1,0 +1,229 @@
+/* ============================================
+   SCHOOL CALENDAR PAGE STYLES
+   ============================================ */
+
+.cal-month-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.cal-month-title {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.8rem;
+    color: #333;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    min-width: 250px;
+    text-align: center;
+}
+
+.cal-nav-btn {
+    width: 44px;
+    height: 44px;
+    border: 2px solid #ffcdd2;
+    background: #fff;
+    border-radius: 50%;
+    font-size: 1.4rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    color: #b71c1c;
+    font-weight: 700;
+}
+
+.cal-nav-btn:hover {
+    background: #b71c1c;
+    color: #fff;
+    border-color: #b71c1c;
+    transform: scale(1.1);
+}
+
+/* Calendar Grid */
+.cal-grid-wrapper {
+    max-width: 1100px;
+    margin: 0 auto;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+    border: 2px solid #ffebee;
+}
+
+.cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.cal-header {
+    background: linear-gradient(135deg, #b71c1c, #e53935);
+    color: #fff;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 0.8rem 0.5rem;
+    letter-spacing: 0.5px;
+}
+
+.cal-header.cal-sun,
+.cal-header.cal-sat {
+    background: linear-gradient(135deg, #8e0000, #b71c1c);
+}
+
+/* Day Cells */
+.cal-day {
+    min-height: 100px;
+    padding: 0.5rem;
+    border: 1px solid #f5f5f5;
+    background: #fff;
+    position: relative;
+    transition: background 0.2s ease;
+}
+
+.cal-day:hover {
+    background: #fffafa;
+}
+
+.cal-day-number {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 0.3rem;
+}
+
+.cal-day.cal-sunday .cal-day-number,
+.cal-day.cal-saturday .cal-day-number {
+    color: #b71c1c;
+}
+
+.cal-day.cal-other-month {
+    background: #fafafa;
+}
+
+.cal-day.cal-other-month .cal-day-number {
+    color: #ccc;
+}
+
+/* Event Styles */
+.cal-event {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    margin-bottom: 0.2rem;
+    line-height: 1.3;
+}
+
+.cal-event.event-type-school {
+    background: #ffcdd2;
+    color: #b71c1c;
+}
+
+.cal-event.event-type-holiday {
+    background: #fff9c4;
+    color: #f57f17;
+}
+
+.cal-event.event-type-exam {
+    background: #e1f5fe;
+    color: #0277bd;
+}
+
+.cal-event.event-type-special {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+/* Highlighted day (has event) */
+.cal-day.cal-has-event {
+    background: #fff5f5;
+}
+
+/* Legend */
+.cal-legend {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.cal-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #666;
+}
+
+.cal-legend-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+}
+
+.cal-legend-dot.cal-legend-event {
+    background: #ffcdd2;
+}
+
+.cal-legend-dot.cal-legend-holiday {
+    background: #fff9c4;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .cal-header {
+        font-size: 0.7rem;
+        padding: 0.6rem 0.2rem;
+    }
+
+    .cal-day {
+        min-height: 70px;
+        padding: 0.3rem;
+    }
+
+    .cal-day-number {
+        font-size: 0.75rem;
+    }
+
+    .cal-event {
+        font-size: 0.6rem;
+        padding: 0.15rem 0.25rem;
+    }
+
+    .cal-month-title {
+        font-size: 1.3rem;
+        min-width: 180px;
+    }
+
+    .cal-nav-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .cal-header {
+        font-size: 0.6rem;
+        letter-spacing: 0;
+    }
+
+    .cal-day {
+        min-height: 55px;
+    }
+
+    .cal-event {
+        font-size: 0.55rem;
+    }
+
+    .cal-month-title {
+        font-size: 1.1rem;
+        letter-spacing: 1px;
+    }
+}
