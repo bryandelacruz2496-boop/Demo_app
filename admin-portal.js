@@ -76,6 +76,16 @@ async function handleAdminLogin(event) {
             localStorage.setItem('adminRole', data.admin.role || 'staff');
             document.getElementById('adminName').textContent = data.admin.name;
 
+            // Show loading data state
+            loginBtn.innerHTML = '<span class="btn-spinner"></span> Loading data...';
+
+            // Start fetching data AND a 3-second minimum timer in parallel
+            const dataReady = loadStudents().catch(() => { });
+            const minDelay = new Promise(resolve => setTimeout(resolve, 3000));
+
+            // Wait for BOTH to complete
+            await Promise.all([dataReady, minDelay]);
+
             // Show success state
             loginBtn.innerHTML = '✓ Login Successful!';
             loginBtn.classList.add('btn-login-success');
@@ -88,9 +98,8 @@ async function handleAdminLogin(event) {
                 document.getElementById('loginWrapper').style.display = 'none';
                 document.getElementById('adminDashboard').style.display = 'block';
                 applyRoleUI();
-                loadStudents();
                 startReplyNotificationCheck();
-            }, 1200);
+            }, 800);
         } else {
             loginBtn.disabled = false;
             loginBtn.innerHTML = originalText;
