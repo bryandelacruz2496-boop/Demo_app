@@ -92,7 +92,7 @@
                         <span class="notif-badge" id="notifBadge" style="display:none;">0</span>
                     </div>
                     <span id="dashStudentName"></span>
-                    <button onclick="logout()" class="btn-logout">Logout</button>
+                    <button onclick="confirmLogout()" class="btn-logout">Logout</button>
                 </div>
             </header>
 
@@ -340,6 +340,19 @@
                 </div>
                 <!-- end dash-main-content -->
 
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="logout-modal-overlay" id="logoutModal" style="display:none;">
+        <div class="logout-modal">
+            <div class="logout-modal-icon">👋</div>
+            <h3>Are you sure you want to log out?</h3>
+            <p>You will need to enter your credentials again to access the portal.</p>
+            <div class="logout-modal-actions">
+                <button class="btn-logout-confirm" onclick="logout(); closeLogoutModal();">Yes, Log Out</button>
+                <button class="btn-logout-cancel" onclick="closeLogoutModal()">No, Stay Logged In</button>
             </div>
         </div>
     </div>

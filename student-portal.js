@@ -265,6 +265,14 @@ async function loadStudentProjects() {
     `).join('');
 }
 
+function confirmLogout() {
+  document.getElementById('logoutModal').style.display = 'flex';
+}
+
+function closeLogoutModal() {
+  document.getElementById('logoutModal').style.display = 'none';
+}
+
 function logout() {
   const token = localStorage.getItem('studentToken');
   if (token) {

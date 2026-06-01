@@ -1543,6 +1543,14 @@ async function doCreateStudent(btn, originalText, fullName, grade, guardian) {
 }
 
 // Logout
+function confirmAdminLogout() {
+    document.getElementById('logoutModal').style.display = 'flex';
+}
+
+function closeLogoutModal() {
+    document.getElementById('logoutModal').style.display = 'none';
+}
+
 function adminLogout() {
     adminToken = null;
     localStorage.removeItem('adminToken');
