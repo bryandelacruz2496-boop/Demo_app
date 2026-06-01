@@ -1214,6 +1214,7 @@ nav ul li a:hover {
     display: flex;
     flex-direction: column;
     align-items: center;
+    height: 100%;
 }
 
 .fb-feed-title {
@@ -1232,10 +1233,17 @@ nav ul li a:hover {
     border: 2px solid #ffebee;
     overflow: hidden;
     width: 100%;
-    height: 100%;
+    flex: 1;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: stretch;
+}
+
+.fb-feed-container .fb-page,
+.fb-feed-container .fb-page span,
+.fb-feed-container .fb-page iframe {
+    width: 100% !important;
+    height: 100% !important;
 }
 
 .map {
