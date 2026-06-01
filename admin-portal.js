@@ -408,11 +408,15 @@ function exportCollectionReport() {
 
 function renderStudentList() {
     const filterGrade = document.getElementById('filterGrade') ? document.getElementById('filterGrade').value : 'all';
+    const searchTerm = document.getElementById('searchStudent') ? document.getElementById('searchStudent').value.trim().toLowerCase() : '';
     const list = document.getElementById('studentList');
 
     let filtered = [...students];
     if (filterGrade !== 'all') {
         filtered = filtered.filter(s => s.grade && s.grade.toLowerCase().includes(filterGrade.toLowerCase()));
+    }
+    if (searchTerm) {
+        filtered = filtered.filter(s => s.fullName && s.fullName.toLowerCase().includes(searchTerm));
     }
 
     list.innerHTML = filtered.map(s => `
