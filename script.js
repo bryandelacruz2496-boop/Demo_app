@@ -490,18 +490,134 @@ if (window.matchMedia('(pointer: fine)').matches) {
 }
 
 // ============================================
-// SCHOOL CALENDAR
+// SCHOOL CALENDAR PICKER
 // ============================================
-function showMonth(month) {
-    const img = document.getElementById('calendarImage');
-    if (img) {
-        img.style.opacity = '0';
-        setTimeout(() => {
-            img.src = 'school-calendar/' + month + '.png';
-            img.alt = 'BSIS School Calendar ' + month.replace('-', ' ');
-            img.style.opacity = '1';
-        }, 200);
-    }
-    document.querySelectorAll('.month-tab').forEach(tab => tab.classList.remove('active'));
-    event.currentTarget.classList.add('active');
+const calendarMonths = [
+    { month: 5, year: 2026, label: 'June 2026', file: 'June-2026' },
+    { month: 6, year: 2026, label: 'July 2026', file: 'July-2026' },
+    { month: 7, year: 2026, label: 'August 2026', file: 'August-2026' },
+    { month: 8, year: 2026, label: 'September 2026', file: 'September-2026' },
+    { month: 9, year: 2026, label: 'October 2026', file: 'October-2026' },
+    { month: 10, year: 2026, label: 'November 2026', file: 'November-2026' },
+    { month: 11, year: 2026, label: 'December 2026', file: 'December-2026' },
+    { month: 0, year: 2027, label: 'January 2027', file: 'January-2027' },
+    { month: 1, year: 2027, label: 'February 2027', file: 'February-2027' },
+    { month: 2, year: 2027, label: 'March 2027', file: 'March-2027' },
+    { month: 3, year: 2027, label: 'April 2027', file: 'April-2027' },
+    { month: 4, year: 2027, label: 'May 2027', file: 'May-2027' }
+];
+
+let pickerCurrentMonth = 5;
+let pickerCurrentYear = 2026;
+let pickerSelectedDay = 1;
+
+function toggleCalendarPicker() {
+    const dropdown = document.getElementById('calendarPickerDropdown');
+    const toggle = document.getElementById('calendarPickerToggle');
+    dropdown.classList.toggle('open');
+    toggle.classList.toggle('open');
 }
+
+// Close picker when clicking outside
+document.addEventListener('click', (e) => {
+    const wrapper = document.querySelector('.calendar-picker-wrapper');
+    if (wrapper && !wrapper.contains(e.target)) {
+        document.getElementById('calendarPickerDropdown')?.classList.remove('open');
+        document.getElementById('calendarPickerToggle')?.classList.remove('open');
+    }
+});
+
+function pickerPrevMonth() {
+    pickerCurrentMonth--;
+    if (pickerCurrentMonth < 0) {
+        pickerCurrentMonth = 11;
+        pickerCurrentYear--;
+    }
+    renderPickerGrid();
+}
+
+function pickerNextMonth() {
+    pickerCurrentMonth++;
+    if (pickerCurrentMonth > 11) {
+        pickerCurrentMonth = 0;
+        pickerCurrentYear++;
+    }
+    renderPickerGrid();
+}
+
+function renderPickerGrid() {
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'];
+    const title = document.getElementById('pickerMonthTitle');
+    title.textContent = monthNames[pickerCurrentMonth] + ' ' + pickerCurrentYear;
+
+    const grid = document.getElementById('pickerDaysGrid');
+    const firstDay = new Date(pickerCurrentYear, pickerCurrentMonth, 1).getDay();
+    const daysInMonth = new Date(pickerCurrentYear, pickerCurrentMonth + 1, 0).getDate();
+    const daysInPrevMonth = new Date(pickerCurrentYear, pickerCurrentMonth, 0).getDate();
+
+    const today = new Date();
+    let html = '';
+
+    // Previous month days
+    for (let i = firstDay - 1; i >= 0; i--) {
+        html += `<span class="picker-day other-month">${daysInPrevMonth - i}</span>`;
+    }
+
+    // Current month days
+    for (let d = 1; d <= daysInMonth; d++) {
+        const isToday = (d === today.getDate() && pickerCurrentMonth === today.getMonth() && pickerCurrentYear === today.getFullYear());
+        const isSelected = (d === pickerSelectedDay && pickerCurrentMonth === pickerSelectedMonth && pickerCurrentYear === pickerSelectedYear);
+        let cls = 'picker-day';
+        if (isToday) cls += ' today';
+        if (isSelected) cls += ' selected';
+        html += `<span class="${cls}" onclick="selectCalendarDay(${d})">${d}</span>`;
+    }
+
+    // Next month days
+    const totalCells = firstDay + daysInMonth;
+    const remaining = (7 - (totalCells % 7)) % 7;
+    for (let i = 1; i <= remaining; i++) {
+        html += `<span class="picker-day other-month">${i}</span>`;
+    }
+
+    grid.innerHTML = html;
+}
+
+let pickerSelectedMonth = 5;
+let pickerSelectedYear = 2026;
+
+function selectCalendarDay(day) {
+    pickerSelectedDay = day;
+    pickerSelectedMonth = pickerCurrentMonth;
+    pickerSelectedYear = pickerCurrentYear;
+
+    // Find matching calendar image
+    const match = calendarMonths.find(m => m.month === pickerCurrentMonth && m.year === pickerCurrentYear);
+    if (match) {
+        const img = document.getElementById('calendarImage');
+        if (img) {
+            img.style.opacity = '0';
+            setTimeout(() => {
+                img.src = 'school-calendar/' + match.file + '.png';
+                img.alt = 'BSIS School Calendar ' + match.label;
+                img.style.opacity = '1';
+            }, 200);
+        }
+        document.getElementById('calendarPickerLabel').textContent = match.label;
+    }
+
+    // Close dropdown
+    document.getElementById('calendarPickerDropdown').classList.remove('open');
+    document.getElementById('calendarPickerToggle').classList.remove('open');
+
+    renderPickerGrid();
+}
+
+// Initialize picker on load
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('pickerDaysGrid')) {
+        renderPickerGrid();
+    }
+});
+

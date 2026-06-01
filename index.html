@@ -168,19 +168,24 @@
                 <h2>School Calendar</h2>
                 <p class="subtitle">BSIS School Calendar 2026-2027</p>
             </div>
-            <div class="calendar-months">
-                <button class="month-tab active" onclick="showMonth('June-2026')">Jun</button>
-                <button class="month-tab" onclick="showMonth('July-2026')">Jul</button>
-                <button class="month-tab" onclick="showMonth('August-2026')">Aug</button>
-                <button class="month-tab" onclick="showMonth('September-2026')">Sep</button>
-                <button class="month-tab" onclick="showMonth('October-2026')">Oct</button>
-                <button class="month-tab" onclick="showMonth('November-2026')">Nov</button>
-                <button class="month-tab" onclick="showMonth('December-2026')">Dec</button>
-                <button class="month-tab" onclick="showMonth('January-2027')">Jan</button>
-                <button class="month-tab" onclick="showMonth('February-2027')">Feb</button>
-                <button class="month-tab" onclick="showMonth('March-2027')">Mar</button>
-                <button class="month-tab" onclick="showMonth('April-2027')">Apr</button>
-                <button class="month-tab" onclick="showMonth('May-2027')">May</button>
+            <div class="calendar-picker-wrapper">
+                <button class="calendar-picker-toggle" id="calendarPickerToggle" onclick="toggleCalendarPicker()">
+                    <span id="calendarPickerLabel">June 2026</span>
+                    <span class="picker-arrow-icon">▾</span>
+                </button>
+                <div class="calendar-picker-dropdown" id="calendarPickerDropdown">
+                    <div class="picker-header">
+                        <span class="picker-month-title" id="pickerMonthTitle">June 2026</span>
+                        <div class="picker-nav">
+                            <button onclick="pickerPrevMonth()" aria-label="Previous month">‹</button>
+                            <button onclick="pickerNextMonth()" aria-label="Next month">›</button>
+                        </div>
+                    </div>
+                    <div class="picker-days-header">
+                        <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+                    </div>
+                    <div class="picker-days-grid" id="pickerDaysGrid"></div>
+                </div>
             </div>
             <div class="calendar-wrapper">
                 <img id="calendarImage" src="school-calendar/June-2026.png" alt="BSIS School Calendar June 2026"
