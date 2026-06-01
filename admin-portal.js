@@ -2993,13 +2993,13 @@ async function toggleStaffStatus(id, status) {
 async function deleteStaffAccount(id) {
     showConfirmPopup('Are you sure you want to delete this account?', () => {
         showPasswordPrompt(async (password) => {
-            const res = await fetch(`${API_URL} /auth/staff / ${id} `, {
+            const res = await fetch(`${API_URL}/auth/staff/${id}`, {
                 method: 'DELETE',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken} ` },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
                 body: JSON.stringify({ password })
             });
             if (res.ok) {
-                showToast('Account deleted');
+                showSuccessToast('Account deleted successfully');
                 loadStaffList();
             } else {
                 const data = await res.json();
