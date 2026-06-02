@@ -204,7 +204,7 @@ router.post('/students/:id/payments', authMiddleware, async (req, res) => {
         const student = await Student.findById(req.params.id);
         if (!student) return res.status(404).json({ message: 'Student not found' });
 
-        student.payments.push({ date, description, amount, status });
+        student.payments.push({ date, description, amount, status, paidDate: status === 'paid' ? (date || new Date().toISOString().split('T')[0]) : null });
 
         // Recalculate pending payment amounts to match remaining balance
         const paidTotal = student.payments

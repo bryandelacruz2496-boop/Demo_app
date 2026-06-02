@@ -309,7 +309,7 @@ function calculateCollection() {
         if (gradeFilter !== 'all' && student.grade !== gradeFilter) return;
 
         student.payments.forEach(payment => {
-            if (payment.amount < 0) return; // skip discounts
+            if (payment.amount <= 0) return; // skip discounts and zero-amount entries
             if (payment.description && payment.description.startsWith('[Expense]')) return; // skip expenses
 
             // Collected: payments marked as paid where paidDate is in the selected month
