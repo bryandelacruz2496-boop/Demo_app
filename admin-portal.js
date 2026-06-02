@@ -312,17 +312,20 @@ function calculateCollection() {
             if (payment.amount <= 0) return; // skip discounts and zero-amount entries
             if (payment.description && payment.description.startsWith('[Expense]')) return; // skip expenses
 
-            // Collected: payments marked as paid where paidDate is in the selected month
-            if (payment.status === 'paid' && payment.paidDate && payment.paidDate.startsWith(`${year}-${month}`)) {
-                collected += payment.amount;
-                collectionRows.push({
-                    name: student.fullName,
-                    grade: student.grade,
-                    description: payment.description,
-                    amount: payment.amount,
-                    status: 'paid',
-                    paidDate: payment.paidDate
-                });
+            // Collected: payments marked as paid where paidDate (or date as fallback) is in the selected month
+            if (payment.status === 'paid') {
+                const matchDate = payment.paidDate || payment.date;
+                if (matchDate && matchDate.startsWith(`${year}-${month}`)) {
+                    collected += payment.amount;
+                    collectionRows.push({
+                        name: student.fullName,
+                        grade: student.grade,
+                        description: payment.description,
+                        amount: payment.amount,
+                        status: 'paid',
+                        paidDate: payment.paidDate || payment.date
+                    });
+                }
             }
 
             // Pending: payments still pending where scheduled date is in the selected month
