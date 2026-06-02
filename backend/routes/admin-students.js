@@ -226,7 +226,7 @@ router.post('/students/:id/payments', authMiddleware, async (req, res) => {
                 }
             });
         } else if (pendingPayments.length > 0 && remainingBalance <= 0) {
-            pendingPayments.forEach(p => { p.amount = 0; });
+            pendingPayments.forEach(p => { p.amount = 0; p.status = 'paid'; p.paidDate = p.paidDate || new Date().toISOString().split('T')[0]; });
         }
 
         await student.save();
@@ -295,7 +295,7 @@ router.post('/students/:id/discount', authMiddleware, async (req, res) => {
                 }
             });
         } else if (pendingPayments.length > 0 && remainingBalance <= 0) {
-            pendingPayments.forEach(p => { p.amount = 0; });
+            pendingPayments.forEach(p => { p.amount = 0; p.status = 'paid'; p.paidDate = p.paidDate || new Date().toISOString().split('T')[0]; });
         }
 
         // Add notification
@@ -369,7 +369,7 @@ router.post('/students-discount-bulk', authMiddleware, async (req, res) => {
                     }
                 });
             } else if (pendingPayments.length > 0 && remainingBalance <= 0) {
-                pendingPayments.forEach(p => { p.amount = 0; });
+                pendingPayments.forEach(p => { p.amount = 0; p.status = 'paid'; p.paidDate = p.paidDate || new Date().toISOString().split('T')[0]; });
             }
 
             if (!student.notifications) student.notifications = [];
@@ -432,7 +432,7 @@ router.put('/students/:id/payments/:paymentId', authMiddleware, async (req, res)
                 }
             });
         } else if (pendingPayments.length > 0 && remainingBalance <= 0) {
-            pendingPayments.forEach(p => { p.amount = 0; });
+            pendingPayments.forEach(p => { p.amount = 0; p.status = 'paid'; p.paidDate = p.paidDate || new Date().toISOString().split('T')[0]; });
         }
 
         // Add notification for student
@@ -501,7 +501,7 @@ router.delete('/students/:id/payments/:paymentId/remove-discount', authMiddlewar
                 }
             });
         } else if (pendingPayments.length > 0 && remainingBalance <= 0) {
-            pendingPayments.forEach(p => { p.amount = 0; });
+            pendingPayments.forEach(p => { p.amount = 0; p.status = 'paid'; p.paidDate = p.paidDate || new Date().toISOString().split('T')[0]; });
         }
 
         await student.save();
@@ -908,7 +908,7 @@ router.post('/students-recalculate', authMiddleware, async (req, res) => {
                     }
                 });
             } else {
-                pendingPayments.forEach(p => { p.amount = 0; });
+                pendingPayments.forEach(p => { p.amount = 0; p.status = 'paid'; p.paidDate = p.paidDate || new Date().toISOString().split('T')[0]; });
             }
 
             await student.save();

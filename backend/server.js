@@ -193,7 +193,7 @@ mongoose.connect(process.env.MONGO_URI, mongoOptions)
             }
           });
         } else {
-          pendingPayments.forEach(p => { p.amount = 0; });
+          pendingPayments.forEach(p => { p.amount = 0; p.status = 'paid'; p.paidDate = p.paidDate || new Date().toISOString().split('T')[0]; });
         }
         await student.save();
         fixed++;

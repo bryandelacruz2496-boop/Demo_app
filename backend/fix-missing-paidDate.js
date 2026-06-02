@@ -1,8 +1,11 @@
 /**
  * Fix Missing paidDate Script
  * 
- * Finds all payments where status is 'paid' but paidDate is null/missing,
- * and sets paidDate to the payment's scheduled date.
+ * Finds all payments where:
+ * 1. status is 'paid' but paidDate is null/missing
+ * 2. status is 'pending' but amount is 0 (fully paid students with ghost entries)
+ * 
+ * Sets paidDate and marks zero-amount pending entries as paid.
  * 
  * Usage: node fix-missing-paidDate.js
  */
@@ -24,8 +27,16 @@ async function fixMissingPaidDates() {
             let studentFixed = 0;
 
             for (const payment of student.payments) {
+                // Fix paid payments missing paidDate
                 if (payment.status === 'paid' && !payment.paidDate) {
                     payment.paidDate = payment.date || new Date().toISOString().split('T')[0];
+                    studentFixed++;
+                }
+
+                // Fix zero-amount pending entries (student already fully paid)
+                if (payment.status === 'pending' && payment.amount === 0) {
+                    payment.status = 'paid';
+                    payment.paidDate = payment.paidDate || payment.date || new Date().toISOString().split('T')[0];
                     studentFixed++;
                 }
             }
