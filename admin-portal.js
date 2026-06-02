@@ -310,6 +310,7 @@ function calculateCollection() {
 
         student.payments.forEach(payment => {
             if (payment.amount < 0) return; // skip discounts
+            if (payment.description && payment.description.startsWith('[Expense]')) return; // skip expenses
 
             // Collected: payments marked as paid where paidDate is in the selected month
             if (payment.status === 'paid' && payment.paidDate && payment.paidDate.startsWith(`${year}-${month}`)) {

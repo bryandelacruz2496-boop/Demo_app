@@ -9,7 +9,7 @@ router.get('/students', authMiddleware, async (req, res) => {
         const students = await Student.find({ status: { $ne: 'archived' } });
         let csv = 'Student No,Full Name,Grade,Guardian,Contact,Total Tuition,Total Paid,Balance\n';
         students.forEach(s => {
-            const paid = s.payments.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0);
+            const paid = s.payments.filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]')).reduce((sum, p) => sum + p.amount, 0);
             csv += `${s.studentNo},"${s.fullName}","${s.grade || ''}","${s.guardian || ''}","${s.guardianContact || ''}",${s.totalTuition || 0},${paid},${(s.totalTuition || 0) - paid}\n`;
         });
         res.setHeader('Content-Type', 'text/csv');
@@ -43,7 +43,7 @@ router.get('/payments-all', authMiddleware, async (req, res) => {
         const students = await Student.find({ status: { $ne: 'archived' } });
         let csv = 'Student No,Full Name,Grade,Total Tuition,Total Paid,Balance,Status\n';
         students.forEach(s => {
-            const paid = s.payments.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0);
+            const paid = s.payments.filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]')).reduce((sum, p) => sum + p.amount, 0);
             const balance = (s.totalTuition || 0) - paid;
             csv += `${s.studentNo},"${s.fullName}","${s.grade || ''}",${s.totalTuition || 0},${paid},${balance},${balance <= 0 ? 'Fully Paid' : 'With Balance'}\n`;
         });
