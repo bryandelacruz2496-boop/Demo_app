@@ -140,6 +140,12 @@ async function loadAnnouncements() {
     const announcements = await res.json();
     const list = document.getElementById('announcementsList');
 
+    // Preserve any text the admin is currently typing before rebuilding the DOM
+    const savedInputs = {};
+    list.querySelectorAll('input[id^="reply-"]').forEach(input => {
+        if (input.value) savedInputs[input.id] = input.value;
+    });
+
     if (announcements.length === 0) {
         list.innerHTML = '';
         return;
@@ -193,6 +199,15 @@ async function loadAnnouncements() {
             </div>
         `}).join('')}
     `;
+
+    // Restore any text the admin had typed before the DOM was rebuilt
+    Object.entries(savedInputs).forEach(([id, value]) => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.value = value;
+            input.focus();
+        }
+    });
 }
 
 function showAnnouncementForm() {
