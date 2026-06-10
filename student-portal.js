@@ -378,6 +378,13 @@ async function loadStudentAnnouncements() {
   if (res.ok) {
     const announcements = await res.json();
     const list = document.getElementById('studentAnnouncementsList');
+
+    // Preserve any text the student is currently typing before rebuilding the DOM
+    const savedInputs = {};
+    list.querySelectorAll('input[id^="student-reply-"]').forEach(input => {
+      if (input.value) savedInputs[input.id] = input.value;
+    });
+
     if (announcements.length === 0) {
       list.innerHTML = '<p style="color:#888;text-align:center;">No announcements yet.</p>';
       return;
@@ -424,6 +431,15 @@ async function loadStudentAnnouncements() {
         </div>
       </div>
     `}).join('');
+
+    // Restore any text the student had typed before the DOM was rebuilt
+    Object.entries(savedInputs).forEach(([id, value]) => {
+      const input = document.getElementById(id);
+      if (input) {
+        input.value = value;
+        input.focus();
+      }
+    });
   }
 }
 
@@ -506,23 +522,33 @@ function startStudentNotificationCheck() {
       if (res.ok) {
         const data = await res.json();
         if (data && data.student) {
+          let needsDashboardRefresh = false;
+
           // Check for new notifications
           const newNotifs = (data.student.notifications || []).length;
           if (newNotifs > lastNotifCount) {
             const latest = data.student.notifications[data.student.notifications.length - 1];
             showStudentNotification(latest.message);
             lastNotifCount = newNotifs;
+            needsDashboardRefresh = true;
           }
 
+          // Check for assessment changes
           const newHash = JSON.stringify(data.student.assessments);
           if (lastAssessmentHash && newHash !== lastAssessmentHash) {
             showStudentNotification('📝 Your assessments have been updated by the admin');
+            needsDashboardRefresh = true;
           }
           lastAssessmentHash = newHash;
 
           currentStudent = data.student;
           localStorage.setItem('studentData', JSON.stringify(data.student));
-          populateDashboard();
+
+          // Only refresh the dashboard UI when something actually changed,
+          // to avoid destroying the announcements input field on every tick.
+          if (needsDashboardRefresh) {
+            populateDashboard();
+          }
         }
       }
     } catch (e) { }
