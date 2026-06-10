@@ -301,11 +301,20 @@ function startSessionCheck() {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.status === 401 || res.status === 404) {
+        // Try to refresh the token before kicking the user out
+        const refreshRes = await fetch(`${API_URL}/student/refresh-token`, { method: 'POST', credentials: 'include' });
+        if (refreshRes.ok) {
+          const data = await refreshRes.json();
+          if (data.token) {
+            localStorage.setItem('studentToken', data.token);
+            return; // Token refreshed successfully, stay logged in
+          }
+        }
         alert('Your session has ended. Your account may have been logged in on another device or removed.');
         logout();
       }
     } catch (e) { }
-  }, 2000);
+  }, 30000);
 }
 
 

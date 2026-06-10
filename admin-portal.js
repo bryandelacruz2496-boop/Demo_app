@@ -23,6 +23,7 @@ window.addEventListener('DOMContentLoaded', () => {
         applyRoleUI();
         loadStudents();
         startReplyNotificationCheck();
+        startAdminSessionCheck();
     }
 
     // Set collection month/year to current
@@ -99,6 +100,7 @@ async function handleAdminLogin(event) {
                 document.getElementById('adminDashboard').style.display = 'block';
                 applyRoleUI();
                 startReplyNotificationCheck();
+                startAdminSessionCheck();
             }, 800);
         } else {
             loginBtn.disabled = false;
@@ -1637,13 +1639,49 @@ function closeLogoutModal() {
 }
 
 function adminLogout() {
+    // Call server to invalidate refresh token
+    fetch(`${API_URL}/auth/logout`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${adminToken}` },
+        credentials: 'include'
+    }).catch(() => { });
+
     adminToken = null;
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminName');
+    localStorage.removeItem('adminRole');
+    if (window._adminSessionCheckInterval) clearInterval(window._adminSessionCheckInterval);
     document.getElementById('adminDashboard').style.display = 'none';
     document.getElementById('loginWrapper').style.display = 'flex';
     document.getElementById('adminUsername').value = '';
     document.getElementById('adminPassword').value = '';
+}
+
+// Check admin session validity every 30 seconds and auto-refresh token
+function startAdminSessionCheck() {
+    window._adminSessionCheckInterval = setInterval(async () => {
+        if (!adminToken) return;
+        try {
+            // Try a lightweight authenticated request to check token validity
+            const res = await fetch(`${API_URL}/auth/me`, {
+                headers: { 'Authorization': `Bearer ${adminToken}` }
+            });
+            if (res.status === 401) {
+                // Token expired — attempt refresh
+                const refreshRes = await fetch(`${API_URL}/auth/refresh`, { method: 'POST', credentials: 'include' });
+                if (refreshRes.ok) {
+                    const data = await refreshRes.json();
+                    if (data.token) {
+                        adminToken = data.token;
+                        localStorage.setItem('adminToken', data.token);
+                        return; // Refreshed successfully
+                    }
+                }
+                alert('Your session has expired. Please log in again.');
+                adminLogout();
+            }
+        } catch (e) { }
+    }, 30000);
 }
 
 // Reply notification check
