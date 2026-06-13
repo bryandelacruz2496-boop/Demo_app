@@ -795,10 +795,10 @@ function renderPayments() {
       <td><span class="status-${p.status}">${isDiscount ? '✓ Discount' : isExpense ? '📋 Expense' : (p.status === 'paid' ? '✓ Paid' : '⏳ Pending')}</span></td>
       <td>${p.paidDate || '-'}</td>
       <td style="white-space:nowrap;display:flex;align-items:center;gap:6px;">
-        ${isDiscount ? `<button class="btn-status btn-mark-pending" onclick="removeDiscount('${p._id}')" style="min-width:100px;">Remove</button>` :
+        ${isDiscount ? `<button class="btn-status btn-mark-pending" onclick="removeDiscount('${p._id}')" style="width:110px;text-align:center;">Remove</button>` :
                 (p.status === 'pending'
-                    ? `<button class="btn-status btn-mark-paid" onclick="updatePaymentStatus('${p._id}', 'paid')" style="min-width:100px;">Mark Paid</button>`
-                    : `<button class="btn-status btn-mark-pending" onclick="updatePaymentStatus('${p._id}', 'pending')" style="min-width:100px;">Mark Pending</button>`
+                    ? `<button class="btn-status btn-mark-paid" onclick="updatePaymentStatus('${p._id}', 'paid')" style="width:110px;text-align:center;">Mark Paid</button>`
+                    : `<button class="btn-status btn-mark-pending" onclick="updatePaymentStatus('${p._id}', 'pending')" style="width:110px;text-align:center;">Mark Pending</button>`
                 )
             }${deleteBtn}
       </td>
