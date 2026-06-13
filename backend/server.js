@@ -54,7 +54,7 @@ if (process.env.NODE_ENV === 'production') {
 // ============================================
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',')
-  : ['http://localhost:8080', 'http://localhost:3000', 'http://localhost:5000', 'https://beatasaiintegratedschool.onrender.com'];
+  : ['http://localhost:8080', 'http://localhost:3000', 'http://localhost:5000', 'https://beatasaiintegratedschool.onrender.com', 'https://beatasai.com', 'https://www.beatasai.com'];
 
 app.use(cors({
   origin: function (origin, callback) {
