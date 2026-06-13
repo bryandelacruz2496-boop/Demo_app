@@ -12,9 +12,9 @@ const { cloudinary, upload, uploadToCloudinary } = require('../config/cloudinary
 
 const router = express.Router();
 
-// Helper: Adjust only the LAST pending payment to absorb remaining balance difference.
-// All other pending payments keep their originalAmount (or current amount if no originalAmount).
-function adjustLastPendingPayment(student) {
+// Helper: Redistribute remaining balance evenly across all pending payments.
+// This keeps amounts consistent and avoids dumping everything into the last payment.
+function adjustPendingPayments(student) {
     const paidTotal = student.payments
         .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
         .reduce((sum, p) => sum + p.amount, 0);
@@ -33,26 +33,16 @@ function adjustLastPendingPayment(student) {
         return;
     }
 
-    // Restore all pending payments to their original amounts (except the last one)
-    // Then adjust only the last pending payment to absorb the difference
-    let sumOfOtherPending = 0;
-    for (let i = 0; i < pendingPayments.length - 1; i++) {
-        const p = pendingPayments[i];
-        p.amount = p.originalAmount || p.amount;
-        sumOfOtherPending += p.amount;
-    }
-
-    const lastPending = pendingPayments[pendingPayments.length - 1];
-    const lastAmount = remainingBalance - sumOfOtherPending;
-
-    if (lastAmount > 0) {
-        lastPending.amount = lastAmount;
-    } else {
-        // If the other pending payments already cover/exceed the balance,
-        // set last to 0 and mark paid
-        lastPending.amount = 0;
-        lastPending.status = 'paid';
-        lastPending.paidDate = lastPending.paidDate || new Date().toISOString().split('T')[0];
+    // Distribute evenly, last payment absorbs rounding remainder
+    const perPayment = Math.floor(remainingBalance / pendingPayments.length);
+    let distributed = 0;
+    for (let i = 0; i < pendingPayments.length; i++) {
+        if (i === pendingPayments.length - 1) {
+            pendingPayments[i].amount = remainingBalance - distributed;
+        } else {
+            pendingPayments[i].amount = perPayment;
+            distributed += perPayment;
+        }
     }
 }
 
@@ -251,7 +241,7 @@ router.post('/students/:id/payments', authMiddleware, async (req, res) => {
         student.payments.push({ date, description, amount, originalAmount: amount, status, paidDate: status === 'paid' ? (date || new Date().toISOString().split('T')[0]) : null });
 
         // Adjust last pending payment to absorb remaining balance
-        adjustLastPendingPayment(student);
+        adjustPendingPayments(student);
 
         await student.save();
         logAction('ADD_PAYMENT', req.admin.username, `Added payment â‚±${amount} for ${student.fullName}`, student.studentNo, req.ip);
@@ -301,7 +291,7 @@ router.post('/students/:id/discount', authMiddleware, async (req, res) => {
         });
 
         // Adjust last pending payment to absorb the discount
-        adjustLastPendingPayment(student);
+        adjustPendingPayments(student);
 
         // Add notification
         if (!student.notifications) student.notifications = [];
@@ -356,7 +346,7 @@ router.post('/students-discount-bulk', authMiddleware, async (req, res) => {
             });
 
             // Adjust last pending payment to absorb the discount
-            adjustLastPendingPayment(student);
+            adjustPendingPayments(student);
 
             if (!student.notifications) student.notifications = [];
             student.notifications.push({
@@ -399,7 +389,7 @@ router.put('/students/:id/payments/:paymentId', authMiddleware, async (req, res)
         payment.paidDate = status === 'paid' ? new Date().toISOString().split('T')[0] : null;
 
         // Adjust last pending payment to absorb remaining balance (don't redistribute all)
-        adjustLastPendingPayment(student);
+        adjustPendingPayments(student);
 
         // Add notification for student
         if (!student.notifications) student.notifications = [];
@@ -460,7 +450,7 @@ router.delete('/students/:id/payments/:paymentId', authMiddleware, async (req, r
         // If it was NOT an expense, recalculate the last pending payment
         // (expenses don't affect tuition balance)
         if (!isExpense) {
-            adjustLastPendingPayment(student);
+            adjustPendingPayments(student);
         }
 
         await student.save();
@@ -500,7 +490,7 @@ router.delete('/students/:id/payments/:paymentId/remove-discount', authMiddlewar
         student.payments.pull({ _id: req.params.paymentId });
 
         // Adjust last pending payment to absorb the restored amount
-        adjustLastPendingPayment(student);
+        adjustPendingPayments(student);
 
         await student.save();
         logAction('REMOVE_DISCOUNT', req.admin.username, `Removed discount â‚±${discountAmount} from ${student.fullName}`, student.studentNo, req.ip);
@@ -884,7 +874,7 @@ router.post('/students-recalculate', authMiddleware, async (req, res) => {
         let updatedCount = 0;
 
         for (const student of students) {
-            adjustLastPendingPayment(student);
+            adjustPendingPayments(student);
             await student.save();
             updatedCount++;
         }
