@@ -811,6 +811,23 @@ function renderPayments() {
     }
 }
 
+async function refreshAdminPayments() {
+    if (!selectedStudent) return;
+    try {
+        const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}`, {
+            headers: { 'Authorization': `Bearer ${adminToken}` }
+        });
+        if (res.ok) {
+            const data = await res.json();
+            selectedStudent.payments = data.payments;
+            selectedStudent.totalTuition = data.totalTuition;
+            renderPayments();
+        }
+    } catch (e) {
+        console.error('Refresh error:', e);
+    }
+}
+
 function onDiscountTypeChange() {
     const discType = document.getElementById('discType').value;
     const descInput = document.getElementById('discDesc');
