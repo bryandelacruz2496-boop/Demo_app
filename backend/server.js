@@ -26,6 +26,9 @@ const { serveEncryptedFile } = require('./middleware/fileEncryption');
 
 const app = express();
 
+// Trust first proxy (Render, Heroku, etc.) so rate-limiter gets real client IP
+app.set('trust proxy', 1);
+
 // ============================================
 // SECURITY: Helmet (HTTP security headers)
 // ============================================
