@@ -31,13 +31,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const monthSelect = document.getElementById('collectionMonth');
     if (monthSelect) monthSelect.value = String(now.getMonth() + 1).padStart(2, '0');
 
-    // Toggle bulk grade selector for discounts
-    const discBulkCheckbox = document.getElementById('discBulk');
-    if (discBulkCheckbox) {
-        discBulkCheckbox.addEventListener('change', function () {
-            document.getElementById('discBulkGrade').style.display = this.checked ? 'inline-block' : 'none';
-        });
-    }
 });
 
 // Prevent browser back/forward button from navigating away
@@ -932,65 +925,37 @@ async function addDiscount() {
     const date = getDatePickerValue('discDate');
     const description = document.getElementById('discDesc').value;
     const amount = Number(document.getElementById('discAmount').value);
-    const isBulk = document.getElementById('discBulk').checked;
 
     if (!date || !description || !amount) {
         showToast('Please fill in all discount fields');
         return;
     }
 
-    showConfirmPopup(`Are you sure you want to apply a ₱${amount.toLocaleString()} discount${isBulk ? ' to ALL students' : ''}?`, () => {
+    showConfirmPopup(`Are you sure you want to apply a ₱${amount.toLocaleString()} discount?`, () => {
         showPasswordPrompt(async (password) => {
-            if (isBulk) {
-                const grade = document.getElementById('discBulkGrade').value;
-                const res = await fetch(`${API_URL}/admin/students-discount-bulk`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
-                    body: JSON.stringify({ date, description, amount, grade, password })
-                });
+            if (!selectedStudent) return;
+            const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/discount`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+                body: JSON.stringify({ date, description, amount, password })
+            });
 
-                if (res.ok) {
-                    const data = await res.json();
-                    showToast(`Discount applied to ${data.updatedCount} students!`);
-                    loadStudents();
-                    document.getElementById('discDate').value = '';
-                    document.getElementById('discDate').dataset.value = '';
-                    document.getElementById('discDesc').value = '';
-                    document.getElementById('discAmount').value = '';
-                    document.getElementById('discType').value = 'custom';
-                    document.getElementById('discDesc').readOnly = false;
-                    document.getElementById('discAmount').readOnly = false;
-                    document.getElementById('discBulk').checked = false;
-                    document.getElementById('discBulkGrade').style.display = 'none';
-                } else {
-                    const data = await res.json();
-                    showToast(data.message || 'Error applying discount');
-                }
+            if (res.ok) {
+                const data = await res.json();
+                selectedStudent.payments = data.payments;
+                selectedStudent.totalTuition = data.totalTuition;
+                renderPayments();
+                showToast('Discount applied!');
+                document.getElementById('discDate').value = '';
+                document.getElementById('discDate').dataset.value = '';
+                document.getElementById('discDesc').value = '';
+                document.getElementById('discAmount').value = '';
+                document.getElementById('discType').value = 'custom';
+                document.getElementById('discDesc').readOnly = false;
+                document.getElementById('discAmount').readOnly = false;
             } else {
-                if (!selectedStudent) return;
-                const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/discount`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
-                    body: JSON.stringify({ date, description, amount, password })
-                });
-
-                if (res.ok) {
-                    const data = await res.json();
-                    selectedStudent.payments = data.payments;
-                    selectedStudent.totalTuition = data.totalTuition;
-                    renderPayments();
-                    showToast('Discount applied!');
-                    document.getElementById('discDate').value = '';
-                    document.getElementById('discDate').dataset.value = '';
-                    document.getElementById('discDesc').value = '';
-                    document.getElementById('discAmount').value = '';
-                    document.getElementById('discType').value = 'custom';
-                    document.getElementById('discDesc').readOnly = false;
-                    document.getElementById('discAmount').readOnly = false;
-                } else {
-                    const data = await res.json();
-                    showToast(data.message || 'Error applying discount');
-                }
+                const data = await res.json();
+                showToast(data.message || 'Error applying discount');
             }
         });
     });
