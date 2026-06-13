@@ -630,8 +630,6 @@ function renderProfile() {
     document.getElementById('editAddress').value = selectedStudent.address || '';
     setDatePickerValue('editBirthDate', selectedStudent.birthDate || '');
     document.getElementById('editGender').value = selectedStudent.gender || '';
-    document.getElementById('editTuition').value = selectedStudent.totalTuition || '';
-    document.getElementById('editPayOption').value = selectedStudent.paymentOption || 'monthly';
 
     // Set read-only by default
     setProfileEditable(false);
@@ -710,8 +708,6 @@ async function saveProfile() {
     formData.append('address', document.getElementById('editAddress').value);
     formData.append('birthDate', getDatePickerValue('editBirthDate'));
     formData.append('gender', document.getElementById('editGender').value);
-    formData.append('totalTuition', document.getElementById('editTuition').value);
-    formData.append('paymentOption', document.getElementById('editPayOption').value);
 
     const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/profile`, {
         method: 'PUT',
