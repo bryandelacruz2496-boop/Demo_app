@@ -866,6 +866,12 @@ function renderPayments() {
     if (dashPaid) dashPaid.textContent = '₱' + totalPaid.toLocaleString();
     if (dashPending) dashPending.textContent = '₱' + (totalPending > 0 ? totalPending : 0).toLocaleString();
 
+    // Update current payment scheme dropdown
+    const schemeSelect = document.getElementById('currentPayScheme');
+    if (schemeSelect) {
+        schemeSelect.value = selectedStudent.paymentOption || 'monthly';
+    }
+
     let payments = [...selectedStudent.payments];
 
     // Filter by month
@@ -927,11 +933,48 @@ async function refreshAdminPayments() {
             const data = await res.json();
             selectedStudent.payments = data.payments;
             selectedStudent.totalTuition = data.totalTuition;
+            selectedStudent.paymentOption = data.paymentOption;
             renderPayments();
         }
     } catch (e) {
         console.error('Refresh error:', e);
     }
+}
+
+function changePaymentScheme() {
+    if (!selectedStudent) return;
+    const schemeSelect = document.getElementById('currentPayScheme');
+    const newScheme = schemeSelect.value;
+
+    if (newScheme === selectedStudent.paymentOption) {
+        showToast('This is already the current payment scheme');
+        return;
+    }
+
+    const labels = { monthly: 'Monthly (7 installments)', two_payments: 'Two Equal Payments', full: 'Full Payment' };
+    const msg = `Are you sure you want to change the payment scheme from "${labels[selectedStudent.paymentOption]}" to "${labels[newScheme]}"?\n\nThis will:\n• Remove all pending payments\n• Recalculate the total based on the new scheme\n• Generate new payment schedule for the remaining balance`;
+
+    showConfirmPopup(msg, () => {
+        showPasswordPrompt(async (password) => {
+            const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/payment-scheme`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+                body: JSON.stringify({ paymentOption: newScheme, password })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                selectedStudent.payments = data.payments;
+                selectedStudent.totalTuition = data.totalTuition;
+                selectedStudent.paymentOption = data.paymentOption;
+                renderPayments();
+                showSuccessToast('Payment scheme updated successfully!');
+            } else {
+                const data = await res.json();
+                showToast(data.message || 'Error changing payment scheme');
+            }
+        });
+    });
 }
 
 function onDiscountTypeChange() {

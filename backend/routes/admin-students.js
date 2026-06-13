@@ -539,6 +539,171 @@ router.post('/students/:id/expense', authMiddleware, async (req, res) => {
     }
 });
 
+// PUT /api/admin/students/:id/payment-scheme - Change payment scheme
+router.put('/students/:id/payment-scheme', authMiddleware, async (req, res) => {
+    try {
+        if (req.admin.role === 'staff') {
+            return res.status(403).json({ message: 'Staff cannot change payment scheme' });
+        }
+
+        const { paymentOption, password } = req.body;
+
+        // Verify admin password
+        if (password) {
+            const Admin = require('../models/Admin');
+            const admin = await Admin.findById(req.admin.id);
+            if (!admin) return res.status(404).json({ message: 'Admin not found' });
+            const isMatch = await admin.comparePassword(password);
+            if (!isMatch) return res.status(401).json({ message: 'Incorrect password' });
+        }
+
+        const student = await Student.findById(req.params.id);
+        if (!student) return res.status(404).json({ message: 'Student not found' });
+
+        const validOptions = ['monthly', 'two_payments', 'full'];
+        if (!validOptions.includes(paymentOption)) {
+            return res.status(400).json({ message: 'Invalid payment option' });
+        }
+
+        // Get grade tuition data
+        const grade = student.grade;
+        const table = TUITION_TABLE['old'] && TUITION_TABLE['old'][grade] ? TUITION_TABLE['old'] : (TUITION_TABLE['new'] && TUITION_TABLE['new'][grade] ? TUITION_TABLE['new'] : null);
+        const gradeData = table ? table[grade] : null;
+
+        if (!gradeData) {
+            return res.status(400).json({ message: 'Cannot determine tuition for this grade' });
+        }
+
+        const baseTuition = gradeData.tuition;
+        const misc = gradeData.miscTotal;
+
+        // Calculate existing discount percentage from payment records
+        let discountPct = 0;
+        let flatDiscounts = 0;
+        student.payments.forEach(p => {
+            if (p.amount < 0 && p.description) {
+                if (p.description.includes('10%') || p.description.toLowerCase().includes('siblings') || p.description.toLowerCase().includes('friends')) {
+                    discountPct += 10;
+                } else if (p.description.includes('5%') || p.description.toLowerCase().includes('early bird')) {
+                    discountPct += 5;
+                } else if (p.description.includes('30%') || p.description.toLowerCase().includes('employee')) {
+                    discountPct += 30;
+                } else {
+                    // Flat discount (referral, custom)
+                    flatDiscounts += Math.abs(p.amount);
+                }
+            }
+        });
+
+        const percentageDiscount = Math.round(baseTuition * (discountPct / 100));
+        const totalDiscounts = percentageDiscount + flatDiscounts;
+
+        // Calculate new totalTuition based on scheme
+        let newTotal;
+        if (paymentOption === 'full') {
+            const less3 = Math.round(baseTuition * 0.03);
+            newTotal = baseTuition - less3 + misc - totalDiscounts;
+        } else if (paymentOption === 'two_payments') {
+            const interest = Math.round(baseTuition * 0.05);
+            newTotal = baseTuition + interest + misc - totalDiscounts;
+        } else {
+            // monthly - uses 7% interest built into the schedule
+            newTotal = gradeData.grandTotal - totalDiscounts;
+        }
+
+        // Calculate what's already been paid (exclude discounts and expenses)
+        const paidTotal = student.payments
+            .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
+            .reduce((sum, p) => sum + p.amount, 0);
+
+        // Remove all pending non-expense payments
+        student.payments = student.payments.filter(p =>
+            p.status === 'paid' || p.description.startsWith('[Expense]')
+        );
+
+        // Update totalTuition and paymentOption
+        student.totalTuition = newTotal;
+        student.paymentOption = paymentOption;
+
+        // Calculate remaining balance
+        const remainingBalance = newTotal - paidTotal;
+
+        // Generate new pending payments for remaining balance
+        if (remainingBalance > 0) {
+            if (paymentOption === 'full') {
+                student.payments.push({
+                    date: new Date().toISOString().split('T')[0],
+                    description: 'Full Payment (remaining balance)',
+                    amount: remainingBalance,
+                    originalAmount: remainingBalance,
+                    status: 'pending'
+                });
+            } else if (paymentOption === 'two_payments') {
+                const half = Math.round(remainingBalance / 2);
+                student.payments.push({
+                    date: '2026-06-01',
+                    description: 'First Payment',
+                    amount: half,
+                    originalAmount: half,
+                    status: 'pending'
+                });
+                student.payments.push({
+                    date: '2026-12-01',
+                    description: 'Second Payment',
+                    amount: remainingBalance - half,
+                    originalAmount: remainingBalance - half,
+                    status: 'pending'
+                });
+            } else {
+                // Monthly: distribute remaining across months that haven't passed
+                const now = new Date();
+                const months = [
+                    { month: '06', name: 'June 2026', date: new Date('2026-06-01') },
+                    { month: '07', name: 'July 2026', date: new Date('2026-07-01') },
+                    { month: '08', name: 'August 2026', date: new Date('2026-08-01') },
+                    { month: '09', name: 'September 2026', date: new Date('2026-09-01') },
+                    { month: '10', name: 'October 2026', date: new Date('2026-10-01') },
+                    { month: '11', name: 'November 2026', date: new Date('2026-11-01') },
+                    { month: '12', name: 'December 2026', date: new Date('2026-12-01') }
+                ];
+
+                // Include current month and future months
+                const availableMonths = months.filter(m => m.date >= new Date(now.getFullYear(), now.getMonth(), 1));
+                const numPayments = availableMonths.length || 1;
+                const perPayment = Math.floor(remainingBalance / numPayments);
+                let distributed = 0;
+
+                for (let i = 0; i < numPayments; i++) {
+                    const amt = (i === numPayments - 1) ? remainingBalance - distributed : perPayment;
+                    student.payments.push({
+                        date: `2026-${availableMonths[i].month}-01`,
+                        description: `Monthly Payment - ${availableMonths[i].name}`,
+                        amount: amt,
+                        originalAmount: amt,
+                        status: 'pending'
+                    });
+                    distributed += amt;
+                }
+            }
+        }
+
+        // Add notification
+        if (!student.notifications) student.notifications = [];
+        student.notifications.push({
+            message: `Your payment scheme has been changed to ${paymentOption === 'full' ? 'Full Payment' : paymentOption === 'two_payments' ? 'Two Payments' : 'Monthly (7 installments)'}`,
+            type: 'payment',
+            read: false
+        });
+
+        await student.save();
+        logAction('CHANGE_SCHEME', req.admin.username, `Changed payment scheme to ${paymentOption} for ${student.fullName}`, student.studentNo, req.ip);
+        res.json({ message: 'Payment scheme updated', payments: student.payments, totalTuition: student.totalTuition, paymentOption: student.paymentOption });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 // POST /api/admin/students/:id/activities - Add activity
 router.post('/students/:id/activities', authMiddleware, upload.single('image'), async (req, res) => {
     try {
