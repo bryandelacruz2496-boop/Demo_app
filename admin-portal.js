@@ -1058,6 +1058,21 @@ function onDiscountTypeChange() {
         const alreadyDeducted = Math.round(tuition * (existingPct / 100));
         amountInput.value = totalDiscountAmount - alreadyDeducted;
         amountInput.readOnly = true;
+    } else if (discType === 'employee') {
+        descInput.value = 'Employee Discount (30%)';
+        descInput.readOnly = true;
+        const grade = selectedStudent ? selectedStudent.grade : '';
+        const type = selectedStudent ? (selectedStudent.enrolleeType || 'old') : 'old';
+        const gradeData = TUITION_DATA[type] && TUITION_DATA[type][grade] ? TUITION_DATA[type][grade] : (TUITION_DATA['old'] && TUITION_DATA['old'][grade] ? TUITION_DATA['old'][grade] : null);
+        const tuition = gradeData ? gradeData.tuition : 0;
+        // Calculate combined discount: sum existing discount percentages + this new one
+        const existingPct = getExistingDiscountPercent(selectedStudent);
+        const newPct = 30;
+        const combinedPct = existingPct + newPct;
+        const totalDiscountAmount = Math.round(tuition * (combinedPct / 100));
+        const alreadyDeducted = Math.round(tuition * (existingPct / 100));
+        amountInput.value = totalDiscountAmount - alreadyDeducted;
+        amountInput.readOnly = true;
     } else if (discType === 'early_bird') {
         descInput.value = 'Early Bird Discount (5%)';
         descInput.readOnly = true;
