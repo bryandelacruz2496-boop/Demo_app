@@ -872,6 +872,12 @@ function renderPayments() {
         schemeSelect.value = selectedStudent.paymentOption || 'monthly';
     }
 
+    // Update current enrollee type dropdown
+    const enrolleeSelect = document.getElementById('currentEnrolleeType');
+    if (enrolleeSelect) {
+        enrolleeSelect.value = selectedStudent.enrolleeType || 'old';
+    }
+
     let payments = [...selectedStudent.payments];
 
     // Filter by month
@@ -972,6 +978,43 @@ function changePaymentScheme() {
             } else {
                 const data = await res.json();
                 showToast(data.message || 'Error changing payment scheme');
+            }
+        });
+    });
+}
+
+function changeEnrolleeType() {
+    if (!selectedStudent) return;
+    const typeSelect = document.getElementById('currentEnrolleeType');
+    const newType = typeSelect.value;
+
+    if (newType === (selectedStudent.enrolleeType || 'old')) {
+        showToast('This is already the current enrollee type');
+        return;
+    }
+
+    const labels = { old: 'Old Enrollee', new: 'New Enrollee' };
+    const msg = `Are you sure you want to change the enrollee type to "${labels[newType]}"?\n\nThis will recalculate tuition based on the ${labels[newType]} rate table and regenerate pending payments.`;
+
+    showConfirmPopup(msg, () => {
+        showPasswordPrompt(async (password) => {
+            const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/enrollee-type`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+                body: JSON.stringify({ enrolleeType: newType, password })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                selectedStudent.payments = data.payments;
+                selectedStudent.totalTuition = data.totalTuition;
+                selectedStudent.enrolleeType = data.enrolleeType;
+                selectedStudent.paymentOption = data.paymentOption;
+                renderPayments();
+                showSuccessToast('Enrollee type updated successfully!');
+            } else {
+                const data = await res.json();
+                showToast(data.message || 'Error changing enrollee type');
             }
         });
     });

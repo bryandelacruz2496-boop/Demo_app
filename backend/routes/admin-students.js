@@ -707,6 +707,131 @@ router.put('/students/:id/payment-scheme', authMiddleware, async (req, res) => {
     }
 });
 
+// PUT /api/admin/students/:id/enrollee-type - Change enrollee type and recalculate
+router.put('/students/:id/enrollee-type', authMiddleware, async (req, res) => {
+    try {
+        if (req.admin.role === 'staff') {
+            return res.status(403).json({ message: 'Staff cannot change enrollee type' });
+        }
+
+        const { enrolleeType, password } = req.body;
+
+        // Verify admin password
+        if (password) {
+            const Admin = require('../models/Admin');
+            const admin = await Admin.findById(req.admin.id);
+            if (!admin) return res.status(404).json({ message: 'Admin not found' });
+            const isMatch = await admin.comparePassword(password);
+            if (!isMatch) return res.status(401).json({ message: 'Incorrect password' });
+        }
+
+        const student = await Student.findById(req.params.id);
+        if (!student) return res.status(404).json({ message: 'Student not found' });
+
+        if (!['old', 'new'].includes(enrolleeType)) {
+            return res.status(400).json({ message: 'Invalid enrollee type' });
+        }
+
+        const grade = student.grade;
+        const gradeData = TUITION_TABLE[enrolleeType] && TUITION_TABLE[enrolleeType][grade];
+        if (!gradeData) {
+            return res.status(400).json({ message: 'Cannot determine tuition for this grade and enrollee type' });
+        }
+
+        const baseTuition = gradeData.tuition;
+        const misc = gradeData.miscTotal;
+        const paymentOption = student.paymentOption || 'monthly';
+
+        // Calculate existing discounts
+        let discountPct = 0, flatDiscounts = 0;
+        student.payments.forEach(p => {
+            if (p.amount < 0 && p.description) {
+                if (p.description.includes('10%') || p.description.toLowerCase().includes('siblings') || p.description.toLowerCase().includes('friends')) discountPct += 10;
+                else if (p.description.includes('5%') || p.description.toLowerCase().includes('early bird')) discountPct += 5;
+                else if (p.description.includes('30%') || p.description.toLowerCase().includes('employee')) discountPct += 30;
+                else flatDiscounts += Math.abs(p.amount);
+            }
+        });
+        const totalDiscounts = Math.round(baseTuition * (discountPct / 100)) + flatDiscounts;
+
+        // Calculate correct totalTuition
+        let newTotal;
+        if (paymentOption === 'full') {
+            newTotal = baseTuition - Math.round(baseTuition * 0.03) + misc - totalDiscounts;
+        } else if (paymentOption === 'two_payments') {
+            newTotal = baseTuition + Math.round(baseTuition * 0.05) + misc - totalDiscounts;
+        } else {
+            newTotal = baseTuition + Math.round(baseTuition * 0.07) + misc - totalDiscounts;
+        }
+
+        // What's already paid
+        const paidTotal = student.payments
+            .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
+            .reduce((sum, p) => sum + p.amount, 0);
+
+        // Update student
+        student.enrolleeType = enrolleeType;
+        student.totalTuition = newTotal;
+
+        // Remove pending non-expense payments
+        student.payments = student.payments.filter(p =>
+            p.status === 'paid' || (p.description && p.description.startsWith('[Expense]'))
+        );
+
+        // Regenerate pending payments
+        const remainingBalance = newTotal - paidTotal;
+        if (remainingBalance > 0) {
+            if (paymentOption === 'full') {
+                student.payments.push({ date: '2026-06-01', description: 'Full Payment (3% discount)', amount: remainingBalance, originalAmount: remainingBalance, status: 'pending' });
+            } else if (paymentOption === 'two_payments') {
+                const half = Math.round(remainingBalance / 2);
+                student.payments.push({ date: '2026-06-01', description: 'First Payment (Upon Enrollment)', amount: half, originalAmount: half, status: 'pending' });
+                student.payments.push({ date: '2026-12-01', description: 'Second Payment (December 2026)', amount: remainingBalance - half, originalAmount: remainingBalance - half, status: 'pending' });
+            } else {
+                const { MONTHLY_SCHEDULES } = require('../config/tuition');
+                const months = ['06', '07', '08', '09', '10', '11', '12'];
+                const monthNames = ['June 2026', 'July 2026', 'August 2026', 'September 2026', 'October 2026', 'November 2026', 'December 2026'];
+                const schedules = MONTHLY_SCHEDULES[enrolleeType];
+                const schedule = schedules && schedules[grade];
+
+                if (schedule) {
+                    let startMonth = 0, covered = 0;
+                    for (let i = 0; i < 7; i++) {
+                        if (covered + schedule[i] <= paidTotal + 1) { covered += schedule[i]; startMonth = i + 1; } else break;
+                    }
+                    if (startMonth >= 7) startMonth = 6;
+                    for (let i = startMonth; i < 7; i++) {
+                        student.payments.push({ date: `2026-${months[i]}-01`, description: `Monthly Payment - ${monthNames[i]}`, amount: schedule[i], originalAmount: schedule[i], status: 'pending' });
+                    }
+                    // Adjust if needed
+                    const pending = student.payments.filter(p => p.status === 'pending' && !p.description.startsWith('[Expense]'));
+                    const pTotal = pending.reduce((s, p) => s + p.amount, 0);
+                    if (Math.abs(pTotal - remainingBalance) > 1 && pending.length > 0) {
+                        const per = Math.floor(remainingBalance / pending.length);
+                        let dist = 0;
+                        pending.forEach((p, i) => { if (i === pending.length - 1) p.amount = remainingBalance - dist; else { p.amount = per; dist += per; } });
+                    }
+                } else {
+                    const per = Math.floor(remainingBalance / 7);
+                    let dist = 0;
+                    for (let i = 0; i < 7; i++) {
+                        const amt = i === 6 ? remainingBalance - dist : per;
+                        student.payments.push({ date: `2026-${months[i]}-01`, description: `Monthly Payment - ${monthNames[i]}`, amount: amt, originalAmount: amt, status: 'pending' });
+                        dist += amt;
+                    }
+                }
+            }
+        }
+
+        await student.save();
+        logAction('CHANGE_ENROLLEE_TYPE', req.admin.username, `Changed enrollee type to ${enrolleeType} for ${student.fullName}`, student.studentNo, req.ip);
+        res.json({ message: 'Enrollee type updated', payments: student.payments, totalTuition: student.totalTuition, enrolleeType: student.enrolleeType, paymentOption: student.paymentOption });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 // POST /api/admin/students/:id/activities - Add activity
 router.post('/students/:id/activities', authMiddleware, upload.single('image'), async (req, res) => {
     try {
