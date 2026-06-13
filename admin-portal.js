@@ -147,7 +147,6 @@ async function loadAnnouncements() {
     }
 
     list.innerHTML = `
-        <h3 style="color:#b71c1c;margin-bottom:1rem;">📢 Recent Announcements</h3>
         ${announcements.map(a => {
         const replies = a.replies || [];
         const hasMore = replies.length > 3;
@@ -157,13 +156,13 @@ async function loadAnnouncements() {
             <div class="announcement-card">
                 <div class="announcement-header">
                     <h4>${a.subject}</h4>
-                    <div>
+                    <div style="display:flex;align-items:center;gap:8px;">
                         <span class="announcement-badge">${a.targetGrade === 'all' ? 'All Grades' : a.targetGrade}</span>
-                        <button class="btn-remove-subject" onclick="deleteAnnouncement('${a._id}')">🗑️</button>
+                        <button class="btn-remove-subject" onclick="deleteAnnouncement('${a._id}')" title="Delete">🗑️</button>
                     </div>
                 </div>
-                <p>${a.body}</p>
-                <span class="announcement-date">${new Date(a.createdAt).toLocaleDateString()}</span>
+                <div class="announcement-body">${a.body}</div>
+                <span class="announcement-date">Posted ${new Date(a.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                 <div class="replies-section">
                     ${visibleReplies.map(r => `
                         <div class="reply-item reply-${r.role}">
@@ -232,10 +231,11 @@ function hideAnnouncementForm() {
 
 async function createAnnouncement() {
     const subject = document.getElementById('annSubject').value;
-    const body = document.getElementById('annBody').value;
+    const bodyEl = document.getElementById('annBody');
+    const body = bodyEl.innerHTML.trim();
     const targetGrade = document.getElementById('annGrade').value;
 
-    if (!subject || !body) {
+    if (!subject || !body || body === '<br>') {
         showToast('Please fill in subject and body');
         return;
     }
@@ -255,7 +255,7 @@ async function createAnnouncement() {
             if (res.ok) {
                 showSuccessToast('✓ Announcement posted successfully!');
                 document.getElementById('annSubject').value = '';
-                document.getElementById('annBody').value = '';
+                bodyEl.innerHTML = '';
                 document.getElementById('annGrade').value = 'all';
                 hideAnnouncementForm();
                 loadAnnouncements();
@@ -267,6 +267,20 @@ async function createAnnouncement() {
             showToast('Error: Cannot connect to server');
         }
     });
+}
+
+// Rich text editor commands
+function execRichCmd(command) {
+    document.execCommand(command, false, null);
+    document.getElementById('annBody').focus();
+}
+
+function insertRichLink() {
+    const url = prompt('Enter URL:', 'https://');
+    if (url) {
+        document.execCommand('createLink', false, url);
+        document.getElementById('annBody').focus();
+    }
 }
 
 async function deleteAnnouncement(id) {

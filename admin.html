@@ -328,15 +328,20 @@
                         </div>
 
                         <div id="announcementForm" class="expandable-panel" style="display:none;">
-                            <h3>📢 Create Announcement</h3>
-                            <div class="form-grid">
+                            <h3 style="color:#1a237e;margin-bottom:1.2rem;">📢 Create Announcement</h3>
+                            <div class="form-grid" style="gap:1rem;">
                                 <div class="form-group">
-                                    <label>Subject *</label>
-                                    <input type="text" id="annSubject" placeholder="e.g. School Event Notice" required>
+                                    <label
+                                        style="font-weight:600;color:#333;margin-bottom:0.4rem;display:block;">Subject
+                                        *</label>
+                                    <input type="text" id="annSubject" placeholder="e.g. School Event Notice" required
+                                        style="width:100%;padding:0.7rem 1rem;border:2px solid #e0e0e0;border-radius:8px;font-size:0.95rem;">
                                 </div>
                                 <div class="form-group">
-                                    <label>Target Grade</label>
-                                    <select id="annGrade">
+                                    <label style="font-weight:600;color:#333;margin-bottom:0.4rem;display:block;">Target
+                                        Grade</label>
+                                    <select id="annGrade"
+                                        style="width:100%;padding:0.7rem 1rem;border:2px solid #e0e0e0;border-radius:8px;font-size:0.95rem;">
                                         <option value="all">All Grades</option>
                                         <option value="Palaruan 1">Palaruan 1</option>
                                         <option value="Palaruan 2">Palaruan 2</option>
@@ -350,12 +355,29 @@
                                     </select>
                                 </div>
                                 <div class="form-group full-width">
-                                    <label>Body *</label>
-                                    <textarea id="annBody" rows="4" placeholder="Write your announcement here..."
-                                        style="width:100%;padding:0.7rem 1rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.95rem;resize:vertical;"></textarea>
+                                    <label style="font-weight:600;color:#333;margin-bottom:0.4rem;display:block;">Body
+                                        *</label>
+                                    <div class="rich-toolbar" id="annToolbar">
+                                        <button type="button" onclick="execRichCmd('bold')"
+                                            title="Bold"><b>B</b></button>
+                                        <button type="button" onclick="execRichCmd('italic')"
+                                            title="Italic"><i>I</i></button>
+                                        <button type="button" onclick="execRichCmd('underline')"
+                                            title="Underline"><u>U</u></button>
+                                        <span class="toolbar-divider"></span>
+                                        <button type="button" onclick="execRichCmd('insertUnorderedList')"
+                                            title="Bullet List">• List</button>
+                                        <button type="button" onclick="execRichCmd('insertOrderedList')"
+                                            title="Numbered List">1. List</button>
+                                        <span class="toolbar-divider"></span>
+                                        <button type="button" onclick="insertRichLink()" title="Insert Link">🔗
+                                            Link</button>
+                                    </div>
+                                    <div id="annBody" contenteditable="true" class="rich-editor"
+                                        placeholder="Write your announcement here..."></div>
                                 </div>
                             </div>
-                            <div class="form-actions">
+                            <div class="form-actions" style="margin-top:1.2rem;">
                                 <button class="btn-save" onclick="createAnnouncement()">📢 Post Announcement</button>
                                 <button class="btn-cancel" onclick="hideAnnouncementForm()">Cancel</button>
                             </div>
