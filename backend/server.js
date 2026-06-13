@@ -42,6 +42,10 @@ app.use(helmet({
 // ============================================
 if (process.env.NODE_ENV === 'production') {
   app.use((req, res, next) => {
+    // Redirect .onrender.com to custom domain
+    if (req.headers.host && req.headers.host.includes('.onrender.com')) {
+      return res.redirect(301, `https://beatasai.com${req.url}`);
+    }
     if (req.headers['x-forwarded-proto'] !== 'https') {
       return res.redirect(301, `https://${req.headers.host}${req.url}`);
     }
