@@ -744,9 +744,14 @@ h4 {
 }
 
 .admin-table td {
-    padding: 0.8rem 1rem;
+    padding: 0.7rem 1rem;
     border-bottom: 1px solid #f0f0f0;
     transition: background 0.2s;
+    font-size: 0.88rem;
+}
+
+.admin-table tbody tr:nth-child(even) td {
+    background: #fafafa;
 }
 
 .admin-table tr:hover td {
@@ -800,6 +805,249 @@ h4 {
 
 .btn-status:active {
     transform: scale(0.97);
+}
+
+/* ============================================ */
+/* Payment Dashboard Redesign */
+/* ============================================ */
+.pay-dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.8rem;
+    margin-bottom: 1.2rem;
+}
+
+.pay-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    text-align: center;
+    border-left: 4px solid #ccc;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pay-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.pay-card-tuition {
+    border-left-color: #1565c0;
+}
+
+.pay-card-paid {
+    border-left-color: #2e7d32;
+}
+
+.pay-card-pending {
+    border-left-color: #e65100;
+}
+
+.pay-card-expense {
+    border-left-color: #880e4f;
+}
+
+.pay-card-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #666;
+    margin-bottom: 0.3rem;
+}
+
+.pay-card-value {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #1a237e;
+}
+
+.pay-card-tuition .pay-card-value {
+    color: #1565c0;
+}
+
+.pay-card-paid .pay-card-value {
+    color: #2e7d32;
+}
+
+.pay-card-pending .pay-card-value {
+    color: #e65100;
+}
+
+.pay-card-expense .pay-card-value {
+    color: #880e4f;
+}
+
+.pay-card-sub {
+    font-size: 0.7rem;
+    color: #999;
+    margin-top: 0.2rem;
+}
+
+/* Controls Row (Scheme + Type) */
+.pay-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.6rem 1rem;
+    background: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    flex-wrap: wrap;
+}
+
+.pay-control-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pay-control-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #555;
+    white-space: nowrap;
+}
+
+.pay-select {
+    padding: 0.35rem 0.7rem;
+    border: 1.5px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: #fff;
+    color: #333;
+}
+
+.pay-select:focus {
+    border-color: #1a237e;
+    outline: none;
+}
+
+.pay-btn-action {
+    padding: 0.3rem 0.8rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: #1a237e;
+    color: #fff;
+    transition: background 0.15s ease;
+}
+
+.pay-btn-action:hover {
+    background: #283593;
+}
+
+.pay-control-divider {
+    width: 1px;
+    height: 24px;
+    background: #ddd;
+}
+
+/* Toolbar (Filters + Actions) */
+.pay-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.pay-filters {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pay-filter-select {
+    padding: 0.4rem 0.7rem;
+    border: 1.5px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    background: #fff;
+    color: #333;
+}
+
+.pay-filter-select:focus {
+    border-color: #1a237e;
+    outline: none;
+}
+
+.pay-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.pay-action-btn {
+    padding: 0.4rem 0.8rem;
+    border: 1.5px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: #fff;
+    color: #333;
+    transition: all 0.15s ease;
+}
+
+.pay-action-btn:hover {
+    border-color: #1a237e;
+    color: #1a237e;
+    background: #f5f5ff;
+}
+
+.pay-action-export {
+    color: #1565c0;
+    border-color: #bbdefb;
+}
+
+.pay-action-export:hover {
+    background: #e3f2fd;
+    border-color: #1565c0;
+}
+
+.pay-action-payment {
+    color: #1a237e;
+    border-color: #c5cae9;
+}
+
+.pay-action-payment:hover {
+    background: #e8eaf6;
+    border-color: #1a237e;
+}
+
+.pay-action-discount {
+    color: #2e7d32;
+    border-color: #c8e6c9;
+}
+
+.pay-action-discount:hover {
+    background: #e8f5e9;
+    border-color: #2e7d32;
+}
+
+.pay-action-expense {
+    color: #e65100;
+    border-color: #ffe0b2;
+}
+
+.pay-action-expense:hover {
+    background: #fff3e0;
+    border-color: #e65100;
+}
+
+.pay-refresh {
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: inline-block;
+    transition: transform 0.2s ease;
+    margin-left: 4px;
 }
 
 .btn-mark-paid {

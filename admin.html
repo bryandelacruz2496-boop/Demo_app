@@ -857,96 +857,90 @@
 
                     <!-- Payments Panel -->
                     <div class="admin-panel" id="paymentsPanel">
-                        <h3>Payment Records</h3>
-                        <div id="paymentDashboard" style="display:flex;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;">
-                            <div
-                                style="flex:1;min-width:150px;background:#e3f2fd;border-radius:10px;padding:1rem;text-align:center;">
-                                <div style="font-size:0.8rem;color:#1565c0;font-weight:600;text-transform:uppercase;">
-                                    Total Tuition</div>
-                                <div id="dashTotalTuition"
-                                    style="font-size:1.4rem;font-weight:700;color:#0d47a1;margin-top:0.3rem;">₱0</div>
+                        <h3 style="color:#1a237e;font-size:1.3rem;margin-bottom:1.2rem;">Payment Records</h3>
+
+                        <!-- Summary Cards -->
+                        <div id="paymentDashboard" class="pay-dashboard">
+                            <div class="pay-card pay-card-tuition">
+                                <div class="pay-card-label">Total Tuition</div>
+                                <div class="pay-card-value" id="dashTotalTuition">₱0</div>
                             </div>
-                            <div
-                                style="flex:1;min-width:150px;background:#e8f5e9;border-radius:10px;padding:1rem;text-align:center;">
-                                <div style="font-size:0.8rem;color:#2e7d32;font-weight:600;text-transform:uppercase;">
-                                    Total Paid</div>
-                                <div id="dashTotalPaid"
-                                    style="font-size:1.4rem;font-weight:700;color:#1b5e20;margin-top:0.3rem;">₱0</div>
+                            <div class="pay-card pay-card-paid">
+                                <div class="pay-card-label">Total Paid</div>
+                                <div class="pay-card-value" id="dashTotalPaid">₱0</div>
                             </div>
-                            <div
-                                style="flex:1;min-width:150px;background:#fff3e0;border-radius:10px;padding:1rem;text-align:center;">
-                                <div style="font-size:0.8rem;color:#e65100;font-weight:600;text-transform:uppercase;">
-                                    Total Pending</div>
-                                <div id="dashTotalPending"
-                                    style="font-size:1.4rem;font-weight:700;color:#bf360c;margin-top:0.3rem;">₱0</div>
+                            <div class="pay-card pay-card-pending">
+                                <div class="pay-card-label">Total Pending</div>
+                                <div class="pay-card-value" id="dashTotalPending">₱0</div>
                             </div>
-                            <div
-                                style="flex:1;min-width:150px;background:#fce4ec;border-radius:10px;padding:1rem;text-align:center;">
-                                <div style="font-size:0.8rem;color:#880e4f;font-weight:600;text-transform:uppercase;">
-                                    Total Expenses</div>
-                                <div id="dashTotalExpenses"
-                                    style="font-size:1.4rem;font-weight:700;color:#880e4f;margin-top:0.3rem;">₱0</div>
-                                <div id="dashExpensesPending"
-                                    style="font-size:0.75rem;color:#ad1457;margin-top:0.2rem;">Pending: ₱0</div>
+                            <div class="pay-card pay-card-expense">
+                                <div class="pay-card-label">Total Expenses</div>
+                                <div class="pay-card-value" id="dashTotalExpenses">₱0</div>
+                                <div class="pay-card-sub" id="dashExpensesPending">Pending: ₱0</div>
                             </div>
                         </div>
-                        <div id="changeSchemeRow"
-                            style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;padding:0.8rem 1rem;background:#f3e5f5;border-radius:10px;border:1px solid #ce93d8;flex-wrap:wrap;">
-                            <label style="font-weight:600;color:#6a1b9a;font-size:0.85rem;white-space:nowrap;">Payment
-                                Scheme:</label>
-                            <select id="currentPayScheme"
-                                style="padding:0.4rem 0.8rem;border:2px solid #ce93d8;border-radius:8px;font-size:0.85rem;font-weight:600;">
-                                <option value="monthly">Monthly (7 installments)</option>
-                                <option value="two_payments">Two Equal Payments</option>
-                                <option value="full">Full Payment</option>
-                            </select>
-                            <button class="btn-add" style="background:#6a1b9a;font-size:0.8rem;padding:0.4rem 1rem;"
-                                onclick="changePaymentScheme()">Change Scheme</button>
-                            <span style="width:1px;height:24px;background:#ce93d8;margin:0 4px;"></span>
-                            <label style="font-weight:600;color:#6a1b9a;font-size:0.85rem;white-space:nowrap;">Enrollee
-                                Type:</label>
-                            <select id="currentEnrolleeType"
-                                style="padding:0.4rem 0.8rem;border:2px solid #ce93d8;border-radius:8px;font-size:0.85rem;font-weight:600;">
-                                <option value="old">Old Enrollee</option>
-                                <option value="new">New Enrollee</option>
-                            </select>
-                            <button class="btn-add" style="background:#6a1b9a;font-size:0.8rem;padding:0.4rem 1rem;"
-                                onclick="changeEnrolleeType()">Update Type</button>
+
+                        <!-- Scheme & Type Controls -->
+                        <div class="pay-controls">
+                            <div class="pay-control-group">
+                                <span class="pay-control-label">Scheme:</span>
+                                <select id="currentPayScheme" class="pay-select">
+                                    <option value="monthly">Monthly (7 installments)</option>
+                                    <option value="two_payments">Two Equal Payments</option>
+                                    <option value="full">Full Payment</option>
+                                </select>
+                                <button class="pay-btn-action" onclick="changePaymentScheme()">Change</button>
+                            </div>
+                            <div class="pay-control-divider"></div>
+                            <div class="pay-control-group">
+                                <span class="pay-control-label">Type:</span>
+                                <select id="currentEnrolleeType" class="pay-select">
+                                    <option value="old">Old Enrollee</option>
+                                    <option value="new">New Enrollee</option>
+                                </select>
+                                <button class="pay-btn-action" onclick="changeEnrolleeType()">Update</button>
+                            </div>
                         </div>
-                        <div class="sort-row">
-                            <label>Month:</label>
-                            <select id="adminPayMonth" onchange="renderPayments()">
-                                <option value="all">All</option>
-                                <option value="01">January</option>
-                                <option value="02">February</option>
-                                <option value="03">March</option>
-                                <option value="04">April</option>
-                                <option value="05">May</option>
-                                <option value="06">June</option>
-                                <option value="07">July</option>
-                                <option value="08">August</option>
-                                <option value="09">September</option>
-                                <option value="10">October</option>
-                                <option value="11">November</option>
-                                <option value="12">December</option>
-                            </select>
-                            <label>Year:</label>
-                            <select id="adminPayYear" onchange="renderPayments()">
-                                <option value="all">All</option>
-                                <option value="2026">2026</option>
-                                <option value="2027">2027</option>
-                            </select>
-                            <button class="btn-export" onclick="exportStudentPayments()">📥 Export Payments</button>
-                            <button class="btn-add" onclick="togglePaymentForm()">+ Add Payment</button>
-                            <button class="btn-add" style="background:#2e7d32;" onclick="toggleDiscountForm()">+ Add
-                                Discount</button>
-                            <button class="btn-add" style="background:#e65100;" onclick="toggleExpenseForm()">+ Other
-                                Expense</button>
-                            <span onclick="refreshAdminPayments()" title="Refresh"
-                                style="cursor:pointer;font-size:1.4rem;margin-left:8px;display:inline-block;transition:transform 0.2s ease;"
-                                onmouseover="this.style.transform='scale(1.3)'"
-                                onmouseout="this.style.transform='scale(1)'">🔄</span>
+
+                        <!-- Toolbar: Filters + Actions -->
+                        <div class="pay-toolbar">
+                            <div class="pay-filters">
+                                <select id="adminPayMonth" onchange="renderPayments()" class="pay-filter-select">
+                                    <option value="all">All Months</option>
+                                    <option value="01">January</option>
+                                    <option value="02">February</option>
+                                    <option value="03">March</option>
+                                    <option value="04">April</option>
+                                    <option value="05">May</option>
+                                    <option value="06">June</option>
+                                    <option value="07">July</option>
+                                    <option value="08">August</option>
+                                    <option value="09">September</option>
+                                    <option value="10">October</option>
+                                    <option value="11">November</option>
+                                    <option value="12">December</option>
+                                </select>
+                                <select id="adminPayYear" onchange="renderPayments()" class="pay-filter-select">
+                                    <option value="all">All Years</option>
+                                    <option value="2026">2026</option>
+                                    <option value="2027">2027</option>
+                                </select>
+                            </div>
+                            <div class="pay-actions">
+                                <button class="pay-action-btn pay-action-export" onclick="exportStudentPayments()"
+                                    title="Export">📥 Export</button>
+                                <button class="pay-action-btn pay-action-payment" onclick="togglePaymentForm()">+
+                                    Payment</button>
+                                <button class="pay-action-btn pay-action-discount" onclick="toggleDiscountForm()">+
+                                    Discount</button>
+                                <button class="pay-action-btn pay-action-expense" onclick="toggleExpenseForm()">+
+                                    Expense</button>
+                                <span class="pay-refresh" onclick="refreshAdminPayments()" title="Refresh"
+                                    onmouseover="this.style.transform='scale(1.3)'"
+                                    onmouseout="this.style.transform='scale(1)'">🔄</span>
+                            </div>
                         </div>
+
                         <div class="add-form" id="addPaymentForm" style="display:none;">
                             <h4>Add Payment</h4>
                             <div class="form-row">
