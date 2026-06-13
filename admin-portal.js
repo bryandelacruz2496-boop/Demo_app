@@ -786,7 +786,7 @@ function renderPayments() {
         const isDiscount = p.amount < 0;
         const isExpense = p.description && p.description.startsWith('[Expense]');
         const displayDesc = isExpense ? p.description.replace('[Expense] ', '') : p.description;
-        const deleteBtn = adminRole === 'superadmin' ? `<button class="btn-status btn-delete-payment" onclick="deletePaymentRecord('${p._id}')" title="Delete record" style="background:#e53935;color:#fff;">Delete</button>` : '';
+        const deleteBtn = adminRole === 'superadmin' ? `<button class="btn-status btn-delete-payment" onclick="deletePaymentRecord('${p._id}')" title="Delete record" style="background:#e53935;color:#fff;min-width:60px;">Delete</button>` : '';
         return `
     <tr${isDiscount ? ' style="background:#e8f5e9;"' : isExpense ? ' style="background:#fff3e0;"' : ''}>
       <td>${p.date}</td>
@@ -795,10 +795,10 @@ function renderPayments() {
       <td><span class="status-${p.status}">${isDiscount ? '✓ Discount' : isExpense ? '📋 Expense' : (p.status === 'paid' ? '✓ Paid' : '⏳ Pending')}</span></td>
       <td>${p.paidDate || '-'}</td>
       <td style="white-space:nowrap;display:flex;align-items:center;gap:6px;">
-        ${isDiscount ? `<button class="btn-status btn-mark-pending" onclick="removeDiscount('${p._id}')">Remove</button>` :
+        ${isDiscount ? `<button class="btn-status btn-mark-pending" onclick="removeDiscount('${p._id}')" style="min-width:100px;">Remove</button>` :
                 (p.status === 'pending'
-                    ? `<button class="btn-status btn-mark-paid" onclick="updatePaymentStatus('${p._id}', 'paid')">Mark Paid</button>`
-                    : `<button class="btn-status btn-mark-pending" onclick="updatePaymentStatus('${p._id}', 'pending')">Mark Pending</button>`
+                    ? `<button class="btn-status btn-mark-paid" onclick="updatePaymentStatus('${p._id}', 'paid')" style="min-width:100px;">Mark Paid</button>`
+                    : `<button class="btn-status btn-mark-pending" onclick="updatePaymentStatus('${p._id}', 'pending')" style="min-width:100px;">Mark Pending</button>`
                 )
             }${deleteBtn}
       </td>
