@@ -772,7 +772,7 @@ function renderPayments() {
         const isDiscount = p.amount < 0;
         const isExpense = p.description && p.description.startsWith('[Expense]');
         const displayDesc = isExpense ? p.description.replace('[Expense] ', '') : p.description;
-        const deleteBtn = adminRole === 'superadmin' ? `<button class="btn-status btn-delete-payment" onclick="deletePaymentRecord('${p._id}')" title="Delete record" style="background:#e53935;color:#fff;margin-left:4px;">🗑️</button>` : '';
+        const deleteBtn = adminRole === 'superadmin' ? `<button class="btn-status btn-delete-payment" onclick="deletePaymentRecord('${p._id}')" title="Delete record" style="background:#e53935;color:#fff;margin-left:4px;">Delete</button>` : '';
         return `
     <tr${isDiscount ? ' style="background:#e8f5e9;"' : isExpense ? ' style="background:#fff3e0;"' : ''}>
       <td>${p.date}</td>
