@@ -735,7 +735,7 @@ h4 {
 
 /* Announcement preview (See More / Collapse) */
 .announcement-preview {
-    max-height: 100px;
+    max-height: 80px;
     overflow: hidden;
     position: relative;
 }

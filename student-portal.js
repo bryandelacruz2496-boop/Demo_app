@@ -496,7 +496,7 @@ async function loadStudentAnnouncements() {
     list.querySelectorAll('.announcement-body').forEach(el => {
       const id = el.id.replace('student-ann-body-', '');
       const btn = document.getElementById(`btn-student-see-more-${id}`);
-      if (btn && el.scrollHeight > 100) {
+      if (btn && el.scrollHeight > 80) {
         btn.style.display = 'inline-block';
       }
     });
