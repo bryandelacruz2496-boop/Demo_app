@@ -12,6 +12,50 @@ const { cloudinary, upload, uploadToCloudinary } = require('../config/cloudinary
 
 const router = express.Router();
 
+// Helper: Adjust only the LAST pending payment to absorb remaining balance difference.
+// All other pending payments keep their originalAmount (or current amount if no originalAmount).
+function adjustLastPendingPayment(student) {
+    const paidTotal = student.payments
+        .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
+        .reduce((sum, p) => sum + p.amount, 0);
+    const remainingBalance = (student.totalTuition || 0) - paidTotal;
+    const pendingPayments = student.payments.filter(p => p.status === 'pending');
+
+    if (pendingPayments.length === 0) return;
+
+    if (remainingBalance <= 0) {
+        // Everything is paid off - mark all pending as paid with 0
+        pendingPayments.forEach(p => {
+            p.amount = 0;
+            p.status = 'paid';
+            p.paidDate = p.paidDate || new Date().toISOString().split('T')[0];
+        });
+        return;
+    }
+
+    // Restore all pending payments to their original amounts (except the last one)
+    // Then adjust only the last pending payment to absorb the difference
+    let sumOfOtherPending = 0;
+    for (let i = 0; i < pendingPayments.length - 1; i++) {
+        const p = pendingPayments[i];
+        p.amount = p.originalAmount || p.amount;
+        sumOfOtherPending += p.amount;
+    }
+
+    const lastPending = pendingPayments[pendingPayments.length - 1];
+    const lastAmount = remainingBalance - sumOfOtherPending;
+
+    if (lastAmount > 0) {
+        lastPending.amount = lastAmount;
+    } else {
+        // If the other pending payments already cover/exceed the balance,
+        // set last to 0 and mark paid
+        lastPending.amount = 0;
+        lastPending.status = 'paid';
+        lastPending.paidDate = lastPending.paidDate || new Date().toISOString().split('T')[0];
+    }
+}
+
 // GET /api/admin/students - List all students (excludes archived by default)
 router.get('/students', authMiddleware, async (req, res) => {
     try {
@@ -204,30 +248,10 @@ router.post('/students/:id/payments', authMiddleware, async (req, res) => {
         const student = await Student.findById(req.params.id);
         if (!student) return res.status(404).json({ message: 'Student not found' });
 
-        student.payments.push({ date, description, amount, status, paidDate: status === 'paid' ? (date || new Date().toISOString().split('T')[0]) : null });
+        student.payments.push({ date, description, amount, originalAmount: amount, status, paidDate: status === 'paid' ? (date || new Date().toISOString().split('T')[0]) : null });
 
-        // Recalculate pending payment amounts to match remaining balance
-        const paidTotal = student.payments
-            .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
-            .reduce((sum, p) => sum + p.amount, 0);
-        const remainingBalance = (student.totalTuition || 0) - paidTotal;
-        const pendingPayments = student.payments.filter(p => p.status === 'pending' && p.amount > 0);
-
-        if (pendingPayments.length > 0 && remainingBalance > 0) {
-            const perPayment = Math.round(remainingBalance / pendingPayments.length);
-            const lastIndex = pendingPayments.length - 1;
-            let distributed = 0;
-            pendingPayments.forEach((p, i) => {
-                if (i === lastIndex) {
-                    p.amount = remainingBalance - distributed;
-                } else {
-                    p.amount = perPayment;
-                    distributed += perPayment;
-                }
-            });
-        } else if (pendingPayments.length > 0 && remainingBalance <= 0) {
-            pendingPayments.forEach(p => { p.amount = 0; p.status = 'paid'; p.paidDate = p.paidDate || new Date().toISOString().split('T')[0]; });
-        }
+        // Adjust last pending payment to absorb remaining balance
+        adjustLastPendingPayment(student);
 
         await student.save();
         logAction('ADD_PAYMENT', req.admin.username, `Added payment â‚±${amount} for ${student.fullName}`, student.studentNo, req.ip);
@@ -271,32 +295,13 @@ router.post('/students/:id/discount', authMiddleware, async (req, res) => {
             date: date || new Date().toISOString().split('T')[0],
             description: description || 'Discount',
             amount: -discountAmount,
+            originalAmount: -discountAmount,
             status: 'paid',
             paidDate: date || new Date().toISOString().split('T')[0]
         });
 
-        // Recalculate pending payment amounts to match new totalTuition
-        const paidTotal = student.payments
-            .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
-            .reduce((sum, p) => sum + p.amount, 0);
-        const remainingBalance = student.totalTuition - paidTotal;
-        const pendingPayments = student.payments.filter(p => p.status === 'pending' && p.amount > 0);
-
-        if (pendingPayments.length > 0 && remainingBalance > 0) {
-            const perPayment = Math.round(remainingBalance / pendingPayments.length);
-            const lastIndex = pendingPayments.length - 1;
-            let distributed = 0;
-            pendingPayments.forEach((p, i) => {
-                if (i === lastIndex) {
-                    p.amount = remainingBalance - distributed;
-                } else {
-                    p.amount = perPayment;
-                    distributed += perPayment;
-                }
-            });
-        } else if (pendingPayments.length > 0 && remainingBalance <= 0) {
-            pendingPayments.forEach(p => { p.amount = 0; p.status = 'paid'; p.paidDate = p.paidDate || new Date().toISOString().split('T')[0]; });
-        }
+        // Adjust last pending payment to absorb the discount
+        adjustLastPendingPayment(student);
 
         // Add notification
         if (!student.notifications) student.notifications = [];
@@ -345,32 +350,13 @@ router.post('/students-discount-bulk', authMiddleware, async (req, res) => {
                 date: date || new Date().toISOString().split('T')[0],
                 description: description || 'Discount',
                 amount: -discountAmount,
+                originalAmount: -discountAmount,
                 status: 'paid',
                 paidDate: date || new Date().toISOString().split('T')[0]
             });
 
-            // Recalculate pending payment amounts to match new totalTuition
-            const paidTotal = student.payments
-                .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
-                .reduce((sum, p) => sum + p.amount, 0);
-            const remainingBalance = student.totalTuition - paidTotal;
-            const pendingPayments = student.payments.filter(p => p.status === 'pending' && p.amount > 0);
-
-            if (pendingPayments.length > 0 && remainingBalance > 0) {
-                const perPayment = Math.round(remainingBalance / pendingPayments.length);
-                const lastIndex = pendingPayments.length - 1;
-                let distributed = 0;
-                pendingPayments.forEach((p, i) => {
-                    if (i === lastIndex) {
-                        p.amount = remainingBalance - distributed;
-                    } else {
-                        p.amount = perPayment;
-                        distributed += perPayment;
-                    }
-                });
-            } else if (pendingPayments.length > 0 && remainingBalance <= 0) {
-                pendingPayments.forEach(p => { p.amount = 0; p.status = 'paid'; p.paidDate = p.paidDate || new Date().toISOString().split('T')[0]; });
-            }
+            // Adjust last pending payment to absorb the discount
+            adjustLastPendingPayment(student);
 
             if (!student.notifications) student.notifications = [];
             student.notifications.push({
@@ -412,28 +398,8 @@ router.put('/students/:id/payments/:paymentId', authMiddleware, async (req, res)
         payment.status = status;
         payment.paidDate = status === 'paid' ? new Date().toISOString().split('T')[0] : null;
 
-        // Recalculate pending payment amounts to match remaining balance
-        const paidTotal = student.payments
-            .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
-            .reduce((sum, p) => sum + p.amount, 0);
-        const remainingBalance = (student.totalTuition || 0) - paidTotal;
-        const pendingPayments = student.payments.filter(p => p.status === 'pending' && p.amount > 0);
-
-        if (pendingPayments.length > 0 && remainingBalance > 0) {
-            const perPayment = Math.round(remainingBalance / pendingPayments.length);
-            const lastIndex = pendingPayments.length - 1;
-            let distributed = 0;
-            pendingPayments.forEach((p, i) => {
-                if (i === lastIndex) {
-                    p.amount = remainingBalance - distributed;
-                } else {
-                    p.amount = perPayment;
-                    distributed += perPayment;
-                }
-            });
-        } else if (pendingPayments.length > 0 && remainingBalance <= 0) {
-            pendingPayments.forEach(p => { p.amount = 0; p.status = 'paid'; p.paidDate = p.paidDate || new Date().toISOString().split('T')[0]; });
-        }
+        // Adjust last pending payment to absorb remaining balance (don't redistribute all)
+        adjustLastPendingPayment(student);
 
         // Add notification for student
         if (!student.notifications) student.notifications = [];
@@ -481,28 +447,8 @@ router.delete('/students/:id/payments/:paymentId/remove-discount', authMiddlewar
         // Remove the discount entry
         student.payments.pull({ _id: req.params.paymentId });
 
-        // Recalculate pending payment amounts
-        const paidTotal = student.payments
-            .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
-            .reduce((sum, p) => sum + p.amount, 0);
-        const remainingBalance = (student.totalTuition || 0) - paidTotal;
-        const pendingPayments = student.payments.filter(p => p.status === 'pending' && p.amount > 0);
-
-        if (pendingPayments.length > 0 && remainingBalance > 0) {
-            const perPayment = Math.round(remainingBalance / pendingPayments.length);
-            const lastIndex = pendingPayments.length - 1;
-            let distributed = 0;
-            pendingPayments.forEach((p, i) => {
-                if (i === lastIndex) {
-                    p.amount = remainingBalance - distributed;
-                } else {
-                    p.amount = perPayment;
-                    distributed += perPayment;
-                }
-            });
-        } else if (pendingPayments.length > 0 && remainingBalance <= 0) {
-            pendingPayments.forEach(p => { p.amount = 0; p.status = 'paid'; p.paidDate = p.paidDate || new Date().toISOString().split('T')[0]; });
-        }
+        // Adjust last pending payment to absorb the restored amount
+        adjustLastPendingPayment(student);
 
         await student.save();
         logAction('REMOVE_DISCOUNT', req.admin.username, `Removed discount â‚±${discountAmount} from ${student.fullName}`, student.studentNo, req.ip);
@@ -886,31 +832,7 @@ router.post('/students-recalculate', authMiddleware, async (req, res) => {
         let updatedCount = 0;
 
         for (const student of students) {
-            const paidTotal = student.payments
-                .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
-                .reduce((sum, p) => sum + p.amount, 0);
-
-            const remainingBalance = (student.totalTuition || 0) - paidTotal;
-            const pendingPayments = student.payments.filter(p => p.status === 'pending' && p.amount > 0);
-
-            if (pendingPayments.length === 0) continue;
-
-            if (remainingBalance > 0) {
-                const perPayment = Math.round(remainingBalance / pendingPayments.length);
-                const lastIndex = pendingPayments.length - 1;
-                let distributed = 0;
-                pendingPayments.forEach((p, i) => {
-                    if (i === lastIndex) {
-                        p.amount = remainingBalance - distributed;
-                    } else {
-                        p.amount = perPayment;
-                        distributed += perPayment;
-                    }
-                });
-            } else {
-                pendingPayments.forEach(p => { p.amount = 0; p.status = 'paid'; p.paidDate = p.paidDate || new Date().toISOString().split('T')[0]; });
-            }
-
+            adjustLastPendingPayment(student);
             await student.save();
             updatedCount++;
         }

@@ -816,13 +816,19 @@ function onDiscountTypeChange() {
     } else if (discType === 'siblings') {
         descInput.value = 'Siblings Discount (10%)';
         descInput.readOnly = true;
-        const tuition = selectedStudent ? selectedStudent.totalTuition || 0 : 0;
+        // Use original tuition from grade table, not the already-reduced totalTuition
+        const grade = selectedStudent ? selectedStudent.grade : '';
+        const gradeData = TUITION_DATA['old'] && TUITION_DATA['old'][grade] ? TUITION_DATA['old'][grade] : (TUITION_DATA['new'] && TUITION_DATA['new'][grade] ? TUITION_DATA['new'][grade] : null);
+        const tuition = gradeData ? gradeData.tuition : (selectedStudent ? selectedStudent.totalTuition || 0 : 0);
         amountInput.value = Math.round(tuition * 0.10);
         amountInput.readOnly = true;
     } else if (discType === 'early_bird') {
         descInput.value = 'Early Bird Discount (5%)';
         descInput.readOnly = true;
-        const tuition = selectedStudent ? selectedStudent.totalTuition || 0 : 0;
+        // Use original tuition from grade table, not the already-reduced totalTuition
+        const grade = selectedStudent ? selectedStudent.grade : '';
+        const gradeData = TUITION_DATA['old'] && TUITION_DATA['old'][grade] ? TUITION_DATA['old'][grade] : (TUITION_DATA['new'] && TUITION_DATA['new'][grade] ? TUITION_DATA['new'][grade] : null);
+        const tuition = gradeData ? gradeData.tuition : (selectedStudent ? selectedStudent.totalTuition || 0 : 0);
         amountInput.value = Math.round(tuition * 0.05);
         amountInput.readOnly = true;
     } else {

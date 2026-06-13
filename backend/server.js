@@ -166,7 +166,7 @@ const mongoOptions = {};
 mongoose.connect(process.env.MONGO_URI, mongoOptions)
   .then(async () => {
     console.log('MongoDB connected');
-    // Auto-recalculate pending payments on startup
+    // Auto-fix pending payments on startup (adjust last pending only)
     try {
       const Student = require('./models/Student');
       const students = await Student.find({ status: { $ne: 'archived' } });
@@ -176,27 +176,29 @@ mongoose.connect(process.env.MONGO_URI, mongoOptions)
           .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
           .reduce((sum, p) => sum + p.amount, 0);
         const remainingBalance = (student.totalTuition || 0) - paidTotal;
-        const pendingPayments = student.payments.filter(p => p.status === 'pending' && p.amount > 0);
+        const pendingPayments = student.payments.filter(p => p.status === 'pending');
         if (pendingPayments.length === 0) continue;
-        const currentTotal = pendingPayments.reduce((s, p) => s + p.amount, 0);
-        if (Math.abs(currentTotal - remainingBalance) < 1) continue; // already correct
-        if (remainingBalance > 0) {
-          const perPayment = Math.round(remainingBalance / pendingPayments.length);
-          const lastIndex = pendingPayments.length - 1;
-          let distributed = 0;
-          pendingPayments.forEach((p, i) => {
-            if (i === lastIndex) {
-              p.amount = remainingBalance - distributed;
-            } else {
-              p.amount = perPayment;
-              distributed += perPayment;
-            }
-          });
-        } else {
-          pendingPayments.forEach(p => { p.amount = 0; p.status = 'paid'; p.paidDate = p.paidDate || new Date().toISOString().split('T')[0]; });
+
+        // Check if last pending payment needs adjustment
+        let sumOfOtherPending = 0;
+        for (let i = 0; i < pendingPayments.length - 1; i++) {
+          const p = pendingPayments[i];
+          p.amount = p.originalAmount || p.amount;
+          sumOfOtherPending += p.amount;
         }
-        await student.save();
-        fixed++;
+        const lastPending = pendingPayments[pendingPayments.length - 1];
+        const expectedLast = remainingBalance - sumOfOtherPending;
+
+        if (remainingBalance <= 0) {
+          pendingPayments.forEach(p => { p.amount = 0; p.status = 'paid'; p.paidDate = p.paidDate || new Date().toISOString().split('T')[0]; });
+          await student.save();
+          fixed++;
+        } else if (Math.abs(lastPending.amount - expectedLast) >= 1) {
+          lastPending.amount = expectedLast > 0 ? expectedLast : 0;
+          if (expectedLast <= 0) { lastPending.status = 'paid'; lastPending.paidDate = lastPending.paidDate || new Date().toISOString().split('T')[0]; }
+          await student.save();
+          fixed++;
+        }
       }
       if (fixed > 0) console.log(`Auto-fixed pending payments for ${fixed} students`);
     } catch (e) {

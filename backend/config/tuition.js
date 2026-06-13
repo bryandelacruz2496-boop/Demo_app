@@ -69,6 +69,7 @@ function generatePayments(grade, paymentOption, enrolleeType) {
             date: '2026-06-01',
             description: `Full Payment (3% discount) - Tuition: ₱${discountedTuition.toLocaleString()} + Misc: ₱${miscTotal.toLocaleString()}`,
             amount: totalPayment,
+            originalAmount: totalPayment,
             status: 'pending'
         });
 
@@ -83,12 +84,14 @@ function generatePayments(grade, paymentOption, enrolleeType) {
             date: '2026-06-01',
             description: 'First Payment (Upon Enrollment)',
             amount: halfPayment,
+            originalAmount: halfPayment,
             status: 'pending'
         });
         payments.push({
             date: '2026-12-01',
             description: 'Second Payment (December 2026)',
             amount: halfPayment,
+            originalAmount: halfPayment,
             status: 'pending'
         });
 
@@ -114,6 +117,7 @@ function generatePayments(grade, paymentOption, enrolleeType) {
                 date: `2026-${months[i].month}-01`,
                 description: `Monthly Payment - ${months[i].name}`,
                 amount: monthlySchedule[i],
+                originalAmount: monthlySchedule[i],
                 status: 'pending'
             });
         }
