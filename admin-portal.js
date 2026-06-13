@@ -1839,7 +1839,7 @@ function startAdminSessionCheck() {
                 headers: { 'Authorization': `Bearer ${adminToken}` }
             });
             if (res.status === 401) {
-                // Token expired — attempt refresh
+                // Token invalid — attempt refresh
                 const refreshRes = await fetch(`${API_URL}/auth/refresh`, { method: 'POST', credentials: 'include' });
                 if (refreshRes.ok) {
                     const data = await refreshRes.json();
@@ -1849,11 +1849,14 @@ function startAdminSessionCheck() {
                         return; // Refreshed successfully
                     }
                 }
+                // Only logout if both token and refresh failed
                 alert('Your session has expired. Please log in again.');
                 adminLogout();
             }
-        } catch (e) { }
-    }, 30000);
+        } catch (e) {
+            // Network error — do NOT logout, just skip this check
+        }
+    }, 60000); // Check every 60 seconds instead of 30
 }
 
 // Reply notification check

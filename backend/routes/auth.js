@@ -12,7 +12,7 @@ const COOKIE_OPTIONS = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
-    maxAge: 15 * 60 * 1000 // 15 minutes for access token
+    maxAge: 365 * 24 * 60 * 60 * 1000 // 1 year
 };
 
 const REFRESH_COOKIE_OPTIONS = {
@@ -20,15 +20,14 @@ const REFRESH_COOKIE_OPTIONS = {
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
     path: '/api/auth/refresh',
-    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days for refresh token
+    maxAge: 365 * 24 * 60 * 60 * 1000 // 1 year
 };
 
 // Generate tokens
 function generateAccessToken(admin) {
     return jwt.sign(
         { id: admin._id, username: admin.username, role: admin.role, name: admin.name },
-        process.env.JWT_SECRET,
-        { expiresIn: '15m' }
+        process.env.JWT_SECRET
     );
 }
 
