@@ -866,6 +866,15 @@ function renderPayments() {
     if (dashPaid) dashPaid.textContent = '₱' + totalPaid.toLocaleString();
     if (dashPending) dashPending.textContent = '₱' + (totalPending > 0 ? totalPending : 0).toLocaleString();
 
+    // Update expenses box
+    const allExpenses = selectedStudent.payments.filter(p => p.description && p.description.startsWith('[Expense]'));
+    const totalExpenses = allExpenses.reduce((sum, p) => sum + p.amount, 0);
+    const pendingExpenses = allExpenses.filter(p => p.status === 'pending').reduce((sum, p) => sum + p.amount, 0);
+    const dashExpenses = document.getElementById('dashTotalExpenses');
+    const dashExpPending = document.getElementById('dashExpensesPending');
+    if (dashExpenses) dashExpenses.textContent = '₱' + totalExpenses.toLocaleString();
+    if (dashExpPending) dashExpPending.textContent = 'Pending: ₱' + pendingExpenses.toLocaleString();
+
     // Update current payment scheme dropdown
     const schemeSelect = document.getElementById('currentPayScheme');
     if (schemeSelect) {
