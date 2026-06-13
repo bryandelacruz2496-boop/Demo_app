@@ -1050,6 +1050,34 @@ h4 {
     margin-left: 4px;
 }
 
+/* Payment Type Badges */
+.pay-type-tuition,
+.pay-type-expense,
+.pay-type-discount {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.pay-type-tuition {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.pay-type-expense {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+.pay-type-discount {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
 .btn-mark-paid {
     background: #e8f5e9;
     color: #2e7d32;

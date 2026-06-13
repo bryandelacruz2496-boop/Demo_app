@@ -910,11 +910,14 @@ function renderPayments() {
         const isDiscount = p.amount < 0;
         const isExpense = p.description && p.description.startsWith('[Expense]');
         const displayDesc = isExpense ? p.description.replace('[Expense] ', '') : p.description;
+        const payType = isDiscount ? 'Discount' : isExpense ? 'Expense' : 'Tuition';
+        const typeClass = isDiscount ? 'pay-type-discount' : isExpense ? 'pay-type-expense' : 'pay-type-tuition';
         const deleteBtn = adminRole === 'superadmin' ? `<button class="btn-status btn-delete-payment" onclick="deletePaymentRecord('${p._id}')" title="Delete record" style="background:#e53935;color:#fff;min-width:60px;">Delete</button>` : '';
         return `
     <tr${isDiscount ? ' style="background:#e8f5e9;"' : isExpense ? ' style="background:#fff3e0;"' : ''}>
       <td>${p.date}</td>
-      <td>${displayDesc}${isExpense ? ' 📋' : ''}</td>
+      <td><span class="${typeClass}">${payType}</span></td>
+      <td>${displayDesc}</td>
       <td>${isDiscount ? '-₱' + Math.abs(p.amount).toLocaleString() : '₱' + p.amount.toLocaleString()}</td>
       <td><span class="status-${p.status}">${isDiscount ? '✓ Discount' : (p.status === 'paid' ? '✓ Paid' : '⏳ Pending')}</span></td>
       <td>${p.paidDate || '-'}</td>
@@ -931,7 +934,7 @@ function renderPayments() {
     }).join('');
 
     if (payments.length === 0) {
-        body.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;padding:2rem;">No payments found</td></tr>';
+        body.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#888;padding:2rem;">No payments found</td></tr>';
     }
 
     // Re-apply role restrictions after rendering payment table
