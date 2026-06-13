@@ -951,20 +951,30 @@ function onDiscountTypeChange() {
     } else if (discType === 'siblings') {
         descInput.value = 'Siblings Discount (10%)';
         descInput.readOnly = true;
-        // Use original tuition from grade table, not the already-reduced totalTuition
         const grade = selectedStudent ? selectedStudent.grade : '';
         const gradeData = TUITION_DATA['old'] && TUITION_DATA['old'][grade] ? TUITION_DATA['old'][grade] : (TUITION_DATA['new'] && TUITION_DATA['new'][grade] ? TUITION_DATA['new'][grade] : null);
-        const tuition = gradeData ? gradeData.tuition : (selectedStudent ? selectedStudent.totalTuition || 0 : 0);
-        amountInput.value = Math.round(tuition * 0.10);
+        const tuition = gradeData ? gradeData.tuition : 0;
+        // Calculate combined discount: sum existing discount percentages + this new one
+        const existingPct = getExistingDiscountPercent(selectedStudent);
+        const newPct = 10;
+        const combinedPct = existingPct + newPct;
+        const totalDiscountAmount = Math.round(tuition * (combinedPct / 100));
+        const alreadyDeducted = Math.round(tuition * (existingPct / 100));
+        amountInput.value = totalDiscountAmount - alreadyDeducted;
         amountInput.readOnly = true;
     } else if (discType === 'early_bird') {
         descInput.value = 'Early Bird Discount (5%)';
         descInput.readOnly = true;
-        // Use original tuition from grade table, not the already-reduced totalTuition
         const grade = selectedStudent ? selectedStudent.grade : '';
         const gradeData = TUITION_DATA['old'] && TUITION_DATA['old'][grade] ? TUITION_DATA['old'][grade] : (TUITION_DATA['new'] && TUITION_DATA['new'][grade] ? TUITION_DATA['new'][grade] : null);
-        const tuition = gradeData ? gradeData.tuition : (selectedStudent ? selectedStudent.totalTuition || 0 : 0);
-        amountInput.value = Math.round(tuition * 0.05);
+        const tuition = gradeData ? gradeData.tuition : 0;
+        // Calculate combined discount: sum existing discount percentages + this new one
+        const existingPct = getExistingDiscountPercent(selectedStudent);
+        const newPct = 5;
+        const combinedPct = existingPct + newPct;
+        const totalDiscountAmount = Math.round(tuition * (combinedPct / 100));
+        const alreadyDeducted = Math.round(tuition * (existingPct / 100));
+        amountInput.value = totalDiscountAmount - alreadyDeducted;
         amountInput.readOnly = true;
     } else {
         descInput.value = '';
@@ -972,6 +982,24 @@ function onDiscountTypeChange() {
         amountInput.value = '';
         amountInput.readOnly = false;
     }
+}
+
+// Helper: Calculate existing discount percentage already applied to a student
+function getExistingDiscountPercent(student) {
+    if (!student || !student.payments) return 0;
+    let totalPct = 0;
+    student.payments.forEach(p => {
+        if (p.amount < 0 && p.description) {
+            if (p.description.includes('10%') || p.description.toLowerCase().includes('siblings') || p.description.toLowerCase().includes('friends & family')) {
+                totalPct += 10;
+            } else if (p.description.includes('5%') || p.description.toLowerCase().includes('early bird')) {
+                totalPct += 5;
+            } else if (p.description.includes('30%') || p.description.toLowerCase().includes('employee')) {
+                totalPct += 30;
+            }
+        }
+    });
+    return totalPct;
 }
 
 function togglePaymentForm() {
