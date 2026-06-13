@@ -419,6 +419,58 @@ router.put('/students/:id/payments/:paymentId', authMiddleware, async (req, res)
     }
 });
 
+// DELETE /api/admin/students/:id/payments/:paymentId - Delete a payment record (superadmin only)
+router.delete('/students/:id/payments/:paymentId', authMiddleware, async (req, res) => {
+    try {
+        // Only superadmin can delete payment records
+        if (req.admin.role !== 'superadmin') {
+            return res.status(403).json({ message: 'Only Super Admin can delete payment records' });
+        }
+
+        const { password } = req.body;
+
+        // Verify admin password
+        if (!password) return res.status(400).json({ message: 'Password is required' });
+        const Admin = require('../models/Admin');
+        const admin = await Admin.findById(req.admin.id);
+        if (!admin) return res.status(404).json({ message: 'Admin not found' });
+        const isMatch = await admin.comparePassword(password);
+        if (!isMatch) return res.status(401).json({ message: 'Incorrect password' });
+
+        const student = await Student.findById(req.params.id);
+        if (!student) return res.status(404).json({ message: 'Student not found' });
+
+        const payment = student.payments.id(req.params.paymentId);
+        if (!payment) return res.status(404).json({ message: 'Payment not found' });
+
+        const isDiscount = payment.amount < 0;
+        const isExpense = payment.description && payment.description.startsWith('[Expense]');
+        const desc = payment.description;
+        const amt = payment.amount;
+
+        // If it's a discount, restore totalTuition
+        if (isDiscount) {
+            const discountAmount = Math.abs(payment.amount);
+            student.totalTuition = (student.totalTuition || 0) + discountAmount;
+        }
+
+        // Remove the payment entry
+        student.payments.pull({ _id: req.params.paymentId });
+
+        // If it was NOT an expense, recalculate the last pending payment
+        // (expenses don't affect tuition balance)
+        if (!isExpense) {
+            adjustLastPendingPayment(student);
+        }
+
+        await student.save();
+        logAction('DELETE_PAYMENT', req.admin.username, `Deleted payment record "${desc}" ₱${Math.abs(amt)} from ${student.fullName}`, student.studentNo, req.ip);
+        res.json({ message: 'Payment record deleted', payments: student.payments, totalTuition: student.totalTuition });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 // DELETE /api/admin/students/:id/payments/:paymentId/remove-discount - Remove a discount
 router.delete('/students/:id/payments/:paymentId/remove-discount', authMiddleware, async (req, res) => {
     try {

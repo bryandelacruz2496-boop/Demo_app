@@ -772,6 +772,7 @@ function renderPayments() {
         const isDiscount = p.amount < 0;
         const isExpense = p.description && p.description.startsWith('[Expense]');
         const displayDesc = isExpense ? p.description.replace('[Expense] ', '') : p.description;
+        const deleteBtn = adminRole === 'superadmin' ? `<button class="btn-status btn-delete-payment" onclick="deletePaymentRecord('${p._id}')" title="Delete record" style="background:#e53935;color:#fff;margin-left:4px;">🗑️</button>` : '';
         return `
     <tr${isDiscount ? ' style="background:#e8f5e9;"' : isExpense ? ' style="background:#fff3e0;"' : ''}>
       <td>${p.date}</td>
@@ -785,7 +786,7 @@ function renderPayments() {
                     ? `<button class="btn-status btn-mark-paid" onclick="updatePaymentStatus('${p._id}', 'paid')">Mark Paid</button>`
                     : `<button class="btn-status btn-mark-pending" onclick="updatePaymentStatus('${p._id}', 'pending')">Mark Pending</button>`
                 )
-            }
+            }${deleteBtn}
       </td>
     </tr>
     `;
@@ -1031,6 +1032,41 @@ async function updatePaymentStatus(paymentId, status) {
             } else {
                 const data = await res.json();
                 showToast(data.message || 'Error updating payment');
+            }
+        });
+    });
+}
+
+async function deletePaymentRecord(paymentId) {
+    const payment = selectedStudent.payments.find(p => p._id === paymentId);
+    const isExpense = payment && payment.description && payment.description.startsWith('[Expense]');
+    const isDiscount = payment && payment.amount < 0;
+    let msg = 'Are you sure you want to delete this payment record? This cannot be undone.';
+    if (isExpense) {
+        msg = 'Are you sure you want to delete this expense record? This will only remove the record (does not affect tuition balance).';
+    } else if (isDiscount) {
+        msg = 'Are you sure you want to delete this discount? The discount amount will be added back to the total tuition.';
+    } else if (payment && payment.status === 'paid') {
+        msg = 'Are you sure you want to delete this PAID payment record? The remaining balance will increase and the last pending payment will be adjusted.';
+    }
+
+    showConfirmPopup(msg, () => {
+        showPasswordPrompt(async (password) => {
+            const res = await fetch(`${API_URL}/admin/students/${selectedStudent._id}/payments/${paymentId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+                body: JSON.stringify({ password })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                selectedStudent.payments = data.payments;
+                if (data.totalTuition !== undefined) selectedStudent.totalTuition = data.totalTuition;
+                renderPayments();
+                showToast('Payment record deleted!');
+            } else {
+                const data = await res.json();
+                showToast(data.message || 'Error deleting payment record');
             }
         });
     });
