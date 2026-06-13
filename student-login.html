@@ -150,59 +150,66 @@
 
                     <!-- Payments Tab -->
                     <div class="dash-panel active" id="payments">
-                        <h3>Payment Records</h3>
-                        <div class="payment-summary">
-                            <div class="summary-item">
-                                <span class="summary-label">Total Tuition</span>
-                                <span class="summary-value" id="totalTuition"></span>
+                        <h3 style="color:#b71c1c;font-size:1.3rem;margin-bottom:1.2rem;">Payment Records</h3>
+
+                        <!-- Summary Cards -->
+                        <div class="student-pay-dashboard">
+                            <div class="student-pay-card student-pay-tuition">
+                                <span class="student-pay-label">Total Tuition</span>
+                                <span class="student-pay-value" id="totalTuition">₱0</span>
                             </div>
-                            <div class="summary-item">
-                                <span class="summary-label">Total Paid</span>
-                                <span class="summary-value paid" id="totalPaid"></span>
+                            <div class="student-pay-card student-pay-paid">
+                                <span class="student-pay-label">Total Paid</span>
+                                <span class="student-pay-value" id="totalPaid">₱0</span>
                             </div>
-                            <div class="summary-item">
-                                <span class="summary-label">Balance</span>
-                                <span class="summary-value balance" id="totalBalance"></span>
+                            <div class="student-pay-card student-pay-balance">
+                                <span class="student-pay-label">Balance</span>
+                                <span class="student-pay-value" id="totalBalance">₱0</span>
                             </div>
-                            <div class="summary-item">
-                                <span class="summary-label">Total Expenses</span>
-                                <span class="summary-value" id="totalExpenses" style="color:#880e4f;"></span>
-                                <span id="totalExpensesPending" style="font-size:0.7rem;color:#ad1457;"></span>
+                            <div class="student-pay-card student-pay-expense">
+                                <span class="student-pay-label">Total Expenses</span>
+                                <span class="student-pay-value" id="totalExpenses">₱0</span>
+                                <span class="student-pay-sub" id="totalExpensesPending"></span>
                             </div>
                         </div>
-                        <div class="sort-row">
-                            <label>Month:</label>
-                            <select id="studentPayMonth" onchange="renderStudentPayments()">
-                                <option value="all">All</option>
-                                <option value="01">January</option>
-                                <option value="02">February</option>
-                                <option value="03">March</option>
-                                <option value="04">April</option>
-                                <option value="05">May</option>
-                                <option value="06">June</option>
-                                <option value="07">July</option>
-                                <option value="08">August</option>
-                                <option value="09">September</option>
-                                <option value="10">October</option>
-                                <option value="11">November</option>
-                                <option value="12">December</option>
-                            </select>
-                            <label>Year:</label>
-                            <select id="studentPayYear" onchange="renderStudentPayments()">
-                                <option value="all">All</option>
-                                <option value="2026">2026</option>
-                                <option value="2027">2027</option>
-                            </select>
-                            <span onclick="refreshStudentPayments()" title="Refresh"
-                                style="margin-left:auto;cursor:pointer;font-size:1.4rem;display:inline-block;transition:transform 0.2s ease;"
+
+                        <!-- Filters -->
+                        <div class="student-pay-toolbar">
+                            <div class="student-pay-filters">
+                                <select id="studentPayMonth" onchange="renderStudentPayments()"
+                                    class="student-pay-select">
+                                    <option value="all">All Months</option>
+                                    <option value="01">January</option>
+                                    <option value="02">February</option>
+                                    <option value="03">March</option>
+                                    <option value="04">April</option>
+                                    <option value="05">May</option>
+                                    <option value="06">June</option>
+                                    <option value="07">July</option>
+                                    <option value="08">August</option>
+                                    <option value="09">September</option>
+                                    <option value="10">October</option>
+                                    <option value="11">November</option>
+                                    <option value="12">December</option>
+                                </select>
+                                <select id="studentPayYear" onchange="renderStudentPayments()"
+                                    class="student-pay-select">
+                                    <option value="all">All Years</option>
+                                    <option value="2026">2026</option>
+                                    <option value="2027">2027</option>
+                                </select>
+                            </div>
+                            <span class="student-pay-refresh" onclick="refreshStudentPayments()" title="Refresh"
                                 onmouseover="this.style.transform='scale(1.3)'"
                                 onmouseout="this.style.transform='scale(1)'">🔄</span>
                         </div>
+
                         <div class="table-wrapper">
                             <table class="data-table">
                                 <thead>
                                     <tr>
                                         <th>Date</th>
+                                        <th>Type</th>
                                         <th>Description</th>
                                         <th>Amount</th>
                                         <th>Status</th>

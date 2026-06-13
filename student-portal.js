@@ -366,19 +366,24 @@ function renderStudentPayments() {
 
   paymentBody.innerHTML = payments.map(p => {
     const isDiscount = p.amount < 0;
+    const isExpense = p.description && p.description.startsWith('[Expense]');
+    const displayDesc = isExpense ? p.description.replace('[Expense] ', '') : p.description;
+    const payType = isDiscount ? 'Discount' : isExpense ? 'Expense' : 'Tuition';
+    const typeClass = isDiscount ? 'student-type-discount' : isExpense ? 'student-type-expense' : 'student-type-tuition';
     return `
-    <tr${isDiscount ? ' style="background:#e8f5e9;"' : ''}>
+    <tr${isDiscount ? ' style="background:#f1f8e9;"' : isExpense ? ' style="background:#fff8e1;"' : ''}>
       <td>${p.date}</td>
-      <td>${p.description}${isDiscount ? ' 🏷️' : ''}</td>
+      <td><span class="${typeClass}">${payType}</span></td>
+      <td>${displayDesc}</td>
       <td>${isDiscount ? '-₱' + Math.abs(p.amount).toLocaleString() : '₱' + p.amount.toLocaleString()}</td>
-      <td><span class="${isDiscount ? 'status-paid' : 'status-' + p.status}">${isDiscount ? '✓ Discount Applied' : (p.status === 'paid' ? '✓ Paid' : '⏳ Pending')}</span></td>
+      <td><span class="${isDiscount ? 'status-paid' : 'status-' + p.status}">${isDiscount ? '✓ Applied' : (p.status === 'paid' ? '✓ Paid' : '⏳ Pending')}</span></td>
       <td>${p.paidDate ? p.paidDate : '-'}</td>
     </tr>
     `;
   }).join('');
 
   if (payments.length === 0) {
-    paymentBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#888;padding:2rem;">No payments found</td></tr>';
+    paymentBody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#888;padding:2rem;">No payments found</td></tr>';
   }
 }
 

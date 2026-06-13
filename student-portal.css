@@ -625,6 +625,147 @@ h4 {
     color: #b71c1c;
 }
 
+/* Student Payment Dashboard - Redesigned */
+.student-pay-dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.8rem;
+    margin-bottom: 1.2rem;
+}
+
+.student-pay-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    border-left: 4px solid #ccc;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.student-pay-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.student-pay-tuition {
+    border-left-color: #1565c0;
+}
+
+.student-pay-paid {
+    border-left-color: #2e7d32;
+}
+
+.student-pay-balance {
+    border-left-color: #b71c1c;
+}
+
+.student-pay-expense {
+    border-left-color: #880e4f;
+}
+
+.student-pay-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #666;
+    margin-bottom: 0.3rem;
+}
+
+.student-pay-value {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #333;
+}
+
+.student-pay-tuition .student-pay-value {
+    color: #1565c0;
+}
+
+.student-pay-paid .student-pay-value {
+    color: #2e7d32;
+}
+
+.student-pay-balance .student-pay-value {
+    color: #b71c1c;
+}
+
+.student-pay-expense .student-pay-value {
+    color: #880e4f;
+}
+
+.student-pay-sub {
+    display: block;
+    font-size: 0.7rem;
+    color: #999;
+    margin-top: 0.2rem;
+}
+
+/* Student Payment Toolbar */
+.student-pay-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.student-pay-filters {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.student-pay-select {
+    padding: 0.4rem 0.7rem;
+    border: 1.5px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    background: #fff;
+    color: #333;
+}
+
+.student-pay-select:focus {
+    border-color: #b71c1c;
+    outline: none;
+}
+
+.student-pay-refresh {
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+
+/* Student Payment Type Badges */
+.student-type-tuition,
+.student-type-expense,
+.student-type-discount {
+    display: inline-block;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.student-type-tuition {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.student-type-expense {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+.student-type-discount {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
 /* Data Table */
 .table-wrapper {
     width: 100%;
@@ -657,9 +798,14 @@ h4 {
 }
 
 .data-table td {
-    padding: 0.8rem 1rem;
+    padding: 0.7rem 1rem;
     border-bottom: 1px solid #f0f0f0;
     transition: background 0.2s;
+    font-size: 0.88rem;
+}
+
+.data-table tbody tr:nth-child(even) td {
+    background: #fafafa;
 }
 
 .data-table tr:hover td {
