@@ -216,6 +216,130 @@ mongoose.connect(process.env.MONGO_URI, mongoOptions)
       console.error('Auto-recalculate error:', e.message);
     }
 
+    // One-time migration: Set enrolleeType and recalculate tuition for students missing it
+    try {
+      const Student = require('./models/Student');
+      const { TUITION_TABLE, MONTHLY_SCHEDULES } = require('./config/tuition');
+      const studentsNoType = await Student.find({ enrolleeType: { $exists: false } });
+      const studentsNullType = await Student.find({ enrolleeType: null });
+      const toFix = [...studentsNoType, ...studentsNullType.filter(s => !studentsNoType.find(n => n._id.equals(s._id)))];
+
+      if (toFix.length > 0) {
+        let migrated = 0;
+        for (const student of toFix) {
+          const grade = student.grade;
+          if (!grade) continue;
+
+          const oldData = TUITION_TABLE['old'] && TUITION_TABLE['old'][grade];
+          const newData = TUITION_TABLE['new'] && TUITION_TABLE['new'][grade];
+          if (!oldData && !newData) continue;
+
+          // Infer enrolleeType from monthly payment amounts
+          let enrolleeType = 'old';
+          const monthlyPayments = student.payments.filter(p => p.description && p.description.startsWith('Monthly Payment'));
+          if (monthlyPayments.length > 0 && newData) {
+            const nonJune = monthlyPayments.find(p => (p.originalAmount || p.amount) !== 3000 && p.description && !p.description.includes('June'));
+            if (nonJune) {
+              const amt = nonJune.originalAmount || nonJune.amount;
+              const newSchedule = MONTHLY_SCHEDULES['new'] && MONTHLY_SCHEDULES['new'][grade];
+              if (newSchedule && Math.abs(amt - newSchedule[1]) < 10) {
+                enrolleeType = 'new';
+              }
+            }
+          }
+
+          student.enrolleeType = enrolleeType;
+
+          // Recalculate totalTuition
+          const gradeData = TUITION_TABLE[enrolleeType][grade];
+          if (!gradeData) continue;
+
+          const baseTuition = gradeData.tuition;
+          const misc = gradeData.miscTotal;
+          const paymentOption = student.paymentOption || 'monthly';
+
+          // Calculate discounts
+          let discountPct = 0, flatDiscounts = 0;
+          student.payments.forEach(p => {
+            if (p.amount < 0 && p.description) {
+              if (p.description.includes('10%') || p.description.toLowerCase().includes('siblings') || p.description.toLowerCase().includes('friends')) discountPct += 10;
+              else if (p.description.includes('5%') || p.description.toLowerCase().includes('early bird')) discountPct += 5;
+              else if (p.description.includes('30%') || p.description.toLowerCase().includes('employee')) discountPct += 30;
+              else flatDiscounts += Math.abs(p.amount);
+            }
+          });
+          const totalDiscounts = Math.round(baseTuition * (discountPct / 100)) + flatDiscounts;
+
+          let correctTotal;
+          if (paymentOption === 'full') {
+            correctTotal = baseTuition - Math.round(baseTuition * 0.03) + misc - totalDiscounts;
+          } else if (paymentOption === 'two_payments') {
+            correctTotal = baseTuition + Math.round(baseTuition * 0.05) + misc - totalDiscounts;
+          } else {
+            correctTotal = baseTuition + Math.round(baseTuition * 0.07) + misc - totalDiscounts;
+          }
+
+          const paidTotal = student.payments
+            .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
+            .reduce((sum, p) => sum + p.amount, 0);
+
+          student.totalTuition = correctTotal;
+
+          // Remove pending non-expense payments
+          student.payments = student.payments.filter(p => p.status === 'paid' || (p.description && p.description.startsWith('[Expense]')));
+
+          const remainingBalance = correctTotal - paidTotal;
+          if (remainingBalance > 0) {
+            if (paymentOption === 'full') {
+              student.payments.push({ date: '2026-06-01', description: 'Full Payment (3% discount)', amount: remainingBalance, originalAmount: remainingBalance, status: 'pending' });
+            } else if (paymentOption === 'two_payments') {
+              const half = Math.round(remainingBalance / 2);
+              student.payments.push({ date: '2026-06-01', description: 'First Payment (Upon Enrollment)', amount: half, originalAmount: half, status: 'pending' });
+              student.payments.push({ date: '2026-12-01', description: 'Second Payment (December 2026)', amount: remainingBalance - half, originalAmount: remainingBalance - half, status: 'pending' });
+            } else {
+              const months = ['06', '07', '08', '09', '10', '11', '12'];
+              const monthNames = ['June 2026', 'July 2026', 'August 2026', 'September 2026', 'October 2026', 'November 2026', 'December 2026'];
+              const schedules = MONTHLY_SCHEDULES[enrolleeType];
+              const schedule = schedules && schedules[grade];
+              if (schedule) {
+                // Determine start month based on paid amount
+                let startMonth = 0, covered = 0;
+                for (let i = 0; i < 7; i++) {
+                  if (covered + schedule[i] <= paidTotal + 1) { covered += schedule[i]; startMonth = i + 1; } else break;
+                }
+                if (startMonth >= 7) startMonth = 6;
+                for (let i = startMonth; i < 7; i++) {
+                  student.payments.push({ date: `2026-${months[i]}-01`, description: `Monthly Payment - ${monthNames[i]}`, amount: schedule[i], originalAmount: schedule[i], status: 'pending' });
+                }
+                // Adjust if total doesn't match
+                const pending = student.payments.filter(p => p.status === 'pending' && !p.description.startsWith('[Expense]'));
+                const pTotal = pending.reduce((s, p) => s + p.amount, 0);
+                if (Math.abs(pTotal - remainingBalance) > 1 && pending.length > 0) {
+                  const per = Math.floor(remainingBalance / pending.length);
+                  let dist = 0;
+                  pending.forEach((p, i) => { if (i === pending.length - 1) p.amount = remainingBalance - dist; else { p.amount = per; dist += per; } });
+                }
+              } else {
+                const per = Math.floor(remainingBalance / 7);
+                let dist = 0;
+                for (let i = 0; i < 7; i++) {
+                  const amt = i === 6 ? remainingBalance - dist : per;
+                  student.payments.push({ date: `2026-${months[i]}-01`, description: `Monthly Payment - ${monthNames[i]}`, amount: amt, originalAmount: amt, status: 'pending' });
+                  dist += amt;
+                }
+              }
+            }
+          }
+
+          await student.save();
+          migrated++;
+        }
+        if (migrated > 0) console.log(`Migrated enrolleeType for ${migrated} students`);
+      }
+    } catch (e) {
+      console.error('EnrolleeType migration error:', e.message);
+    }
+
     // Ensure at least one superadmin exists (upgrade first admin if none)
     try {
       const Admin = require('./models/Admin');
