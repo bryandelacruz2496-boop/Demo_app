@@ -379,6 +379,35 @@ function filterStudentPayments() {
   renderStudentPayments();
 }
 
+async function refreshStudentPayments() {
+  const token = localStorage.getItem('studentToken');
+  if (!token) return;
+  try {
+    const res = await fetch(`${API_URL}/student/refresh`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.student) {
+        currentStudent = data.student;
+        localStorage.setItem('studentData', JSON.stringify(data.student));
+        // Update summary
+        const totalTuition = currentStudent.totalTuition || 0;
+        const totalPaid = currentStudent.payments
+          .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
+          .reduce((sum, p) => sum + p.amount, 0);
+        const balance = totalTuition - totalPaid;
+        document.getElementById('totalTuition').textContent = '₱' + totalTuition.toLocaleString();
+        document.getElementById('totalPaid').textContent = '₱' + totalPaid.toLocaleString();
+        document.getElementById('totalBalance').textContent = '₱' + balance.toLocaleString();
+        renderStudentPayments();
+      }
+    }
+  } catch (e) {
+    console.error('Refresh error:', e);
+  }
+}
+
 
 // Load announcements for student
 async function loadStudentAnnouncements() {
