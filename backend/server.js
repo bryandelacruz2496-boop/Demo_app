@@ -74,7 +74,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-// Preserve password fields before mongo sanitization
+// Preserve password fields and rich HTML body before mongo sanitization
 app.use((req, res, next) => {
   if (req.body) {
     req._rawPasswords = {};
@@ -83,19 +83,27 @@ app.use((req, res, next) => {
         req._rawPasswords[field] = req.body[field];
       }
     });
+    // Preserve HTML body for announcements
+    if (req.body.body !== undefined) {
+      req._rawBody = req.body.body;
+    }
   }
   next();
 });
 
 app.use(mongoSanitize()); // Prevents NoSQL injection ($gt, $ne, etc.)
 
-// Restore password fields after mongo sanitization
+// Restore password fields and HTML body after mongo sanitization
 app.use((req, res, next) => {
   if (req._rawPasswords) {
     Object.keys(req._rawPasswords).forEach(field => {
       req.body[field] = req._rawPasswords[field];
     });
     delete req._rawPasswords;
+  }
+  if (req._rawBody !== undefined) {
+    req.body.body = req._rawBody;
+    delete req._rawBody;
   }
   next();
 });
