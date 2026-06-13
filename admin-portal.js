@@ -208,8 +208,12 @@ async function loadAnnouncements() {
     list.querySelectorAll('.announcement-body').forEach(el => {
         const id = el.id.replace('ann-body-', '');
         const btn = document.getElementById(`btn-see-more-${id}`);
-        if (el.scrollHeight > 120) {
-            btn.style.display = 'inline-block';
+        if (btn) {
+            const textLen = el.textContent.length;
+            const hasLists = el.querySelector('ul, ol, br');
+            if (textLen > 150 || hasLists || el.scrollHeight > 100) {
+                btn.style.display = 'inline-block';
+            }
         }
     });
 

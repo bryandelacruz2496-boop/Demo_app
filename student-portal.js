@@ -496,8 +496,13 @@ async function loadStudentAnnouncements() {
     list.querySelectorAll('.announcement-body').forEach(el => {
       const id = el.id.replace('student-ann-body-', '');
       const btn = document.getElementById(`btn-student-see-more-${id}`);
-      if (btn && el.scrollHeight > 80) {
-        btn.style.display = 'inline-block';
+      if (btn) {
+        // Show See More if content is long (text > 150 chars or has multiple lines/list items)
+        const textLen = el.textContent.length;
+        const hasLists = el.querySelector('ul, ol, br');
+        if (textLen > 150 || hasLists || el.scrollHeight > 80) {
+          btn.style.display = 'inline-block';
+        }
       }
     });
 
