@@ -14,12 +14,13 @@ const router = express.Router();
 
 // Helper: Redistribute remaining balance evenly across all pending payments.
 // This keeps amounts consistent and avoids dumping everything into the last payment.
+// EXCLUDES expenses — they are separate from tuition.
 function adjustPendingPayments(student) {
     const paidTotal = student.payments
         .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
         .reduce((sum, p) => sum + p.amount, 0);
     const remainingBalance = (student.totalTuition || 0) - paidTotal;
-    const pendingPayments = student.payments.filter(p => p.status === 'pending');
+    const pendingPayments = student.payments.filter(p => p.status === 'pending' && !p.description.startsWith('[Expense]'));
 
     if (pendingPayments.length === 0) return;
 
