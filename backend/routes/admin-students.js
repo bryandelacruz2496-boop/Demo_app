@@ -141,6 +141,7 @@ router.post('/students', authMiddleware, upload.single('profileImage'), async (r
             gender,
             profileImage: req.file ? (await uploadToCloudinary(req.file.buffer)).secure_url : null,
             totalTuition: finalTotal,
+            enrolleeType: enrolleeType || 'old',
             paymentOption: option,
             payments: discount === 'late_enrollment' ? [...payments, { date: new Date().toISOString().split('T')[0], description: 'Late Enrollment Fee', amount: 1000, status: 'pending' }] : payments,
             activities: [],
@@ -567,7 +568,8 @@ router.put('/students/:id/payment-scheme', authMiddleware, async (req, res) => {
 
         // Get grade tuition data
         const grade = student.grade;
-        const table = TUITION_TABLE['old'] && TUITION_TABLE['old'][grade] ? TUITION_TABLE['old'] : (TUITION_TABLE['new'] && TUITION_TABLE['new'][grade] ? TUITION_TABLE['new'] : null);
+        const type = student.enrolleeType || 'old';
+        const table = TUITION_TABLE[type];
         const gradeData = table ? table[grade] : null;
 
         if (!gradeData) {
@@ -607,8 +609,9 @@ router.put('/students/:id/payment-scheme', authMiddleware, async (req, res) => {
             const interest = Math.round(baseTuition * 0.05);
             newTotal = baseTuition + interest + misc - totalDiscounts;
         } else {
-            // monthly - uses 7% interest built into the schedule
-            newTotal = gradeData.grandTotal - totalDiscounts;
+            // monthly - 7% interest on tuition
+            const interest = Math.round(baseTuition * 0.07);
+            newTotal = baseTuition + interest + misc - totalDiscounts;
         }
 
         // Calculate what's already been paid (exclude discounts and expenses)

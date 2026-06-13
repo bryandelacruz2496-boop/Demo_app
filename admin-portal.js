@@ -991,7 +991,8 @@ function onDiscountTypeChange() {
         descInput.value = 'Siblings Discount (10%)';
         descInput.readOnly = true;
         const grade = selectedStudent ? selectedStudent.grade : '';
-        const gradeData = TUITION_DATA['old'] && TUITION_DATA['old'][grade] ? TUITION_DATA['old'][grade] : (TUITION_DATA['new'] && TUITION_DATA['new'][grade] ? TUITION_DATA['new'][grade] : null);
+        const type = selectedStudent ? (selectedStudent.enrolleeType || 'old') : 'old';
+        const gradeData = TUITION_DATA[type] && TUITION_DATA[type][grade] ? TUITION_DATA[type][grade] : (TUITION_DATA['old'] && TUITION_DATA['old'][grade] ? TUITION_DATA['old'][grade] : null);
         const tuition = gradeData ? gradeData.tuition : 0;
         // Calculate combined discount: sum existing discount percentages + this new one
         const existingPct = getExistingDiscountPercent(selectedStudent);
@@ -1005,7 +1006,8 @@ function onDiscountTypeChange() {
         descInput.value = 'Early Bird Discount (5%)';
         descInput.readOnly = true;
         const grade = selectedStudent ? selectedStudent.grade : '';
-        const gradeData = TUITION_DATA['old'] && TUITION_DATA['old'][grade] ? TUITION_DATA['old'][grade] : (TUITION_DATA['new'] && TUITION_DATA['new'][grade] ? TUITION_DATA['new'][grade] : null);
+        const type = selectedStudent ? (selectedStudent.enrolleeType || 'old') : 'old';
+        const gradeData = TUITION_DATA[type] && TUITION_DATA[type][grade] ? TUITION_DATA[type][grade] : (TUITION_DATA['old'] && TUITION_DATA['old'][grade] ? TUITION_DATA['old'][grade] : null);
         const tuition = gradeData ? gradeData.tuition : 0;
         // Calculate combined discount: sum existing discount percentages + this new one
         const existingPct = getExistingDiscountPercent(selectedStudent);

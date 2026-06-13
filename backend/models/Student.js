@@ -53,6 +53,7 @@ const studentSchema = new mongoose.Schema({
     gender: String,
     profileImage: { type: String, default: null },
     totalTuition: { type: Number, default: 0 },
+    enrolleeType: { type: String, enum: ['old', 'new'], default: 'old' },
     paymentOption: { type: String, enum: ['monthly', 'quarterly', 'full', 'two_payments'], default: 'monthly' },
     activeToken: { type: String, default: null },
     refreshToken: { type: String, default: null },
