@@ -792,7 +792,7 @@ function renderPayments() {
       <td>${p.date}</td>
       <td>${displayDesc}${isExpense ? ' 📋' : ''}</td>
       <td>${isDiscount ? '-₱' + Math.abs(p.amount).toLocaleString() : '₱' + p.amount.toLocaleString()}</td>
-      <td><span class="status-${p.status}">${isDiscount ? '✓ Discount' : isExpense ? '📋 Expense' : (p.status === 'paid' ? '✓ Paid' : '⏳ Pending')}</span></td>
+      <td><span class="status-${p.status}">${isDiscount ? '✓ Discount' : (p.status === 'paid' ? '✓ Paid' : '⏳ Pending')}</span></td>
       <td>${p.paidDate || '-'}</td>
       <td><div style="display:flex;align-items:center;gap:6px;white-space:nowrap;">
         ${isDiscount ? `<button class="btn-status btn-mark-pending" onclick="removeDiscount('${p._id}')" style="width:110px;text-align:center;">Remove</button>` :
