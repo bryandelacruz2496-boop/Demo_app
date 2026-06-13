@@ -181,6 +181,13 @@ function populateDashboard() {
   const balance = totalTuition - totalPaid;
   document.getElementById('totalBalance').textContent = '₱' + balance.toLocaleString();
 
+  // Expenses
+  const allExpenses = (currentStudent.payments || []).filter(p => p.description && p.description.startsWith('[Expense]'));
+  const totalExpenses = allExpenses.reduce((sum, p) => sum + p.amount, 0);
+  const pendingExpenses = allExpenses.filter(p => p.status === 'pending').reduce((sum, p) => sum + p.amount, 0);
+  document.getElementById('totalExpenses').textContent = '₱' + totalExpenses.toLocaleString();
+  document.getElementById('totalExpensesPending').textContent = pendingExpenses > 0 ? 'Pending: ₱' + pendingExpenses.toLocaleString() : '';
+
   renderStudentPayments();
   try { loadStudentAnnouncements(); } catch (e) { }
 
@@ -400,6 +407,12 @@ async function refreshStudentPayments() {
         document.getElementById('totalTuition').textContent = '₱' + totalTuition.toLocaleString();
         document.getElementById('totalPaid').textContent = '₱' + totalPaid.toLocaleString();
         document.getElementById('totalBalance').textContent = '₱' + balance.toLocaleString();
+        // Update expenses
+        const allExpenses = currentStudent.payments.filter(p => p.description && p.description.startsWith('[Expense]'));
+        const totalExpenses = allExpenses.reduce((sum, p) => sum + p.amount, 0);
+        const pendingExpenses = allExpenses.filter(p => p.status === 'pending').reduce((sum, p) => sum + p.amount, 0);
+        document.getElementById('totalExpenses').textContent = '₱' + totalExpenses.toLocaleString();
+        document.getElementById('totalExpensesPending').textContent = pendingExpenses > 0 ? 'Pending: ₱' + pendingExpenses.toLocaleString() : '';
         renderStudentPayments();
       }
     }
