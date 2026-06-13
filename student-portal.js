@@ -438,8 +438,8 @@ async function loadStudentAnnouncements() {
           <h4>${a.subject}</h4>
           <span style="background:#ffebee;color:#b71c1c;padding:0.2rem 0.8rem;border-radius:15px;font-size:0.8rem;font-weight:600;">${a.targetGrade === 'all' ? 'All Grades' : a.targetGrade}</span>
         </div>
-        <p style="margin-top:0.5rem;">${a.body}</p>
-        <span class="meta">${new Date(a.createdAt).toLocaleDateString()}</span>
+        <div class="announcement-body" style="margin-top:0.5rem;line-height:1.7;color:#444;">${a.body}</div>
+        <span class="meta">${new Date(a.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
         <div class="replies-section" style="margin-top:1rem;border-top:1px solid #eee;padding-top:0.8rem;">
           ${visibleReplies.map(r => `
             <div style="margin-bottom:0.6rem;padding:0.5rem 0.8rem;background:${r.role === 'admin' ? '#fff3e0' : '#e8f5e9'};border-radius:8px;">
@@ -469,6 +469,14 @@ async function loadStudentAnnouncements() {
         </div>
       </div>
     `}).join('');
+
+    // Ensure announcement bodies render HTML properly (fix for escaped entities)
+    list.querySelectorAll('.announcement-body').forEach(el => {
+      const text = el.textContent;
+      if (text.includes('<') && text.includes('>')) {
+        el.innerHTML = text;
+      }
+    });
 
     // Restore any text the student had typed before the DOM was rebuilt
     Object.entries(savedInputs).forEach(([id, value]) => {

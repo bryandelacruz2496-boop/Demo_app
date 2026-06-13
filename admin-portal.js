@@ -194,6 +194,14 @@ async function loadAnnouncements() {
         `}).join('')}
     `;
 
+    // Ensure announcement bodies render HTML properly (fix for escaped entities)
+    list.querySelectorAll('.announcement-body').forEach(el => {
+        const text = el.textContent;
+        if (text.includes('<') && text.includes('>')) {
+            el.innerHTML = text;
+        }
+    });
+
     // Restore any text the admin had typed before the DOM was rebuilt
     Object.entries(savedInputs).forEach(([id, value]) => {
         const input = document.getElementById(id);
