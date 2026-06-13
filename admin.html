@@ -849,6 +849,29 @@
                     <!-- Payments Panel -->
                     <div class="admin-panel" id="paymentsPanel">
                         <h3>Payment Records</h3>
+                        <div id="paymentDashboard" style="display:flex;gap:1rem;margin-bottom:1rem;flex-wrap:wrap;">
+                            <div
+                                style="flex:1;min-width:150px;background:#e3f2fd;border-radius:10px;padding:1rem;text-align:center;">
+                                <div style="font-size:0.8rem;color:#1565c0;font-weight:600;text-transform:uppercase;">
+                                    Total Tuition</div>
+                                <div id="dashTotalTuition"
+                                    style="font-size:1.4rem;font-weight:700;color:#0d47a1;margin-top:0.3rem;">₱0</div>
+                            </div>
+                            <div
+                                style="flex:1;min-width:150px;background:#e8f5e9;border-radius:10px;padding:1rem;text-align:center;">
+                                <div style="font-size:0.8rem;color:#2e7d32;font-weight:600;text-transform:uppercase;">
+                                    Total Paid</div>
+                                <div id="dashTotalPaid"
+                                    style="font-size:1.4rem;font-weight:700;color:#1b5e20;margin-top:0.3rem;">₱0</div>
+                            </div>
+                            <div
+                                style="flex:1;min-width:150px;background:#fff3e0;border-radius:10px;padding:1rem;text-align:center;">
+                                <div style="font-size:0.8rem;color:#e65100;font-weight:600;text-transform:uppercase;">
+                                    Total Pending</div>
+                                <div id="dashTotalPending"
+                                    style="font-size:1.4rem;font-weight:700;color:#bf360c;margin-top:0.3rem;">₱0</div>
+                            </div>
+                        </div>
                         <div class="sort-row">
                             <label>Month:</label>
                             <select id="adminPayMonth" onchange="renderPayments()">

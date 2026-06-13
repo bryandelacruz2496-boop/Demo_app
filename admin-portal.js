@@ -753,6 +753,20 @@ function renderPayments() {
     const year = document.getElementById('adminPayYear') ? document.getElementById('adminPayYear').value : 'all';
     const body = document.getElementById('paymentsBody');
 
+    // Update payment dashboard boxes
+    const totalTuition = selectedStudent.totalTuition || 0;
+    const totalPaid = selectedStudent.payments
+        .filter(p => p.status === 'paid' && p.amount > 0 && !p.description.startsWith('[Expense]'))
+        .reduce((sum, p) => sum + p.amount, 0);
+    const totalPending = totalTuition - totalPaid;
+
+    const dashTuition = document.getElementById('dashTotalTuition');
+    const dashPaid = document.getElementById('dashTotalPaid');
+    const dashPending = document.getElementById('dashTotalPending');
+    if (dashTuition) dashTuition.textContent = '₱' + totalTuition.toLocaleString();
+    if (dashPaid) dashPaid.textContent = '₱' + totalPaid.toLocaleString();
+    if (dashPending) dashPending.textContent = '₱' + (totalPending > 0 ? totalPending : 0).toLocaleString();
+
     let payments = [...selectedStudent.payments];
 
     // Filter by month
