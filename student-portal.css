@@ -733,6 +733,35 @@ h4 {
     color: #555;
 }
 
+/* Announcement preview (See More / Collapse) */
+.announcement-preview {
+    max-height: 100px;
+    overflow: hidden;
+    position: relative;
+}
+
+.announcement-preview::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(transparent, #fafafa);
+    pointer-events: none;
+}
+
+.announcement-body ul,
+.announcement-body ol {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+}
+
+.announcement-body a {
+    color: #b71c1c;
+    text-decoration: underline;
+}
+
 .grade-badge {
     display: inline-block;
     background: linear-gradient(135deg, #b71c1c, #e53935);

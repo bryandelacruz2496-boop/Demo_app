@@ -1603,6 +1603,84 @@ h4 {
     font-style: italic;
 }
 
+/* Announcement preview (See More / Collapse) */
+.announcement-preview {
+    max-height: 100px;
+    overflow: hidden;
+    position: relative;
+}
+
+.announcement-preview::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(transparent, #fff);
+    pointer-events: none;
+}
+
+.btn-see-more {
+    background: none;
+    border: none;
+    color: #3f51b5;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 0.3rem 0;
+    margin-top: 0.2rem;
+}
+
+.btn-see-more:hover {
+    text-decoration: underline;
+}
+
+/* Announcement action buttons (edit, delete) */
+.btn-ann-action {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+}
+
+.btn-ann-action:hover {
+    background: #f0f0f0;
+}
+
+.btn-ann-delete:hover {
+    background: #ffebee;
+}
+
+/* Edit mode */
+.announcement-body.editing {
+    border: 2px solid #3f51b5;
+    border-radius: 8px;
+    padding: 1rem;
+    min-height: 100px;
+    outline: none;
+    max-height: none;
+}
+
+.announcement-body.editing::after {
+    display: none;
+}
+
+.edit-toolbar {
+    margin-bottom: 0;
+    border-radius: 8px 8px 0 0;
+    border-bottom: none;
+}
+
+.edit-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 0.8rem;
+}
+
 /* Rich Text Editor */
 .rich-toolbar {
     display: flex;

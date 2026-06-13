@@ -158,10 +158,12 @@ async function loadAnnouncements() {
                     <h4>${a.subject}</h4>
                     <div style="display:flex;align-items:center;gap:8px;">
                         <span class="announcement-badge">${a.targetGrade === 'all' ? 'All Grades' : a.targetGrade}</span>
-                        <button class="btn-remove-subject" onclick="deleteAnnouncement('${a._id}')" title="Delete">🗑️</button>
+                        <button class="btn-ann-action" onclick="editAnnouncement('${a._id}')" title="Edit">✏️</button>
+                        <button class="btn-ann-action btn-ann-delete" onclick="deleteAnnouncement('${a._id}')" title="Delete">🗑️</button>
                     </div>
                 </div>
-                <div class="announcement-body">${a.body}</div>
+                <div class="announcement-body announcement-preview" id="ann-body-${a._id}">${a.body}</div>
+                <button class="btn-see-more" id="btn-see-more-${a._id}" onclick="toggleAnnouncementBody('${a._id}')" style="display:none;">See More</button>
                 <span class="announcement-date">Posted ${new Date(a.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                 <div class="replies-section">
                     ${visibleReplies.map(r => `
@@ -202,6 +204,15 @@ async function loadAnnouncements() {
         }
     });
 
+    // Apply See More / Collapse for long announcements
+    list.querySelectorAll('.announcement-body').forEach(el => {
+        const id = el.id.replace('ann-body-', '');
+        const btn = document.getElementById(`btn-see-more-${id}`);
+        if (el.scrollHeight > 120) {
+            btn.style.display = 'inline-block';
+        }
+    });
+
     // Restore any text the admin had typed before the DOM was rebuilt
     Object.entries(savedInputs).forEach(([id, value]) => {
         const input = document.getElementById(id);
@@ -210,6 +221,18 @@ async function loadAnnouncements() {
             input.focus();
         }
     });
+}
+
+function toggleAnnouncementBody(id) {
+    const body = document.getElementById(`ann-body-${id}`);
+    const btn = document.getElementById(`btn-see-more-${id}`);
+    if (body.classList.contains('announcement-preview')) {
+        body.classList.remove('announcement-preview');
+        btn.textContent = 'Collapse';
+    } else {
+        body.classList.add('announcement-preview');
+        btn.textContent = 'See More';
+    }
 }
 
 function showAnnouncementForm() {
@@ -302,6 +325,71 @@ async function deleteAnnouncement(id) {
             loadAnnouncements();
         }
     });
+}
+
+function editAnnouncement(id) {
+    const bodyEl = document.getElementById(`ann-body-${id}`);
+    if (!bodyEl) return;
+
+    // Check if already in edit mode
+    if (bodyEl.getAttribute('contenteditable') === 'true') return;
+
+    // Expand if collapsed
+    bodyEl.classList.remove('announcement-preview');
+    const seeMoreBtn = document.getElementById(`btn-see-more-${id}`);
+    if (seeMoreBtn) seeMoreBtn.style.display = 'none';
+
+    // Make editable
+    bodyEl.setAttribute('contenteditable', 'true');
+    bodyEl.classList.add('editing');
+    bodyEl.focus();
+
+    // Add edit toolbar and save/cancel buttons
+    const toolbar = document.createElement('div');
+    toolbar.className = 'rich-toolbar edit-toolbar';
+    toolbar.id = `edit-toolbar-${id}`;
+    toolbar.innerHTML = `
+        <button type="button" onclick="document.execCommand('bold')" title="Bold"><b>B</b></button>
+        <button type="button" onclick="document.execCommand('italic')" title="Italic"><i>I</i></button>
+        <button type="button" onclick="document.execCommand('underline')" title="Underline"><u>U</u></button>
+        <span class="toolbar-divider"></span>
+        <button type="button" onclick="document.execCommand('insertUnorderedList')" title="Bullet List">• List</button>
+        <button type="button" onclick="document.execCommand('insertOrderedList')" title="Numbered List">1. List</button>
+        <span class="toolbar-divider"></span>
+        <button type="button" onclick="var u=prompt('Enter URL:','https://');if(u)document.execCommand('createLink',false,u);" title="Insert Link">🔗 Link</button>
+    `;
+    bodyEl.parentNode.insertBefore(toolbar, bodyEl);
+
+    const actions = document.createElement('div');
+    actions.className = 'edit-actions';
+    actions.id = `edit-actions-${id}`;
+    actions.innerHTML = `
+        <button class="btn-save" onclick="saveAnnouncementEdit('${id}')">Save</button>
+        <button class="btn-cancel" onclick="cancelAnnouncementEdit('${id}')">Cancel</button>
+    `;
+    bodyEl.parentNode.insertBefore(actions, bodyEl.nextSibling);
+}
+
+async function saveAnnouncementEdit(id) {
+    const bodyEl = document.getElementById(`ann-body-${id}`);
+    const newBody = bodyEl.innerHTML.trim();
+
+    const res = await fetch(`${API_URL}/announcements/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
+        body: JSON.stringify({ body: newBody })
+    });
+
+    if (res.ok) {
+        showSuccessToast('Announcement updated!');
+        loadAnnouncements();
+    } else {
+        showToast('Error updating announcement');
+    }
+}
+
+function cancelAnnouncementEdit(id) {
+    loadAnnouncements();
 }
 
 function handleAdminReplyKey(e, id) {

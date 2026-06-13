@@ -438,7 +438,8 @@ async function loadStudentAnnouncements() {
           <h4>${a.subject}</h4>
           <span style="background:#ffebee;color:#b71c1c;padding:0.2rem 0.8rem;border-radius:15px;font-size:0.8rem;font-weight:600;">${a.targetGrade === 'all' ? 'All Grades' : a.targetGrade}</span>
         </div>
-        <div class="announcement-body" style="margin-top:0.5rem;line-height:1.7;color:#444;">${a.body}</div>
+        <div class="announcement-body announcement-preview" id="student-ann-body-${a._id}" style="margin-top:0.5rem;line-height:1.7;color:#444;">${a.body}</div>
+        <button class="btn-see-more" id="btn-student-see-more-${a._id}" onclick="toggleStudentAnnouncementBody('${a._id}')" style="display:none;background:none;border:none;color:#b71c1c;font-weight:600;font-size:0.85rem;cursor:pointer;padding:0.3rem 0;">See More</button>
         <span class="meta">${new Date(a.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
         <div class="replies-section" style="margin-top:1rem;border-top:1px solid #eee;padding-top:0.8rem;">
           ${visibleReplies.map(r => `
@@ -478,6 +479,15 @@ async function loadStudentAnnouncements() {
       }
     });
 
+    // Apply See More / Collapse for long announcements
+    list.querySelectorAll('.announcement-body').forEach(el => {
+      const id = el.id.replace('student-ann-body-', '');
+      const btn = document.getElementById(`btn-student-see-more-${id}`);
+      if (btn && el.scrollHeight > 100) {
+        btn.style.display = 'inline-block';
+      }
+    });
+
     // Restore any text the student had typed before the DOM was rebuilt
     Object.entries(savedInputs).forEach(([id, value]) => {
       const input = document.getElementById(id);
@@ -486,6 +496,18 @@ async function loadStudentAnnouncements() {
         input.focus();
       }
     });
+  }
+}
+
+function toggleStudentAnnouncementBody(id) {
+  const body = document.getElementById(`student-ann-body-${id}`);
+  const btn = document.getElementById(`btn-student-see-more-${id}`);
+  if (body.classList.contains('announcement-preview')) {
+    body.classList.remove('announcement-preview');
+    btn.textContent = 'Collapse';
+  } else {
+    body.classList.add('announcement-preview');
+    btn.textContent = 'See More';
   }
 }
 

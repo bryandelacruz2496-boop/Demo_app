@@ -54,6 +54,24 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     }
 });
 
+// PUT /api/announcements/:id - Update announcement (admin only)
+router.put('/:id', authMiddleware, async (req, res) => {
+    try {
+        const { subject, body, targetGrade } = req.body;
+        const announcement = await Announcement.findById(req.params.id);
+        if (!announcement) return res.status(404).json({ message: 'Announcement not found' });
+
+        if (subject !== undefined) announcement.subject = subject;
+        if (body !== undefined) announcement.body = body;
+        if (targetGrade !== undefined) announcement.targetGrade = targetGrade;
+
+        await announcement.save();
+        res.json({ message: 'Announcement updated', announcement });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 // POST /api/announcements/:id/replies - Add reply (admin)
 router.post('/:id/replies', authMiddleware, async (req, res) => {
     try {
