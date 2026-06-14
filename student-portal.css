@@ -798,8 +798,8 @@ h4 {
 }
 
 .data-table td {
-    padding: 0.7rem 1rem;
-    border-bottom: 2px solid #e0e0e0;
+    padding: 0.9rem 1rem;
+    border-bottom: 3px solid #bdbdbd;
     transition: background 0.2s;
     font-size: 0.88rem;
 }
