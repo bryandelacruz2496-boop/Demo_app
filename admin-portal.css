@@ -745,7 +745,7 @@ h4 {
 
 .admin-table td {
     padding: 0.7rem 1rem;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 2px solid #e0e0e0;
     transition: background 0.2s;
     font-size: 0.88rem;
 }
