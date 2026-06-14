@@ -27,7 +27,8 @@ const REFRESH_COOKIE_OPTIONS = {
 function generateAccessToken(admin) {
     return jwt.sign(
         { id: admin._id, username: admin.username, role: admin.role, name: admin.name },
-        process.env.JWT_SECRET
+        process.env.JWT_SECRET,
+        { expiresIn: '24h' }
     );
 }
 
