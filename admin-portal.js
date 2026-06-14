@@ -494,16 +494,18 @@ function calculateCollection() {
         } else {
             // Show subtotal for filtered view
             const filteredTotal = filtered.reduce((sum, r) => sum + r.amount, 0);
-            tbody.innerHTML = filtered.map(r => `
+            tbody.innerHTML = filtered.map(r => {
+                const tdBg = r.status === 'paid' ? ' style="background:#e8f5e9;"' : '';
+                return `
                 <tr${r.status === 'paid' ? ' class="row-paid"' : ''}>
-                    <td>${r.name}</td>
-                    <td>${r.grade}</td>
-                    <td>${r.description}</td>
-                    <td>₱${r.amount.toLocaleString()}</td>
-                    <td><span class="status-${r.status}">${r.status === 'paid' ? '✓ Paid' : '⏳ Pending'}</span></td>
-                    <td>${r.paidDate}</td>
-                </tr>
-            `).join('') + `
+                    <td${tdBg}>${r.name}</td>
+                    <td${tdBg}>${r.grade}</td>
+                    <td${tdBg}>${r.description}</td>
+                    <td${tdBg}>₱${r.amount.toLocaleString()}</td>
+                    <td${tdBg}><span class="status-${r.status}">${r.status === 'paid' ? '✓ Paid' : '⏳ Pending'}</span></td>
+                    <td${tdBg}>${r.paidDate}</td>
+                </tr>`;
+            }).join('') + `
                 <tr style="font-weight:700;background:#f5f5f5;">
                     <td colspan="3">Total (${filtered.length} records)</td>
                     <td>₱${filteredTotal.toLocaleString()}</td>
@@ -914,15 +916,16 @@ function renderPayments() {
         const typeClass = isDiscount ? 'pay-type-discount' : isExpense ? 'pay-type-expense' : 'pay-type-tuition';
         const deleteBtn = adminRole === 'superadmin' ? `<button class="btn-status btn-delete-payment" onclick="deletePaymentRecord('${p._id}')" title="Delete record" style="background:#e53935;color:#fff;min-width:60px;">Delete</button>` : '';
         const rowBg = isDiscount ? ' class="row-paid"' : (p.status === 'paid' ? ' class="row-paid"' : (isExpense ? ' class="row-expense"' : ''));
+        const tdStyle = (isDiscount || p.status === 'paid') ? ' style="background:#e8f5e9;"' : (isExpense && p.status !== 'paid' ? ' style="background:#fff3e0;"' : '');
         return `
     <tr${rowBg}>
-      <td>${p.date}</td>
-      <td><span class="${typeClass}">${payType}</span></td>
-      <td>${displayDesc}</td>
-      <td>${isDiscount ? '-₱' + Math.abs(p.amount).toLocaleString() : '₱' + p.amount.toLocaleString()}</td>
-      <td><span class="status-${p.status}">${isDiscount ? '✓ Discount' : (p.status === 'paid' ? '✓ Paid' : '⏳ Pending')}</span></td>
-      <td>${p.paidDate || '-'}</td>
-      <td><div style="display:flex;align-items:center;gap:6px;white-space:nowrap;">
+      <td${tdStyle}>${p.date}</td>
+      <td${tdStyle}><span class="${typeClass}">${payType}</span></td>
+      <td${tdStyle}>${displayDesc}</td>
+      <td${tdStyle}>${isDiscount ? '-₱' + Math.abs(p.amount).toLocaleString() : '₱' + p.amount.toLocaleString()}</td>
+      <td${tdStyle}><span class="status-${p.status}">${isDiscount ? '✓ Discount' : (p.status === 'paid' ? '✓ Paid' : '⏳ Pending')}</span></td>
+      <td${tdStyle}>${p.paidDate || '-'}</td>
+      <td${tdStyle}><div style="display:flex;align-items:center;gap:6px;white-space:nowrap;">
         ${isDiscount ? `<button class="btn-status btn-mark-pending" onclick="removeDiscount('${p._id}')" style="width:110px;text-align:center;">Remove</button>` :
                 (p.status === 'pending'
                     ? `<button class="btn-status btn-mark-paid" onclick="updatePaymentStatus('${p._id}', 'paid')" style="width:110px;text-align:center;">Mark Paid</button>`

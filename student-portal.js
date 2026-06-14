@@ -371,14 +371,15 @@ function renderStudentPayments() {
     const payType = isDiscount ? 'Discount' : isExpense ? 'Expense' : 'Tuition';
     const typeClass = isDiscount ? 'student-type-discount' : isExpense ? 'student-type-expense' : 'student-type-tuition';
     const rowBg = isDiscount ? ' class="row-paid"' : (p.status === 'paid' ? ' class="row-paid"' : (isExpense ? ' class="row-expense"' : ''));
+    const tdStyle = (isDiscount || p.status === 'paid') ? ' style="background:#e8f5e9;"' : (isExpense && p.status !== 'paid' ? ' style="background:#fff8e1;"' : '');
     return `
     <tr${rowBg}>
-      <td>${p.date}</td>
-      <td><span class="${typeClass}">${payType}</span></td>
-      <td>${displayDesc}</td>
-      <td>${isDiscount ? '-₱' + Math.abs(p.amount).toLocaleString() : '₱' + p.amount.toLocaleString()}</td>
-      <td><span class="${isDiscount ? 'status-paid' : 'status-' + p.status}">${isDiscount ? '✓ Applied' : (p.status === 'paid' ? '✓ Paid' : '⏳ Pending')}</span></td>
-      <td>${p.paidDate ? p.paidDate : '-'}</td>
+      <td${tdStyle}>${p.date}</td>
+      <td${tdStyle}><span class="${typeClass}">${payType}</span></td>
+      <td${tdStyle}>${displayDesc}</td>
+      <td${tdStyle}>${isDiscount ? '-₱' + Math.abs(p.amount).toLocaleString() : '₱' + p.amount.toLocaleString()}</td>
+      <td${tdStyle}><span class="${isDiscount ? 'status-paid' : 'status-' + p.status}">${isDiscount ? '✓ Applied' : (p.status === 'paid' ? '✓ Paid' : '⏳ Pending')}</span></td>
+      <td${tdStyle}>${p.paidDate ? p.paidDate : '-'}</td>
     </tr>
     `;
   }).join('');
