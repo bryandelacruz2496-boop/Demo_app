@@ -1633,7 +1633,11 @@ h4 {
 
 /* Attendance row color coding */
 .data-table tr:has(.status-paid) {
-    background: rgba(46, 125, 50, 0.03);
+    background: #e8f5e9 !important;
+}
+
+.data-table tr:has(.status-pending) {
+    background: transparent;
 }
 
 /* QR code section polish */

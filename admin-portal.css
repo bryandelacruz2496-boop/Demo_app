@@ -793,6 +793,11 @@ h4 {
     font-weight: 600;
 }
 
+/* Highlight fully paid rows with light green background */
+.data-table tr:has(.status-paid) {
+    background: #e8f5e9 !important;
+}
+
 .btn-status {
     padding: 0.3rem 0.8rem;
     border: none;
