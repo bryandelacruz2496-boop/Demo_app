@@ -370,7 +370,7 @@ function renderStudentPayments() {
     const displayDesc = isExpense ? p.description.replace('[Expense] ', '') : p.description;
     const payType = isDiscount ? 'Discount' : isExpense ? 'Expense' : 'Tuition';
     const typeClass = isDiscount ? 'student-type-discount' : isExpense ? 'student-type-expense' : 'student-type-tuition';
-    const rowBg = isDiscount ? ' style="background:#f1f8e9;"' : isExpense ? ' style="background:#fff8e1;"' : (p.status === 'paid' ? ' style="background:#e8f5e9;"' : '');
+    const rowBg = isDiscount ? ' class="row-paid"' : (p.status === 'paid' ? ' class="row-paid"' : (isExpense ? ' class="row-expense"' : ''));
     return `
     <tr${rowBg}>
       <td>${p.date}</td>

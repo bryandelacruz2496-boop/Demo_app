@@ -495,7 +495,7 @@ function calculateCollection() {
             // Show subtotal for filtered view
             const filteredTotal = filtered.reduce((sum, r) => sum + r.amount, 0);
             tbody.innerHTML = filtered.map(r => `
-                <tr${r.status === 'paid' ? ' style="background:#e8f5e9;"' : ''}>
+                <tr${r.status === 'paid' ? ' class="row-paid"' : ''}>
                     <td>${r.name}</td>
                     <td>${r.grade}</td>
                     <td>${r.description}</td>
@@ -913,7 +913,7 @@ function renderPayments() {
         const payType = isDiscount ? 'Discount' : isExpense ? 'Expense' : 'Tuition';
         const typeClass = isDiscount ? 'pay-type-discount' : isExpense ? 'pay-type-expense' : 'pay-type-tuition';
         const deleteBtn = adminRole === 'superadmin' ? `<button class="btn-status btn-delete-payment" onclick="deletePaymentRecord('${p._id}')" title="Delete record" style="background:#e53935;color:#fff;min-width:60px;">Delete</button>` : '';
-        const rowBg = isDiscount ? ' style="background:#e8f5e9;"' : isExpense ? ' style="background:#fff3e0;"' : (p.status === 'paid' ? ' style="background:#e8f5e9;"' : '');
+        const rowBg = isDiscount ? ' class="row-paid"' : (p.status === 'paid' ? ' class="row-paid"' : (isExpense ? ' class="row-expense"' : ''));
         return `
     <tr${rowBg}>
       <td>${p.date}</td>

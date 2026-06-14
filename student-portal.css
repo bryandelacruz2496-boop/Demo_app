@@ -1632,8 +1632,18 @@ h4 {
 }
 
 /* Attendance row color coding */
-.data-table tr:has(.status-paid) {
+.data-table tr:has(.status-paid) td,
+.data-table tr.row-paid td {
     background: #e8f5e9 !important;
+}
+
+.data-table tr:has(.status-paid):hover td,
+.data-table tr.row-paid:hover td {
+    background: #c8e6c9 !important;
+}
+
+.data-table tr.row-expense td {
+    background: #fff8e1 !important;
 }
 
 .data-table tr:has(.status-pending) {
