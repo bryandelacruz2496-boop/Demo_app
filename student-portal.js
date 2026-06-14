@@ -80,62 +80,84 @@ async function handleStudentLogin(event) {
   loginBtn.innerHTML = '<span class="btn-spinner"></span> Logging in...';
   errorEl.textContent = '';
 
-  try {
-    const res = await fetch(`${API_URL}/student/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ studentNo, password })
-    });
+  // Retry logic: up to 3 attempts with increasing timeout
+  const maxRetries = 3;
+  let lastError = null;
 
-    const data = await res.json();
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
-    if (res.ok) {
-      currentStudent = data.student;
-      localStorage.setItem('studentToken', data.token);
-      localStorage.setItem('studentData', JSON.stringify(data.student));
-      errorEl.textContent = '';
+      if (attempt > 1) {
+        loginBtn.innerHTML = `<span class="btn-spinner"></span> Reconnecting... (${attempt}/${maxRetries})`;
+      }
 
-      // Show success state on button
-      loginBtn.innerHTML = '✓ Login Successful!';
-      loginBtn.classList.add('btn-login-success');
+      const res = await fetch(`${API_URL}/student/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ studentNo, password }),
+        signal: controller.signal
+      });
 
-      // Show success notification
-      showLoginNotification('✓ Welcome, ' + (data.student.fullName || 'Student') + '!');
+      clearTimeout(timeout);
+      const data = await res.json();
 
-      // Brief delay then proceed
-      setTimeout(() => {
+      if (res.ok) {
+        currentStudent = data.student;
+        localStorage.setItem('studentToken', data.token);
+        localStorage.setItem('studentData', JSON.stringify(data.student));
+        errorEl.textContent = '';
+
+        // Show success state on button
+        loginBtn.innerHTML = '✓ Login Successful!';
+        loginBtn.classList.add('btn-login-success');
+
+        // Show success notification
+        showLoginNotification('✓ Welcome, ' + (data.student.fullName || 'Student') + '!');
+
+        // Brief delay then proceed
+        setTimeout(() => {
+          loginBtn.disabled = false;
+          loginBtn.innerHTML = originalText;
+          loginBtn.classList.remove('btn-login-success');
+
+          if (data.student.mustChangePassword) {
+            document.getElementById('loginWrapper').style.display = 'none';
+            document.getElementById('changePwOverlay').style.display = 'flex';
+          } else {
+            showDashboard();
+            startSessionCheck();
+            startStudentNotificationCheck();
+          }
+        }, 1200);
+        return; // Success, exit
+      } else {
+        // Server responded with an error (wrong password, etc.) — don't retry
         loginBtn.disabled = false;
         loginBtn.innerHTML = originalText;
-        loginBtn.classList.remove('btn-login-success');
+        errorEl.textContent = data.message;
 
-        if (data.student.mustChangePassword) {
-          document.getElementById('loginWrapper').style.display = 'none';
-          document.getElementById('changePwOverlay').style.display = 'flex';
-        } else {
-          showDashboard();
-          startSessionCheck();
-          startStudentNotificationCheck();
-        }
-      }, 1200);
-    } else {
-      // Reset button
-      loginBtn.disabled = false;
-      loginBtn.innerHTML = originalText;
-      errorEl.textContent = data.message;
-
-      // Shake animation
-      loginForm.classList.add('shake');
-      setTimeout(() => loginForm.classList.remove('shake'), 600);
+        loginForm.classList.add('shake');
+        setTimeout(() => loginForm.classList.remove('shake'), 600);
+        return;
+      }
+    } catch (err) {
+      lastError = err;
+      // Wait before retrying (1s, then 2s)
+      if (attempt < maxRetries) {
+        await new Promise(r => setTimeout(r, attempt * 1000));
+      }
     }
-  } catch (err) {
-    loginBtn.disabled = false;
-    loginBtn.innerHTML = originalText;
-    errorEl.textContent = 'Cannot connect to server. Please try again.';
-
-    // Shake animation
-    loginForm.classList.add('shake');
-    setTimeout(() => loginForm.classList.remove('shake'), 600);
   }
+
+  // All retries exhausted
+  loginBtn.disabled = false;
+  loginBtn.innerHTML = originalText;
+  errorEl.textContent = 'Cannot connect to server. Please check your internet and try again.';
+
+  loginForm.classList.add('shake');
+  setTimeout(() => loginForm.classList.remove('shake'), 600);
 }
 
 function showLoginNotification(message) {

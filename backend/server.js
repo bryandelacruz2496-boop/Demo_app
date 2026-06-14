@@ -463,9 +463,9 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 
-  // Self-ping to prevent Render free tier sleep
+  // Self-ping to prevent sleep
   setInterval(() => {
-    fetch('https://beatasaiintegratedschool.onrender.com/api/health')
+    fetch('https://beatasai.com/api/health')
       .catch(() => { });
   }, 10 * 60 * 1000); // every 10 minutes
 });

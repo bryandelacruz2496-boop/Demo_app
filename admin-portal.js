@@ -54,61 +54,84 @@ async function handleAdminLogin(event) {
     loginBtn.innerHTML = '<span class="btn-spinner"></span> Logging in...';
     errorEl.textContent = '';
 
-    try {
-        const res = await fetch(`${API_URL}/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
-        const data = await res.json();
+    // Retry logic: up to 3 attempts with increasing timeout
+    const maxRetries = 3;
 
-        if (res.ok) {
-            adminToken = data.token;
-            adminRole = data.admin.role || 'staff';
-            localStorage.setItem('adminToken', data.token);
-            localStorage.setItem('adminName', data.admin.name);
-            localStorage.setItem('adminRole', data.admin.role || 'staff');
-            document.getElementById('adminName').textContent = data.admin.name;
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 15000);
 
-            // Show loading data state
-            loginBtn.innerHTML = '<span class="btn-spinner"></span> Loading data...';
+            if (attempt > 1) {
+                loginBtn.innerHTML = `<span class="btn-spinner"></span> Reconnecting... (${attempt}/${maxRetries})`;
+            }
 
-            // Start fetching data AND a 3-second minimum timer in parallel
-            const dataReady = loadStudents().catch(() => { });
-            const minDelay = new Promise(resolve => setTimeout(resolve, 3000));
+            const res = await fetch(`${API_URL}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password }),
+                signal: controller.signal
+            });
+            clearTimeout(timeout);
+            const data = await res.json();
 
-            // Wait for BOTH to complete
-            await Promise.all([dataReady, minDelay]);
+            if (res.ok) {
+                adminToken = data.token;
+                adminRole = data.admin.role || 'staff';
+                localStorage.setItem('adminToken', data.token);
+                localStorage.setItem('adminName', data.admin.name);
+                localStorage.setItem('adminRole', data.admin.role || 'staff');
+                document.getElementById('adminName').textContent = data.admin.name;
 
-            // Show success state
-            loginBtn.innerHTML = '✓ Login Successful!';
-            loginBtn.classList.add('btn-login-success');
-            showAdminLoginNotification('✓ Welcome, ' + data.admin.name + '!');
+                // Show loading data state
+                loginBtn.innerHTML = '<span class="btn-spinner"></span> Loading data...';
 
-            setTimeout(() => {
+                // Start fetching data AND a 3-second minimum timer in parallel
+                const dataReady = loadStudents().catch(() => { });
+                const minDelay = new Promise(resolve => setTimeout(resolve, 3000));
+
+                // Wait for BOTH to complete
+                await Promise.all([dataReady, minDelay]);
+
+                // Show success state
+                loginBtn.innerHTML = '✓ Login Successful!';
+                loginBtn.classList.add('btn-login-success');
+                showAdminLoginNotification('✓ Welcome, ' + data.admin.name + '!');
+
+                setTimeout(() => {
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = originalText;
+                    loginBtn.classList.remove('btn-login-success');
+                    document.getElementById('loginWrapper').style.display = 'none';
+                    document.getElementById('adminDashboard').style.display = 'block';
+                    applyRoleUI();
+                    startReplyNotificationCheck();
+                    startAdminSessionCheck();
+                }, 800);
+                return; // Success, exit
+            } else {
+                // Server responded with error (wrong password, etc.) — don't retry
                 loginBtn.disabled = false;
                 loginBtn.innerHTML = originalText;
-                loginBtn.classList.remove('btn-login-success');
-                document.getElementById('loginWrapper').style.display = 'none';
-                document.getElementById('adminDashboard').style.display = 'block';
-                applyRoleUI();
-                startReplyNotificationCheck();
-                startAdminSessionCheck();
-            }, 800);
-        } else {
-            loginBtn.disabled = false;
-            loginBtn.innerHTML = originalText;
-            errorEl.textContent = data.message;
-            loginForm.classList.add('shake');
-            setTimeout(() => loginForm.classList.remove('shake'), 600);
+                errorEl.textContent = data.message;
+                loginForm.classList.add('shake');
+                setTimeout(() => loginForm.classList.remove('shake'), 600);
+                return;
+            }
+        } catch (err) {
+            // Wait before retrying (1s, then 2s)
+            if (attempt < maxRetries) {
+                await new Promise(r => setTimeout(r, attempt * 1000));
+            }
         }
-    } catch (err) {
-        loginBtn.disabled = false;
-        loginBtn.innerHTML = originalText;
-        errorEl.textContent = 'Cannot connect to server';
-        loginForm.classList.add('shake');
-        setTimeout(() => loginForm.classList.remove('shake'), 600);
     }
+
+    // All retries exhausted
+    loginBtn.disabled = false;
+    loginBtn.innerHTML = originalText;
+    errorEl.textContent = 'Cannot connect to server. Please check your internet and try again.';
+    loginForm.classList.add('shake');
+    setTimeout(() => loginForm.classList.remove('shake'), 600);
 }
 
 function showAdminLoginNotification(message) {
