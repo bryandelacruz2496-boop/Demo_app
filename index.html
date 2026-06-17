@@ -373,12 +373,11 @@
                 </div>
                 <div class="inquiry-form">
                     <h3>💌 Send an Inquiry</h3>
-                    <form onsubmit="handleInquiry(event)" id="inquiryForm">
-                        <input type="text" id="inqName" placeholder="👤 Child's Full Name" required>
-                        <input type="email" id="inqEmail" placeholder="📧 Parent's Email" required>
-                        <input type="tel" id="inqContact" placeholder="📞 Contact Number" required inputmode="numeric"
-                            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                        <select id="inqGrade" required>
+                    <form id="inquiryForm" onsubmit="return false;">
+                        <input type="text" id="inqName" placeholder="👤 Child's Full Name">
+                        <input type="email" id="inqEmail" placeholder="📧 Parent's Email">
+                        <input type="tel" id="inqContact" placeholder="📞 Contact Number" inputmode="numeric">
+                        <select id="inqGrade">
                             <option value="">📚 Select Grade Level</option>
                             <option>Pre-School (Nursery/Kinder)</option>
                             <option>Elementary (Grade 1-6)</option>
@@ -386,7 +385,8 @@
                             <option>Senior High (Grade 11-12)</option>
                         </select>
                         <textarea id="inqMessage" placeholder="💬 Any questions for us?" rows="3"></textarea>
-                        <button type="submit" class="btn btn-primary btn-full">Send Inquiry 🚀</button>
+                        <button type="button" class="btn btn-primary btn-full" disabled
+                            style="opacity:0.6;cursor:not-allowed;">Send Inquiry 🚀</button>
                     </form>
                     <p class="form-success" id="formSuccess">✅ Thank you! We will contact you shortly.</p>
                 </div>
