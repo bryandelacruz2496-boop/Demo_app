@@ -374,21 +374,16 @@
                 <div class="inquiry-form">
                     <h3>💌 Send an Inquiry</h3>
                     <form id="inquiryForm" onsubmit="return false;">
-                        <input type="text" id="inqName" placeholder="👤 Child's Full Name">
-                        <input type="email" id="inqEmail" placeholder="📧 Parent's Email">
-                        <input type="tel" id="inqContact" placeholder="📞 Contact Number" inputmode="numeric">
-                        <select id="inqGrade">
+                        <input type="text" placeholder="👤 Child's Full Name" disabled>
+                        <input type="email" placeholder="📧 Parent's Email" disabled>
+                        <input type="tel" placeholder="📞 Contact Number" disabled>
+                        <select disabled>
                             <option value="">📚 Select Grade Level</option>
-                            <option>Pre-School (Nursery/Kinder)</option>
-                            <option>Elementary (Grade 1-6)</option>
-                            <option>Junior High (Grade 7-10)</option>
-                            <option>Senior High (Grade 11-12)</option>
                         </select>
-                        <textarea id="inqMessage" placeholder="💬 Any questions for us?" rows="3"></textarea>
+                        <textarea placeholder="💬 Any questions for us?" rows="3" disabled></textarea>
                         <button type="button" class="btn btn-primary btn-full" disabled
                             style="opacity:0.6;cursor:not-allowed;">Send Inquiry 🚀</button>
                     </form>
-                    <p class="form-success" id="formSuccess">✅ Thank you! We will contact you shortly.</p>
                 </div>
             </div>
         </div>

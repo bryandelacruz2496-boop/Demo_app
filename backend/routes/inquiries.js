@@ -4,16 +4,9 @@ const authMiddleware = require('../middleware/auth');
 
 const router = express.Router();
 
-// POST /api/inquiries - Submit inquiry (public)
-router.post('/', async (req, res) => {
-    try {
-        const { childName, email, contact, gradeLevel, message } = req.body;
-        const inquiry = new Inquiry({ childName, email, contact, gradeLevel, message });
-        await inquiry.save();
-        res.status(201).json({ message: 'Inquiry submitted' });
-    } catch (err) {
-        res.status(500).json({ message: 'Server error' });
-    }
+// POST /api/inquiries - Disabled
+router.post('/', (req, res) => {
+    res.status(403).json({ message: 'Inquiry submissions are currently disabled.' });
 });
 
 // GET /api/inquiries - Get all inquiries (admin only)
