@@ -2514,14 +2514,41 @@ function hideGlobalProjectForm() {
     document.getElementById('globalProjectForm').style.display = 'none';
 }
 
+// Project rich text editor commands
+function execProjCmd(command) {
+    document.execCommand(command, false, null);
+    document.getElementById('globalProjDesc').focus();
+}
+
+function execProjFontSize(size) {
+    if (!size) return;
+    document.execCommand('fontSize', false, size);
+    document.getElementById('globalProjDesc').focus();
+}
+
+function execProjFontName(font) {
+    if (!font) return;
+    document.execCommand('fontName', false, font);
+    document.getElementById('globalProjDesc').focus();
+}
+
+function insertProjLink() {
+    const url = prompt('Enter URL:', 'https://');
+    if (url) {
+        document.execCommand('createLink', false, url);
+        document.getElementById('globalProjDesc').focus();
+    }
+}
+
 async function createGlobalProject() {
     const title = document.getElementById('globalProjTitle').value;
     const subject = document.getElementById('globalProjSubject').value;
     const dueDate = getDatePickerValue('globalProjDue');
-    const description = document.getElementById('globalProjDesc').value;
+    const descEl = document.getElementById('globalProjDesc');
+    const description = descEl.innerHTML.trim();
     const targetGrade = document.getElementById('globalProjGrade').value;
 
-    if (!title || !subject || !dueDate || !description) {
+    if (!title || !subject || !dueDate || !description || description === '<br>') {
         showToast('Please fill in all required fields');
         return;
     }
@@ -2539,7 +2566,7 @@ async function createGlobalProject() {
             document.getElementById('globalProjSubject').value = '';
             document.getElementById('globalProjDue').value = '';
             document.getElementById('globalProjDue').dataset.value = '';
-            document.getElementById('globalProjDesc').value = '';
+            descEl.innerHTML = '';
             document.getElementById('globalProjGrade').value = 'all';
             hideGlobalProjectForm();
             loadGlobalProjects();
@@ -2570,8 +2597,8 @@ async function loadGlobalProjects() {
                 </div>
             </div>
             <p><strong>${p.subject}</strong> • Due: ${p.dueDate}</p>
-            <p>${p.description}</p>
-            <span class="announcement-date">Posted: ${new Date(p.createdAt).toLocaleDateString()}</span>
+            <div class="announcement-body">${p.description}</div>
+            <span class="announcement-date">Posted: ${new Date(p.createdAt).toLocaleDateString()}${p.createdBy ? ' • By: ' + p.createdBy : ''}</span>
         </div>
     `).join('');
 }

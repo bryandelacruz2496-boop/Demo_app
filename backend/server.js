@@ -91,13 +91,17 @@ app.use((req, res, next) => {
     if (req.body.body !== undefined) {
       req._rawBody = req.body.body;
     }
+    // Preserve HTML description for projects
+    if (req.body.description !== undefined) {
+      req._rawDescription = req.body.description;
+    }
   }
   next();
 });
 
 app.use(mongoSanitize()); // Prevents NoSQL injection ($gt, $ne, etc.)
 
-// Restore password fields and HTML body after mongo sanitization
+// Restore password fields and HTML body/description after mongo sanitization
 app.use((req, res, next) => {
   if (req._rawPasswords) {
     Object.keys(req._rawPasswords).forEach(field => {
@@ -108,6 +112,10 @@ app.use((req, res, next) => {
   if (req._rawBody !== undefined) {
     req.body.body = req._rawBody;
     delete req._rawBody;
+  }
+  if (req._rawDescription !== undefined) {
+    req.body.description = req._rawDescription;
+    delete req._rawDescription;
   }
   next();
 });
@@ -126,8 +134,13 @@ app.use((req, res, next) => {
 function sanitizeObject(obj, path) {
   // Skip password fields - they need to be compared exactly as entered
   const skipFields = ['password', 'newPassword', 'adminPassword', 'newPw', 'confirmPw'];
+  // Skip rich HTML fields on routes that intentionally use them
+  const richHtmlRoutes = ['/announcements', '/projects'];
+  const richHtmlFields = ['body', 'description'];
+  const isRichRoute = richHtmlRoutes.some(r => path && path.includes(r));
   for (const key in obj) {
     if (skipFields.includes(key)) continue;
+    if (isRichRoute && richHtmlFields.includes(key)) continue;
     if (typeof obj[key] === 'string') {
       obj[key] = obj[key]
         .replace(/</g, '&lt;')

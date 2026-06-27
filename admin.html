@@ -468,8 +468,39 @@
                                 </div>
                                 <div class="form-group full-width">
                                     <label>Description *</label>
-                                    <textarea id="globalProjDesc" rows="3" placeholder="Project details..."
-                                        style="width:100%;padding:0.7rem 1rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.95rem;resize:vertical;"></textarea>
+                                    <div class="rich-toolbar" id="projToolbar">
+                                        <select onchange="execProjFontName(this.value);this.selectedIndex=0;" title="Font Family">
+                                            <option value="">Font</option>
+                                            <option value="Arial">Arial</option>
+                                            <option value="Georgia">Georgia</option>
+                                            <option value="Times New Roman">Times New Roman</option>
+                                            <option value="Courier New">Courier New</option>
+                                            <option value="Verdana">Verdana</option>
+                                            <option value="Nunito">Nunito</option>
+                                            <option value="Fredoka">Fredoka</option>
+                                        </select>
+                                        <select onchange="execProjFontSize(this.value);this.selectedIndex=0;" title="Font Size">
+                                            <option value="">Size</option>
+                                            <option value="1">8</option>
+                                            <option value="2">10</option>
+                                            <option value="3">12</option>
+                                            <option value="4">14</option>
+                                            <option value="5">18</option>
+                                            <option value="6">24</option>
+                                            <option value="7">36</option>
+                                        </select>
+                                        <span class="toolbar-divider"></span>
+                                        <button type="button" onclick="execProjCmd('bold')" title="Bold"><b>B</b></button>
+                                        <button type="button" onclick="execProjCmd('italic')" title="Italic"><i>I</i></button>
+                                        <button type="button" onclick="execProjCmd('underline')" title="Underline"><u>U</u></button>
+                                        <span class="toolbar-divider"></span>
+                                        <button type="button" onclick="execProjCmd('insertUnorderedList')" title="Bullet List">• List</button>
+                                        <button type="button" onclick="execProjCmd('insertOrderedList')" title="Numbered List">1. List</button>
+                                        <span class="toolbar-divider"></span>
+                                        <button type="button" onclick="insertProjLink()" title="Insert Link">🔗</button>
+                                    </div>
+                                    <div id="globalProjDesc" contenteditable="true" class="rich-editor"
+                                        placeholder="Project details..."></div>
                                 </div>
                             </div>
                             <div class="form-actions">
