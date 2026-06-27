@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const replySchema = new mongoose.Schema({
     author: { type: String, required: true },
     role: { type: String, enum: ['student', 'admin'], required: true },
-    message: { type: String, required: true }
+    message: { type: String, required: true },
+    parentReplyId: { type: mongoose.Schema.Types.ObjectId, default: null }
 }, { timestamps: true });
 
 const announcementSchema = new mongoose.Schema({

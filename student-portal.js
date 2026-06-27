@@ -471,9 +471,6 @@ async function loadStudentAnnouncements() {
     }
     list.innerHTML = announcements.map(a => {
       const replies = a.replies || [];
-      const hasMore = replies.length > 3;
-      const visibleReplies = hasMore ? replies.slice(0, 2) : replies;
-      const hiddenReplies = hasMore ? replies.slice(2) : [];
       return `
       <div class="activity-card" style="cursor:default;">
         <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -484,30 +481,10 @@ async function loadStudentAnnouncements() {
         <button class="btn-see-more" id="btn-student-see-more-${a._id}" onclick="toggleStudentAnnouncementBody('${a._id}')" style="display:none;background:none;border:none;color:#b71c1c;font-weight:600;font-size:0.85rem;cursor:pointer;padding:0.3rem 0;">See More</button>
         <span class="meta">${new Date(a.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
         <div class="replies-section" style="margin-top:1rem;border-top:1px solid #eee;padding-top:0.8rem;">
-          ${visibleReplies.map(r => `
-            <div style="margin-bottom:0.6rem;padding:0.5rem 0.8rem;background:${r.role === 'admin' ? '#fff3e0' : '#e8f5e9'};border-radius:8px;">
-              <strong style="font-size:0.85rem;">${r.author}</strong> <span style="font-size:0.75rem;color:#888;">${r.role === 'admin' ? '(Admin)' : '(Student)'}</span>
-              <p style="margin:0.3rem 0 0;font-size:0.9rem;">${r.message}</p>
-              <span style="font-size:0.7rem;color:#aaa;">${new Date(r.createdAt).toLocaleString()}</span>
-            </div>
-          `).join('')}
-          ${hasMore ? `
-            <div id="student-replies-hidden-${a._id}" style="display:none;">
-              ${hiddenReplies.map(r => `
-                <div style="margin-bottom:0.6rem;padding:0.5rem 0.8rem;background:${r.role === 'admin' ? '#fff3e0' : '#e8f5e9'};border-radius:8px;">
-                  <strong style="font-size:0.85rem;">${r.author}</strong> <span style="font-size:0.75rem;color:#888;">${r.role === 'admin' ? '(Admin)' : '(Student)'}</span>
-                  <p style="margin:0.3rem 0 0;font-size:0.9rem;">${r.message}</p>
-                  <span style="font-size:0.7rem;color:#aaa;">${new Date(r.createdAt).toLocaleString()}</span>
-                </div>
-              `).join('')}
-            </div>
-            <button id="student-btn-toggle-${a._id}" onclick="toggleStudentReplies('${a._id}', ${hiddenReplies.length})" style="background:none;border:none;color:#b71c1c;font-size:0.85rem;font-weight:600;cursor:pointer;padding:0.4rem 0;margin-top:0.3rem;">
-              View ${hiddenReplies.length} more repl${hiddenReplies.length === 1 ? 'y' : 'ies'}
-            </button>
-          ` : ''}
+          ${renderStudentThreadedReplies(replies, null, a._id, 0)}
           <div style="display:flex;gap:0.5rem;margin-top:0.5rem;">
-            <input type="text" id="student-reply-${a._id}" placeholder="Write a reply..." style="flex:1;padding:0.5rem 0.8rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.9rem;" onkeydown="handleStudentReplyKey(event,'${a._id}')">
-            <button onclick="studentReply('${a._id}')" style="background:#b71c1c;color:#fff;border:none;padding:0.5rem 1rem;border-radius:8px;font-weight:600;cursor:pointer;">Reply</button>
+            <input type="text" id="student-reply-${a._id}" placeholder="Write a reply..." style="flex:1;padding:0.5rem 0.8rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.9rem;" onkeydown="handleStudentReplyKey(event,'${a._id}','')">
+            <button onclick="studentReply('${a._id}','')" style="background:#b71c1c;color:#fff;border:none;padding:0.5rem 1rem;border-radius:8px;font-weight:600;cursor:pointer;">Reply</button>
           </div>
         </div>
       </div>
@@ -526,7 +503,6 @@ async function loadStudentAnnouncements() {
       const id = el.id.replace('student-ann-body-', '');
       const btn = document.getElementById(`btn-student-see-more-${id}`);
       if (btn) {
-        // Show See More if content is long (text > 150 chars or has multiple lines/list items)
         const textLen = el.textContent.length;
         const hasLists = el.querySelector('ul, ol, br');
         if (textLen > 150 || hasLists || el.scrollHeight > 80) {
@@ -546,6 +522,105 @@ async function loadStudentAnnouncements() {
   }
 }
 
+function renderStudentThreadedReplies(replies, parentId, announcementId, depth) {
+  const maxDepth = 2;
+  const children = replies.filter(r => {
+    const rParent = r.parentReplyId || null;
+    return rParent === parentId || (parentId === null && !rParent);
+  });
+
+  if (children.length === 0) return '';
+
+  const visibleCount = depth === 0 ? 3 : 2;
+  const visible = children.slice(0, visibleCount);
+  const hidden = children.slice(visibleCount);
+
+  let html = '';
+  visible.forEach(r => {
+    const replyId = r._id;
+    const indentStyle = depth > 0 ? `margin-left:${Math.min(depth, maxDepth) * 14}px;border-left:2px solid #eee;padding-left:10px;` : '';
+    const childReplies = depth < maxDepth ? renderStudentThreadedReplies(replies, replyId, announcementId, depth + 1) : '';
+    html += `
+      <div style="margin-bottom:0.6rem;${indentStyle}">
+        <div style="padding:0.5rem 0.8rem;background:${r.role === 'admin' ? '#fff3e0' : '#e8f5e9'};border-radius:8px;">
+          <strong style="font-size:0.85rem;">${r.author}</strong> <span style="font-size:0.75rem;color:#888;">${r.role === 'admin' ? '(Admin)' : '(Student)'}</span>
+          <p style="margin:0.3rem 0 0;font-size:0.9rem;">${r.message}</p>
+          <div style="display:flex;align-items:center;gap:0.8rem;margin-top:0.3rem;">
+            <span style="font-size:0.7rem;color:#aaa;">${new Date(r.createdAt).toLocaleString()}</span>
+            <button onclick="showStudentThreadReply('${announcementId}','${replyId}')" style="background:none;border:none;color:#b71c1c;font-size:0.75rem;font-weight:600;cursor:pointer;padding:0.2rem 0.4rem;border-radius:4px;">↩ Reply</button>
+          </div>
+        </div>
+        <div id="student-thread-form-${replyId}" style="display:none;margin-top:0.4rem;margin-left:0.5rem;">
+          <div style="display:flex;gap:0.5rem;">
+            <input type="text" id="student-thread-input-${replyId}" placeholder="Reply to ${r.author}..." style="flex:1;padding:0.4rem 0.7rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.85rem;" onkeydown="handleStudentReplyKey(event,'${announcementId}','${replyId}')">
+            <button onclick="studentReply('${announcementId}','${replyId}')" style="background:#b71c1c;color:#fff;border:none;padding:0.4rem 0.8rem;border-radius:8px;font-weight:600;cursor:pointer;font-size:0.8rem;">Reply</button>
+          </div>
+        </div>
+        ${childReplies}
+      </div>
+    `;
+  });
+
+  if (hidden.length > 0) {
+    const toggleId = `student-thread-hidden-${parentId || announcementId}-${depth}`;
+    html += `
+      <div id="${toggleId}" style="display:none;">
+        ${hidden.map(r => {
+          const replyId = r._id;
+          const indentStyle = depth > 0 ? `margin-left:${Math.min(depth, maxDepth) * 14}px;border-left:2px solid #eee;padding-left:10px;` : '';
+          const childReplies = depth < maxDepth ? renderStudentThreadedReplies(replies, replyId, announcementId, depth + 1) : '';
+          return `
+            <div style="margin-bottom:0.6rem;${indentStyle}">
+              <div style="padding:0.5rem 0.8rem;background:${r.role === 'admin' ? '#fff3e0' : '#e8f5e9'};border-radius:8px;">
+                <strong style="font-size:0.85rem;">${r.author}</strong> <span style="font-size:0.75rem;color:#888;">${r.role === 'admin' ? '(Admin)' : '(Student)'}</span>
+                <p style="margin:0.3rem 0 0;font-size:0.9rem;">${r.message}</p>
+                <div style="display:flex;align-items:center;gap:0.8rem;margin-top:0.3rem;">
+                  <span style="font-size:0.7rem;color:#aaa;">${new Date(r.createdAt).toLocaleString()}</span>
+                  <button onclick="showStudentThreadReply('${announcementId}','${replyId}')" style="background:none;border:none;color:#b71c1c;font-size:0.75rem;font-weight:600;cursor:pointer;padding:0.2rem 0.4rem;border-radius:4px;">↩ Reply</button>
+                </div>
+              </div>
+              <div id="student-thread-form-${replyId}" style="display:none;margin-top:0.4rem;margin-left:0.5rem;">
+                <div style="display:flex;gap:0.5rem;">
+                  <input type="text" id="student-thread-input-${replyId}" placeholder="Reply to ${r.author}..." style="flex:1;padding:0.4rem 0.7rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.85rem;" onkeydown="handleStudentReplyKey(event,'${announcementId}','${replyId}')">
+                  <button onclick="studentReply('${announcementId}','${replyId}')" style="background:#b71c1c;color:#fff;border:none;padding:0.4rem 0.8rem;border-radius:8px;font-weight:600;cursor:pointer;font-size:0.8rem;">Reply</button>
+                </div>
+              </div>
+              ${childReplies}
+            </div>
+          `;
+        }).join('')}
+      </div>
+      <button onclick="toggleStudentThreadReplies('${toggleId}', this, ${hidden.length})" style="background:none;border:none;color:#b71c1c;font-size:0.85rem;font-weight:600;cursor:pointer;padding:0.4rem 0;margin-top:0.3rem;">
+        View ${hidden.length} more repl${hidden.length === 1 ? 'y' : 'ies'}
+      </button>
+    `;
+  }
+
+  return html;
+}
+
+function showStudentThreadReply(announcementId, replyId) {
+  // Hide any other open thread reply forms
+  document.querySelectorAll('[id^="student-thread-form-"]').forEach(f => f.style.display = 'none');
+  const form = document.getElementById(`student-thread-form-${replyId}`);
+  if (form) {
+    form.style.display = 'block';
+    const input = document.getElementById(`student-thread-input-${replyId}`);
+    if (input) input.focus();
+  }
+}
+
+function toggleStudentThreadReplies(toggleId, btn, count) {
+  const el = document.getElementById(toggleId);
+  if (el.style.display === 'none') {
+    el.style.display = 'block';
+    btn.textContent = 'Show less';
+  } else {
+    el.style.display = 'none';
+    btn.textContent = `View ${count} more repl${count === 1 ? 'y' : 'ies'}`;
+  }
+}
+
 function toggleStudentAnnouncementBody(id) {
   const body = document.getElementById(`student-ann-body-${id}`);
   const btn = document.getElementById(`btn-student-see-more-${id}`);
@@ -558,8 +633,8 @@ function toggleStudentAnnouncementBody(id) {
   }
 }
 
-function handleStudentReplyKey(e, id) {
-  if (e.key === 'Enter') studentReply(id);
+function handleStudentReplyKey(e, id, parentReplyId) {
+  if (e.key === 'Enter') studentReply(id, parentReplyId);
 }
 
 function toggleStudentReplies(announcementId, hiddenCount) {
@@ -574,16 +649,24 @@ function toggleStudentReplies(announcementId, hiddenCount) {
   }
 }
 
-async function studentReply(announcementId) {
-  const input = document.getElementById(`student-reply-${announcementId}`);
+async function studentReply(announcementId, parentReplyId) {
+  let input;
+  if (parentReplyId) {
+    input = document.getElementById(`student-thread-input-${parentReplyId}`);
+  } else {
+    input = document.getElementById(`student-reply-${announcementId}`);
+  }
   const message = input.value.trim();
   if (!message) return;
+
+  const body = { message };
+  if (parentReplyId) body.parentReplyId = parentReplyId;
 
   const token = localStorage.getItem('studentToken');
   const res = await fetch(`${API_URL}/announcements/${announcementId}/student-reply`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify({ message })
+    body: JSON.stringify(body)
   });
 
   if (res.ok) {

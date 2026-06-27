@@ -172,9 +172,6 @@ async function loadAnnouncements() {
     list.innerHTML = `
         ${announcements.map(a => {
         const replies = a.replies || [];
-        const hasMore = replies.length > 3;
-        const visibleReplies = hasMore ? replies.slice(0, 2) : replies;
-        const hiddenReplies = hasMore ? replies.slice(2) : [];
         return `
             <div class="announcement-card">
                 <div class="announcement-header">
@@ -189,30 +186,10 @@ async function loadAnnouncements() {
                 <button class="btn-see-more" id="btn-see-more-${a._id}" onclick="toggleAnnouncementBody('${a._id}')" style="display:none;">See More</button>
                 <span class="announcement-date">Posted ${new Date(a.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                 <div class="replies-section">
-                    ${visibleReplies.map(r => `
-                        <div class="reply-item reply-${r.role}">
-                            <strong>${r.author}</strong> <span class="reply-role">${r.role}</span>
-                            <p>${r.message}</p>
-                            <span class="reply-date">${new Date(r.createdAt).toLocaleString()}</span>
-                        </div>
-                    `).join('')}
-                    ${hasMore ? `
-                        <div class="replies-collapsed" id="replies-hidden-${a._id}" style="display:none;">
-                            ${hiddenReplies.map(r => `
-                                <div class="reply-item reply-${r.role}">
-                                    <strong>${r.author}</strong> <span class="reply-role">${r.role}</span>
-                                    <p>${r.message}</p>
-                                    <span class="reply-date">${new Date(r.createdAt).toLocaleString()}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                        <button class="btn-view-more-replies" id="btn-toggle-replies-${a._id}" onclick="toggleReplies('${a._id}', ${hiddenReplies.length})">
-                            View ${hiddenReplies.length} more repl${hiddenReplies.length === 1 ? 'y' : 'ies'}
-                        </button>
-                    ` : ''}
+                    ${renderThreadedReplies(replies, null, a._id, 0)}
                     <div class="reply-form">
-                        <input type="text" id="reply-${a._id}" placeholder="Write a reply..." class="reply-input" onkeydown="handleAdminReplyKey(event,'${a._id}')">
-                        <button class="btn-reply" onclick="adminReply('${a._id}')">Reply</button>
+                        <input type="text" id="reply-${a._id}" placeholder="Write a reply..." class="reply-input" onkeydown="handleAdminReplyKey(event,'${a._id}','')">
+                        <button class="btn-reply" onclick="adminReply('${a._id}','')">Reply</button>
                     </div>
                 </div>
             </div>
@@ -248,6 +225,100 @@ async function loadAnnouncements() {
             input.focus();
         }
     });
+}
+
+function renderThreadedReplies(replies, parentId, announcementId, depth) {
+    const maxDepth = 2;
+    const children = replies.filter(r => {
+        const rParent = r.parentReplyId || null;
+        return rParent === parentId || (parentId === null && !rParent);
+    });
+
+    if (children.length === 0) return '';
+
+    const visibleCount = depth === 0 ? 3 : 2;
+    const visible = children.slice(0, visibleCount);
+    const hidden = children.slice(visibleCount);
+    const depthClass = depth > 0 ? `reply-nested reply-depth-${Math.min(depth, maxDepth)}` : '';
+
+    let html = '';
+    visible.forEach(r => {
+        const replyId = r._id;
+        const childReplies = depth < maxDepth ? renderThreadedReplies(replies, replyId, announcementId, depth + 1) : '';
+        html += `
+            <div class="reply-item reply-${r.role} ${depthClass}" data-reply-id="${replyId}">
+                <div class="reply-content">
+                    <strong>${r.author}</strong> <span class="reply-role">${r.role}</span>
+                    <p>${r.message}</p>
+                    <div class="reply-meta">
+                        <span class="reply-date">${new Date(r.createdAt).toLocaleString()}</span>
+                        <button class="btn-thread-reply" onclick="showThreadReplyInput('${announcementId}','${replyId}')">↩ Reply</button>
+                    </div>
+                </div>
+                <div class="thread-reply-form" id="thread-form-${replyId}" style="display:none;">
+                    <input type="text" id="thread-input-${replyId}" placeholder="Reply to ${r.author}..." class="reply-input" onkeydown="handleAdminReplyKey(event,'${announcementId}','${replyId}')">
+                    <button class="btn-reply" onclick="adminReply('${announcementId}','${replyId}')">Reply</button>
+                </div>
+                ${childReplies}
+            </div>
+        `;
+    });
+
+    if (hidden.length > 0) {
+        const toggleId = `thread-hidden-${parentId || announcementId}-${depth}`;
+        html += `
+            <div class="replies-collapsed" id="${toggleId}" style="display:none;">
+                ${hidden.map(r => {
+                    const replyId = r._id;
+                    const childReplies = depth < maxDepth ? renderThreadedReplies(replies, replyId, announcementId, depth + 1) : '';
+                    return `
+                        <div class="reply-item reply-${r.role} ${depthClass}" data-reply-id="${replyId}">
+                            <div class="reply-content">
+                                <strong>${r.author}</strong> <span class="reply-role">${r.role}</span>
+                                <p>${r.message}</p>
+                                <div class="reply-meta">
+                                    <span class="reply-date">${new Date(r.createdAt).toLocaleString()}</span>
+                                    <button class="btn-thread-reply" onclick="showThreadReplyInput('${announcementId}','${replyId}')">↩ Reply</button>
+                                </div>
+                            </div>
+                            <div class="thread-reply-form" id="thread-form-${replyId}" style="display:none;">
+                                <input type="text" id="thread-input-${replyId}" placeholder="Reply to ${r.author}..." class="reply-input" onkeydown="handleAdminReplyKey(event,'${announcementId}','${replyId}')">
+                                <button class="btn-reply" onclick="adminReply('${announcementId}','${replyId}')">Reply</button>
+                            </div>
+                            ${childReplies}
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+            <button class="btn-view-more-replies" onclick="toggleThreadReplies('${toggleId}', this, ${hidden.length})">
+                View ${hidden.length} more repl${hidden.length === 1 ? 'y' : 'ies'}
+            </button>
+        `;
+    }
+
+    return html;
+}
+
+function showThreadReplyInput(announcementId, replyId) {
+    // Hide any other open thread reply forms
+    document.querySelectorAll('.thread-reply-form').forEach(f => f.style.display = 'none');
+    const form = document.getElementById(`thread-form-${replyId}`);
+    if (form) {
+        form.style.display = 'flex';
+        const input = document.getElementById(`thread-input-${replyId}`);
+        if (input) input.focus();
+    }
+}
+
+function toggleThreadReplies(toggleId, btn, count) {
+    const el = document.getElementById(toggleId);
+    if (el.style.display === 'none') {
+        el.style.display = 'block';
+        btn.textContent = 'Show less';
+    } else {
+        el.style.display = 'none';
+        btn.textContent = `View ${count} more repl${count === 1 ? 'y' : 'ies'}`;
+    }
 }
 
 function toggleAnnouncementBody(id) {
@@ -452,19 +523,27 @@ function cancelAnnouncementEdit(id) {
     loadAnnouncements();
 }
 
-function handleAdminReplyKey(e, id) {
-    if (e.key === 'Enter') adminReply(id);
+function handleAdminReplyKey(e, id, parentReplyId) {
+    if (e.key === 'Enter') adminReply(id, parentReplyId);
 }
 
-async function adminReply(announcementId) {
-    const input = document.getElementById(`reply-${announcementId}`);
+async function adminReply(announcementId, parentReplyId) {
+    let input;
+    if (parentReplyId) {
+        input = document.getElementById(`thread-input-${parentReplyId}`);
+    } else {
+        input = document.getElementById(`reply-${announcementId}`);
+    }
     const message = input.value.trim();
     if (!message) return;
+
+    const body = { message };
+    if (parentReplyId) body.parentReplyId = parentReplyId;
 
     const res = await fetch(`${API_URL}/announcements/${announcementId}/replies`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminToken}` },
-        body: JSON.stringify({ message })
+        body: JSON.stringify(body)
     });
 
     if (res.ok) {

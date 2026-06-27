@@ -75,7 +75,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
 // POST /api/announcements/:id/replies - Add reply (admin)
 router.post('/:id/replies', authMiddleware, async (req, res) => {
     try {
-        const { message } = req.body;
+        const { message, parentReplyId } = req.body;
         if (!message) return res.status(400).json({ message: 'Message is required' });
 
         const announcement = await Announcement.findById(req.params.id);
@@ -84,7 +84,8 @@ router.post('/:id/replies', authMiddleware, async (req, res) => {
         announcement.replies.push({
             author: req.admin.name || req.admin.username,
             role: 'admin',
-            message
+            message,
+            parentReplyId: parentReplyId || null
         });
         await announcement.save();
         res.json({ replies: announcement.replies });
@@ -105,7 +106,7 @@ router.post('/:id/student-reply', async (req, res) => {
         const student = await Student.findById(decoded.id);
         if (!student) return res.status(401).json({ message: 'Invalid token' });
 
-        const { message } = req.body;
+        const { message, parentReplyId } = req.body;
         if (!message) return res.status(400).json({ message: 'Message is required' });
 
         // Rate limit: 3 replies per minute per student
@@ -129,7 +130,8 @@ router.post('/:id/student-reply', async (req, res) => {
         announcement.replies.push({
             author: student.fullName,
             role: 'student',
-            message
+            message,
+            parentReplyId: parentReplyId || null
         });
         await announcement.save();
         res.json({ replies: announcement.replies });
