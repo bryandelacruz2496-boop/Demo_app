@@ -236,7 +236,7 @@ function renderThreadedReplies(replies, parentId, announcementId, depth) {
 
     if (children.length === 0) return '';
 
-    const visibleCount = depth === 0 ? 2 : 1;
+    const visibleCount = depth === 0 ? 1 : 1;
     const visible = children.slice(0, visibleCount);
     const hidden = children.slice(visibleCount);
     const depthClass = depth > 0 ? `reply-nested reply-depth-${Math.min(depth, maxDepth)}` : '';
