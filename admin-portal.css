@@ -1992,7 +1992,7 @@ h4 {
 .rich-toolbar {
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 6px;
     padding: 0.6rem 1rem;
     background: #fafbff;
@@ -2011,6 +2011,8 @@ h4 {
     color: #333;
     outline: none;
     transition: border-color 0.2s ease;
+    width: auto;
+    max-width: 120px;
 }
 
 .rich-toolbar select:hover {
