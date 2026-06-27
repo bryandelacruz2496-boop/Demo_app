@@ -531,7 +531,7 @@ function renderStudentThreadedReplies(replies, parentId, announcementId, depth) 
 
   if (children.length === 0) return '';
 
-  const visibleCount = depth === 0 ? 3 : 2;
+  const visibleCount = depth === 0 ? 2 : 1;
   const visible = children.slice(0, visibleCount);
   const hidden = children.slice(visibleCount);
 
