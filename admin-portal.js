@@ -388,6 +388,27 @@ function editAnnouncement(id) {
     toolbar.className = 'rich-toolbar edit-toolbar';
     toolbar.id = `edit-toolbar-${id}`;
     toolbar.innerHTML = `
+        <select onchange="execFontName(this.value);this.selectedIndex=0;" title="Font Family">
+            <option value="">Font</option>
+            <option value="Arial">Arial</option>
+            <option value="Georgia">Georgia</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Courier New">Courier New</option>
+            <option value="Verdana">Verdana</option>
+            <option value="Nunito">Nunito</option>
+            <option value="Fredoka">Fredoka</option>
+        </select>
+        <select onchange="execFontSize(this.value);this.selectedIndex=0;" title="Font Size">
+            <option value="">Size</option>
+            <option value="1">8</option>
+            <option value="2">10</option>
+            <option value="3">12</option>
+            <option value="4">14</option>
+            <option value="5">18</option>
+            <option value="6">24</option>
+            <option value="7">36</option>
+        </select>
+        <span class="toolbar-divider"></span>
         <button type="button" onclick="document.execCommand('bold')" title="Bold"><b>B</b></button>
         <button type="button" onclick="document.execCommand('italic')" title="Italic"><i>I</i></button>
         <button type="button" onclick="document.execCommand('underline')" title="Underline"><u>U</u></button>
@@ -395,7 +416,7 @@ function editAnnouncement(id) {
         <button type="button" onclick="document.execCommand('insertUnorderedList')" title="Bullet List">• List</button>
         <button type="button" onclick="document.execCommand('insertOrderedList')" title="Numbered List">1. List</button>
         <span class="toolbar-divider"></span>
-        <button type="button" onclick="var u=prompt('Enter URL:','https://');if(u)document.execCommand('createLink',false,u);" title="Insert Link">🔗 Link</button>
+        <button type="button" onclick="var u=prompt('Enter URL:','https://');if(u)document.execCommand('createLink',false,u);" title="Insert Link">🔗</button>
     `;
     bodyEl.parentNode.insertBefore(toolbar, bodyEl);
 
