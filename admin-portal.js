@@ -228,177 +228,28 @@ async function loadAnnouncements() {
 }
 
 function renderThreadedReplies(replies, parentId, announcementId, depth) {
-    const maxDepth = 2;
-    const children = replies.filter(r => {
+    // Get top-level replies (no parent)
+    const topLevel = replies.filter(r => {
         const rParent = r.parentReplyId || null;
         return rParent === parentId || (parentId === null && !rParent);
     });
 
-    if (children.length === 0) return '';
+    if (topLevel.length === 0) return '';
 
-    const visibleCount = 1;
-    const visible = children.slice(0, visibleCount);
-    const hidden = children.slice(visibleCount);
-    const depthClass = depth > 0 ? `reply-nested reply-depth-${Math.min(depth, maxDepth)}` : '';
+    // Show first top-level reply, rest behind "View more"
+    const visible = topLevel.slice(0, 1);
+    const hidden = topLevel.slice(1);
 
     let html = '';
     visible.forEach(r => {
-        const replyId = r._id;
-        const nestedChildren = replies.filter(nr => nr.parentReplyId === replyId);
-        let childHtml = '';
-        if (depth < maxDepth && nestedChildren.length > 0) {
-            const firstChild = nestedChildren[0];
-            const firstChildId = firstChild._id;
-            const innerChildren = depth + 1 < maxDepth ? renderThreadedReplies(replies, firstChildId, announcementId, depth + 2) : '';
-            childHtml += `
-                <div class="reply-item reply-${firstChild.role} reply-nested reply-depth-${Math.min(depth + 1, maxDepth)}" data-reply-id="${firstChildId}">
-                    <div class="reply-content">
-                        <strong>${firstChild.author}</strong> <span class="reply-role">${firstChild.role}</span>
-                        <p>${firstChild.message}</p>
-                        <div class="reply-meta">
-                            <span class="reply-date">${new Date(firstChild.createdAt).toLocaleString()}</span>
-                            <button class="btn-thread-reply" onclick="showThreadReplyInput('${announcementId}','${firstChildId}')">↩ Reply</button>
-                        </div>
-                    </div>
-                    <div class="thread-reply-form" id="thread-form-${firstChildId}" style="display:none;">
-                        <input type="text" id="thread-input-${firstChildId}" placeholder="Reply to ${firstChild.author}..." class="reply-input" onkeydown="handleAdminReplyKey(event,'${announcementId}','${firstChildId}')">
-                        <button class="btn-reply" onclick="adminReply('${announcementId}','${firstChildId}')">Reply</button>
-                    </div>
-                    ${innerChildren}
-                </div>
-            `;
-            if (nestedChildren.length > 1) {
-                const nestedHidden = nestedChildren.slice(1);
-                const nestedToggleId = `thread-nested-${replyId}`;
-                childHtml += `
-                    <div class="replies-collapsed" id="${nestedToggleId}" style="display:none;">
-                        ${nestedHidden.map(nr => {
-                            const nrId = nr._id;
-                            const nrInner = depth + 1 < maxDepth ? renderThreadedReplies(replies, nrId, announcementId, depth + 2) : '';
-                            return `
-                                <div class="reply-item reply-${nr.role} reply-nested reply-depth-${Math.min(depth + 1, maxDepth)}" data-reply-id="${nrId}">
-                                    <div class="reply-content">
-                                        <strong>${nr.author}</strong> <span class="reply-role">${nr.role}</span>
-                                        <p>${nr.message}</p>
-                                        <div class="reply-meta">
-                                            <span class="reply-date">${new Date(nr.createdAt).toLocaleString()}</span>
-                                            <button class="btn-thread-reply" onclick="showThreadReplyInput('${announcementId}','${nrId}')">↩ Reply</button>
-                                        </div>
-                                    </div>
-                                    <div class="thread-reply-form" id="thread-form-${nrId}" style="display:none;">
-                                        <input type="text" id="thread-input-${nrId}" placeholder="Reply to ${nr.author}..." class="reply-input" onkeydown="handleAdminReplyKey(event,'${announcementId}','${nrId}')">
-                                        <button class="btn-reply" onclick="adminReply('${announcementId}','${nrId}')">Reply</button>
-                                    </div>
-                                    ${nrInner}
-                                </div>
-                            `;
-                        }).join('')}
-                    </div>
-                    <button class="btn-view-more-replies" onclick="toggleThreadReplies('${nestedToggleId}', this, ${nestedHidden.length})">
-                        View ${nestedHidden.length} more repl${nestedHidden.length === 1 ? 'y' : 'ies'}
-                    </button>
-                `;
-            }
-        }
-        html += `
-            <div class="reply-item reply-${r.role} ${depthClass}" data-reply-id="${replyId}">
-                <div class="reply-content">
-                    <strong>${r.author}</strong> <span class="reply-role">${r.role}</span>
-                    <p>${r.message}</p>
-                    <div class="reply-meta">
-                        <span class="reply-date">${new Date(r.createdAt).toLocaleString()}</span>
-                        <button class="btn-thread-reply" onclick="showThreadReplyInput('${announcementId}','${replyId}')">↩ Reply</button>
-                    </div>
-                </div>
-                <div class="thread-reply-form" id="thread-form-${replyId}" style="display:none;">
-                    <input type="text" id="thread-input-${replyId}" placeholder="Reply to ${r.author}..." class="reply-input" onkeydown="handleAdminReplyKey(event,'${announcementId}','${replyId}')">
-                    <button class="btn-reply" onclick="adminReply('${announcementId}','${replyId}')">Reply</button>
-                </div>
-                ${childHtml}
-            </div>
-        `;
+        html += renderSingleReply(r, replies, announcementId);
     });
 
     if (hidden.length > 0) {
-        const toggleId = `thread-hidden-${parentId || announcementId}-${depth}`;
+        const toggleId = `thread-hidden-${parentId || announcementId}`;
         html += `
             <div class="replies-collapsed" id="${toggleId}" style="display:none;">
-                ${hidden.map(r => {
-                    const replyId = r._id;
-                    const nestedChildren2 = replies.filter(nr => nr.parentReplyId === replyId);
-                    let childHtml2 = '';
-                    if (depth < maxDepth && nestedChildren2.length > 0) {
-                        const firstChild2 = nestedChildren2[0];
-                        const firstChildId2 = firstChild2._id;
-                        const innerChildren2 = depth + 1 < maxDepth ? renderThreadedReplies(replies, firstChildId2, announcementId, depth + 2) : '';
-                        childHtml2 += `
-                            <div class="reply-item reply-${firstChild2.role} reply-nested reply-depth-${Math.min(depth + 1, maxDepth)}" data-reply-id="${firstChildId2}">
-                                <div class="reply-content">
-                                    <strong>${firstChild2.author}</strong> <span class="reply-role">${firstChild2.role}</span>
-                                    <p>${firstChild2.message}</p>
-                                    <div class="reply-meta">
-                                        <span class="reply-date">${new Date(firstChild2.createdAt).toLocaleString()}</span>
-                                        <button class="btn-thread-reply" onclick="showThreadReplyInput('${announcementId}','${firstChildId2}')">↩ Reply</button>
-                                    </div>
-                                </div>
-                                <div class="thread-reply-form" id="thread-form-${firstChildId2}" style="display:none;">
-                                    <input type="text" id="thread-input-${firstChildId2}" placeholder="Reply to ${firstChild2.author}..." class="reply-input" onkeydown="handleAdminReplyKey(event,'${announcementId}','${firstChildId2}')">
-                                    <button class="btn-reply" onclick="adminReply('${announcementId}','${firstChildId2}')">Reply</button>
-                                </div>
-                                ${innerChildren2}
-                            </div>
-                        `;
-                        if (nestedChildren2.length > 1) {
-                            const nestedHidden2 = nestedChildren2.slice(1);
-                            const nestedToggleId2 = `thread-nested-${replyId}`;
-                            childHtml2 += `
-                                <div class="replies-collapsed" id="${nestedToggleId2}" style="display:none;">
-                                    ${nestedHidden2.map(nr => {
-                                        const nrId = nr._id;
-                                        const nrInner = depth + 1 < maxDepth ? renderThreadedReplies(replies, nrId, announcementId, depth + 2) : '';
-                                        return `
-                                            <div class="reply-item reply-${nr.role} reply-nested reply-depth-${Math.min(depth + 1, maxDepth)}" data-reply-id="${nrId}">
-                                                <div class="reply-content">
-                                                    <strong>${nr.author}</strong> <span class="reply-role">${nr.role}</span>
-                                                    <p>${nr.message}</p>
-                                                    <div class="reply-meta">
-                                                        <span class="reply-date">${new Date(nr.createdAt).toLocaleString()}</span>
-                                                        <button class="btn-thread-reply" onclick="showThreadReplyInput('${announcementId}','${nrId}')">↩ Reply</button>
-                                                    </div>
-                                                </div>
-                                                <div class="thread-reply-form" id="thread-form-${nrId}" style="display:none;">
-                                                    <input type="text" id="thread-input-${nrId}" placeholder="Reply to ${nr.author}..." class="reply-input" onkeydown="handleAdminReplyKey(event,'${announcementId}','${nrId}')">
-                                                    <button class="btn-reply" onclick="adminReply('${announcementId}','${nrId}')">Reply</button>
-                                                </div>
-                                                ${nrInner}
-                                            </div>
-                                        `;
-                                    }).join('')}
-                                </div>
-                                <button class="btn-view-more-replies" onclick="toggleThreadReplies('${nestedToggleId2}', this, ${nestedChildren2.length - 1})">
-                                    View ${nestedChildren2.length - 1} more repl${nestedChildren2.length - 1 === 1 ? 'y' : 'ies'}
-                                </button>
-                            `;
-                        }
-                    }
-                    return `
-                        <div class="reply-item reply-${r.role} ${depthClass}" data-reply-id="${replyId}">
-                            <div class="reply-content">
-                                <strong>${r.author}</strong> <span class="reply-role">${r.role}</span>
-                                <p>${r.message}</p>
-                                <div class="reply-meta">
-                                    <span class="reply-date">${new Date(r.createdAt).toLocaleString()}</span>
-                                    <button class="btn-thread-reply" onclick="showThreadReplyInput('${announcementId}','${replyId}')">↩ Reply</button>
-                                </div>
-                            </div>
-                            <div class="thread-reply-form" id="thread-form-${replyId}" style="display:none;">
-                                <input type="text" id="thread-input-${replyId}" placeholder="Reply to ${r.author}..." class="reply-input" onkeydown="handleAdminReplyKey(event,'${announcementId}','${replyId}')">
-                                <button class="btn-reply" onclick="adminReply('${announcementId}','${replyId}')">Reply</button>
-                            </div>
-                            ${childHtml2}
-                        </div>
-                    `;
-                }).join('')}
+                ${hidden.map(r => renderSingleReply(r, replies, announcementId)).join('')}
             </div>
             <button class="btn-view-more-replies" onclick="toggleThreadReplies('${toggleId}', this, ${hidden.length})">
                 View ${hidden.length} more repl${hidden.length === 1 ? 'y' : 'ies'}
@@ -407,6 +258,43 @@ function renderThreadedReplies(replies, parentId, announcementId, depth) {
     }
 
     return html;
+}
+
+function renderSingleReply(r, allReplies, announcementId) {
+    const replyId = r._id;
+    const nestedChildren = allReplies.filter(nr => nr.parentReplyId === replyId);
+    let childHtml = '';
+
+    // Facebook-style: hide all nested replies behind "View all X replies"
+    if (nestedChildren.length > 0) {
+        const nestedToggleId = `thread-children-${replyId}`;
+        childHtml = `
+            <div class="replies-collapsed" id="${nestedToggleId}" style="display:none;">
+                ${nestedChildren.map(nr => renderSingleReply(nr, allReplies, announcementId)).join('')}
+            </div>
+            <button class="btn-view-more-replies reply-nested" onclick="toggleThreadReplies('${nestedToggleId}', this, ${nestedChildren.length})">
+                View all ${nestedChildren.length} repl${nestedChildren.length === 1 ? 'y' : 'ies'}
+            </button>
+        `;
+    }
+
+    return `
+        <div class="reply-item reply-${r.role}" data-reply-id="${replyId}">
+            <div class="reply-content">
+                <strong>${r.author}</strong> <span class="reply-role">${r.role}</span>
+                <p>${r.message}</p>
+                <div class="reply-meta">
+                    <span class="reply-date">${new Date(r.createdAt).toLocaleString()}</span>
+                    <button class="btn-thread-reply" onclick="showThreadReplyInput('${announcementId}','${replyId}')">↩ Reply</button>
+                </div>
+            </div>
+            <div class="thread-reply-form" id="thread-form-${replyId}" style="display:none;">
+                <input type="text" id="thread-input-${replyId}" placeholder="Reply to ${r.author}..." class="reply-input" onkeydown="handleAdminReplyKey(event,'${announcementId}','${replyId}')">
+                <button class="btn-reply" onclick="adminReply('${announcementId}','${replyId}')">Reply</button>
+            </div>
+            ${childHtml}
+        </div>
+    `;
 }
 
 function showThreadReplyInput(announcementId, replyId) {

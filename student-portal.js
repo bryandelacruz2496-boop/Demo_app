@@ -523,192 +523,28 @@ async function loadStudentAnnouncements() {
 }
 
 function renderStudentThreadedReplies(replies, parentId, announcementId, depth) {
-  const maxDepth = 2;
-  const children = replies.filter(r => {
+  // Get top-level replies (no parent)
+  const topLevel = replies.filter(r => {
     const rParent = r.parentReplyId || null;
     return rParent === parentId || (parentId === null && !rParent);
   });
 
-  if (children.length === 0) return '';
+  if (topLevel.length === 0) return '';
 
-  const visibleCount = 1;
-  const visible = children.slice(0, visibleCount);
-  const hidden = children.slice(visibleCount);
+  // Show first top-level reply, rest behind "View more"
+  const visible = topLevel.slice(0, 1);
+  const hidden = topLevel.slice(1);
 
   let html = '';
   visible.forEach(r => {
-    const replyId = r._id;
-    const indentStyle = depth > 0 ? `margin-left:${Math.min(depth, maxDepth) * 14}px;border-left:2px solid #eee;padding-left:10px;` : '';
-    const nestedChildren = replies.filter(nr => nr.parentReplyId === replyId);
-    let childHtml = '';
-    if (depth < maxDepth && nestedChildren.length > 0) {
-      const firstChild = nestedChildren[0];
-      const firstChildId = firstChild._id;
-      const innerIndent = `margin-left:${Math.min(depth + 1, maxDepth) * 14}px;border-left:2px solid #eee;padding-left:10px;`;
-      const innerChildren = depth + 1 < maxDepth ? renderStudentThreadedReplies(replies, firstChildId, announcementId, depth + 2) : '';
-      childHtml += `
-        <div style="margin-bottom:0.6rem;${innerIndent}">
-          <div style="padding:0.5rem 0.8rem;background:${firstChild.role === 'admin' ? '#fff3e0' : '#e8f5e9'};border-radius:8px;">
-            <strong style="font-size:0.85rem;">${firstChild.author}</strong> <span style="font-size:0.75rem;color:#888;">${firstChild.role === 'admin' ? '(Admin)' : '(Student)'}</span>
-            <p style="margin:0.3rem 0 0;font-size:0.9rem;">${firstChild.message}</p>
-            <div style="display:flex;align-items:center;gap:0.8rem;margin-top:0.3rem;">
-              <span style="font-size:0.7rem;color:#aaa;">${new Date(firstChild.createdAt).toLocaleString()}</span>
-              <button onclick="showStudentThreadReply('${announcementId}','${firstChildId}')" style="background:none;border:none;color:#b71c1c;font-size:0.75rem;font-weight:600;cursor:pointer;padding:0.2rem 0.4rem;border-radius:4px;">↩ Reply</button>
-            </div>
-          </div>
-          <div id="student-thread-form-${firstChildId}" style="display:none;margin-top:0.4rem;margin-left:0.5rem;">
-            <div style="display:flex;gap:0.5rem;">
-              <input type="text" id="student-thread-input-${firstChildId}" placeholder="Reply to ${firstChild.author}..." style="flex:1;padding:0.4rem 0.7rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.85rem;" onkeydown="handleStudentReplyKey(event,'${announcementId}','${firstChildId}')">
-              <button onclick="studentReply('${announcementId}','${firstChildId}')" style="background:#b71c1c;color:#fff;border:none;padding:0.4rem 0.8rem;border-radius:8px;font-weight:600;cursor:pointer;font-size:0.8rem;">Reply</button>
-            </div>
-          </div>
-          ${innerChildren}
-        </div>
-      `;
-      if (nestedChildren.length > 1) {
-        const nestedHidden = nestedChildren.slice(1);
-        const nestedToggleId = `student-thread-nested-${replyId}`;
-        childHtml += `
-          <div id="${nestedToggleId}" style="display:none;">
-            ${nestedHidden.map(nr => {
-              const nrId = nr._id;
-              const nrInner = depth + 1 < maxDepth ? renderStudentThreadedReplies(replies, nrId, announcementId, depth + 2) : '';
-              return `
-                <div style="margin-bottom:0.6rem;${innerIndent}">
-                  <div style="padding:0.5rem 0.8rem;background:${nr.role === 'admin' ? '#fff3e0' : '#e8f5e9'};border-radius:8px;">
-                    <strong style="font-size:0.85rem;">${nr.author}</strong> <span style="font-size:0.75rem;color:#888;">${nr.role === 'admin' ? '(Admin)' : '(Student)'}</span>
-                    <p style="margin:0.3rem 0 0;font-size:0.9rem;">${nr.message}</p>
-                    <div style="display:flex;align-items:center;gap:0.8rem;margin-top:0.3rem;">
-                      <span style="font-size:0.7rem;color:#aaa;">${new Date(nr.createdAt).toLocaleString()}</span>
-                      <button onclick="showStudentThreadReply('${announcementId}','${nrId}')" style="background:none;border:none;color:#b71c1c;font-size:0.75rem;font-weight:600;cursor:pointer;padding:0.2rem 0.4rem;border-radius:4px;">↩ Reply</button>
-                    </div>
-                  </div>
-                  <div id="student-thread-form-${nrId}" style="display:none;margin-top:0.4rem;margin-left:0.5rem;">
-                    <div style="display:flex;gap:0.5rem;">
-                      <input type="text" id="student-thread-input-${nrId}" placeholder="Reply to ${nr.author}..." style="flex:1;padding:0.4rem 0.7rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.85rem;" onkeydown="handleStudentReplyKey(event,'${announcementId}','${nrId}')">
-                      <button onclick="studentReply('${announcementId}','${nrId}')" style="background:#b71c1c;color:#fff;border:none;padding:0.4rem 0.8rem;border-radius:8px;font-weight:600;cursor:pointer;font-size:0.8rem;">Reply</button>
-                    </div>
-                  </div>
-                  ${nrInner}
-                </div>
-              `;
-            }).join('')}
-          </div>
-          <button onclick="toggleStudentThreadReplies('${nestedToggleId}', this, ${nestedHidden.length})" style="background:none;border:none;color:#b71c1c;font-size:0.85rem;font-weight:600;cursor:pointer;padding:0.4rem 0;margin-top:0.3rem;margin-left:${Math.min(depth + 1, maxDepth) * 14}px;">
-            View ${nestedHidden.length} more repl${nestedHidden.length === 1 ? 'y' : 'ies'}
-          </button>
-        `;
-      }
-    }
-    html += `
-      <div style="margin-bottom:0.6rem;${indentStyle}">
-        <div style="padding:0.5rem 0.8rem;background:${r.role === 'admin' ? '#fff3e0' : '#e8f5e9'};border-radius:8px;">
-          <strong style="font-size:0.85rem;">${r.author}</strong> <span style="font-size:0.75rem;color:#888;">${r.role === 'admin' ? '(Admin)' : '(Student)'}</span>
-          <p style="margin:0.3rem 0 0;font-size:0.9rem;">${r.message}</p>
-          <div style="display:flex;align-items:center;gap:0.8rem;margin-top:0.3rem;">
-            <span style="font-size:0.7rem;color:#aaa;">${new Date(r.createdAt).toLocaleString()}</span>
-            <button onclick="showStudentThreadReply('${announcementId}','${replyId}')" style="background:none;border:none;color:#b71c1c;font-size:0.75rem;font-weight:600;cursor:pointer;padding:0.2rem 0.4rem;border-radius:4px;">↩ Reply</button>
-          </div>
-        </div>
-        <div id="student-thread-form-${replyId}" style="display:none;margin-top:0.4rem;margin-left:0.5rem;">
-          <div style="display:flex;gap:0.5rem;">
-            <input type="text" id="student-thread-input-${replyId}" placeholder="Reply to ${r.author}..." style="flex:1;padding:0.4rem 0.7rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.85rem;" onkeydown="handleStudentReplyKey(event,'${announcementId}','${replyId}')">
-            <button onclick="studentReply('${announcementId}','${replyId}')" style="background:#b71c1c;color:#fff;border:none;padding:0.4rem 0.8rem;border-radius:8px;font-weight:600;cursor:pointer;font-size:0.8rem;">Reply</button>
-          </div>
-        </div>
-        ${childHtml}
-      </div>
-    `;
+    html += renderStudentSingleReply(r, replies, announcementId);
   });
 
   if (hidden.length > 0) {
-    const toggleId = `student-thread-hidden-${parentId || announcementId}-${depth}`;
+    const toggleId = `student-thread-hidden-${parentId || announcementId}`;
     html += `
       <div id="${toggleId}" style="display:none;">
-        ${hidden.map(r => {
-          const replyId = r._id;
-          const indentStyle = depth > 0 ? `margin-left:${Math.min(depth, maxDepth) * 14}px;border-left:2px solid #eee;padding-left:10px;` : '';
-          const nestedChildren2 = replies.filter(nr => nr.parentReplyId === replyId);
-          let childHtml2 = '';
-          if (depth < maxDepth && nestedChildren2.length > 0) {
-            const firstChild2 = nestedChildren2[0];
-            const firstChildId2 = firstChild2._id;
-            const innerIndent2 = `margin-left:${Math.min(depth + 1, maxDepth) * 14}px;border-left:2px solid #eee;padding-left:10px;`;
-            const innerChildren2 = depth + 1 < maxDepth ? renderStudentThreadedReplies(replies, firstChildId2, announcementId, depth + 2) : '';
-            childHtml2 += `
-              <div style="margin-bottom:0.6rem;${innerIndent2}">
-                <div style="padding:0.5rem 0.8rem;background:${firstChild2.role === 'admin' ? '#fff3e0' : '#e8f5e9'};border-radius:8px;">
-                  <strong style="font-size:0.85rem;">${firstChild2.author}</strong> <span style="font-size:0.75rem;color:#888;">${firstChild2.role === 'admin' ? '(Admin)' : '(Student)'}</span>
-                  <p style="margin:0.3rem 0 0;font-size:0.9rem;">${firstChild2.message}</p>
-                  <div style="display:flex;align-items:center;gap:0.8rem;margin-top:0.3rem;">
-                    <span style="font-size:0.7rem;color:#aaa;">${new Date(firstChild2.createdAt).toLocaleString()}</span>
-                    <button onclick="showStudentThreadReply('${announcementId}','${firstChildId2}')" style="background:none;border:none;color:#b71c1c;font-size:0.75rem;font-weight:600;cursor:pointer;padding:0.2rem 0.4rem;border-radius:4px;">↩ Reply</button>
-                  </div>
-                </div>
-                <div id="student-thread-form-${firstChildId2}" style="display:none;margin-top:0.4rem;margin-left:0.5rem;">
-                  <div style="display:flex;gap:0.5rem;">
-                    <input type="text" id="student-thread-input-${firstChildId2}" placeholder="Reply to ${firstChild2.author}..." style="flex:1;padding:0.4rem 0.7rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.85rem;" onkeydown="handleStudentReplyKey(event,'${announcementId}','${firstChildId2}')">
-                    <button onclick="studentReply('${announcementId}','${firstChildId2}')" style="background:#b71c1c;color:#fff;border:none;padding:0.4rem 0.8rem;border-radius:8px;font-weight:600;cursor:pointer;font-size:0.8rem;">Reply</button>
-                  </div>
-                </div>
-                ${innerChildren2}
-              </div>
-            `;
-            if (nestedChildren2.length > 1) {
-              const nestedHidden2 = nestedChildren2.slice(1);
-              const nestedToggleId2 = `student-thread-nested-${replyId}`;
-              childHtml2 += `
-                <div id="${nestedToggleId2}" style="display:none;">
-                  ${nestedHidden2.map(nr => {
-                    const nrId = nr._id;
-                    const nrInner = depth + 1 < maxDepth ? renderStudentThreadedReplies(replies, nrId, announcementId, depth + 2) : '';
-                    return `
-                      <div style="margin-bottom:0.6rem;${innerIndent2}">
-                        <div style="padding:0.5rem 0.8rem;background:${nr.role === 'admin' ? '#fff3e0' : '#e8f5e9'};border-radius:8px;">
-                          <strong style="font-size:0.85rem;">${nr.author}</strong> <span style="font-size:0.75rem;color:#888;">${nr.role === 'admin' ? '(Admin)' : '(Student)'}</span>
-                          <p style="margin:0.3rem 0 0;font-size:0.9rem;">${nr.message}</p>
-                          <div style="display:flex;align-items:center;gap:0.8rem;margin-top:0.3rem;">
-                            <span style="font-size:0.7rem;color:#aaa;">${new Date(nr.createdAt).toLocaleString()}</span>
-                            <button onclick="showStudentThreadReply('${announcementId}','${nrId}')" style="background:none;border:none;color:#b71c1c;font-size:0.75rem;font-weight:600;cursor:pointer;padding:0.2rem 0.4rem;border-radius:4px;">↩ Reply</button>
-                          </div>
-                        </div>
-                        <div id="student-thread-form-${nrId}" style="display:none;margin-top:0.4rem;margin-left:0.5rem;">
-                          <div style="display:flex;gap:0.5rem;">
-                            <input type="text" id="student-thread-input-${nrId}" placeholder="Reply to ${nr.author}..." style="flex:1;padding:0.4rem 0.7rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.85rem;" onkeydown="handleStudentReplyKey(event,'${announcementId}','${nrId}')">
-                            <button onclick="studentReply('${announcementId}','${nrId}')" style="background:#b71c1c;color:#fff;border:none;padding:0.4rem 0.8rem;border-radius:8px;font-weight:600;cursor:pointer;font-size:0.8rem;">Reply</button>
-                          </div>
-                        </div>
-                        ${nrInner}
-                      </div>
-                    `;
-                  }).join('')}
-                </div>
-                <button onclick="toggleStudentThreadReplies('${nestedToggleId2}', this, ${nestedHidden2.length})" style="background:none;border:none;color:#b71c1c;font-size:0.85rem;font-weight:600;cursor:pointer;padding:0.4rem 0;margin-top:0.3rem;margin-left:${Math.min(depth + 1, maxDepth) * 14}px;">
-                  View ${nestedHidden2.length} more repl${nestedHidden2.length === 1 ? 'y' : 'ies'}
-                </button>
-              `;
-            }
-          }
-          return `
-            <div style="margin-bottom:0.6rem;${indentStyle}">
-              <div style="padding:0.5rem 0.8rem;background:${r.role === 'admin' ? '#fff3e0' : '#e8f5e9'};border-radius:8px;">
-                <strong style="font-size:0.85rem;">${r.author}</strong> <span style="font-size:0.75rem;color:#888;">${r.role === 'admin' ? '(Admin)' : '(Student)'}</span>
-                <p style="margin:0.3rem 0 0;font-size:0.9rem;">${r.message}</p>
-                <div style="display:flex;align-items:center;gap:0.8rem;margin-top:0.3rem;">
-                  <span style="font-size:0.7rem;color:#aaa;">${new Date(r.createdAt).toLocaleString()}</span>
-                  <button onclick="showStudentThreadReply('${announcementId}','${replyId}')" style="background:none;border:none;color:#b71c1c;font-size:0.75rem;font-weight:600;cursor:pointer;padding:0.2rem 0.4rem;border-radius:4px;">↩ Reply</button>
-                </div>
-              </div>
-              <div id="student-thread-form-${replyId}" style="display:none;margin-top:0.4rem;margin-left:0.5rem;">
-                <div style="display:flex;gap:0.5rem;">
-                  <input type="text" id="student-thread-input-${replyId}" placeholder="Reply to ${r.author}..." style="flex:1;padding:0.4rem 0.7rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.85rem;" onkeydown="handleStudentReplyKey(event,'${announcementId}','${replyId}')">
-                  <button onclick="studentReply('${announcementId}','${replyId}')" style="background:#b71c1c;color:#fff;border:none;padding:0.4rem 0.8rem;border-radius:8px;font-weight:600;cursor:pointer;font-size:0.8rem;">Reply</button>
-                </div>
-              </div>
-              ${childHtml2}
-            </div>
-          `;
-        }).join('')}
+        ${hidden.map(r => renderStudentSingleReply(r, replies, announcementId)).join('')}
       </div>
       <button onclick="toggleStudentThreadReplies('${toggleId}', this, ${hidden.length})" style="background:none;border:none;color:#b71c1c;font-size:0.85rem;font-weight:600;cursor:pointer;padding:0.4rem 0;margin-top:0.3rem;">
         View ${hidden.length} more repl${hidden.length === 1 ? 'y' : 'ies'}
@@ -717,6 +553,45 @@ function renderStudentThreadedReplies(replies, parentId, announcementId, depth) 
   }
 
   return html;
+}
+
+function renderStudentSingleReply(r, allReplies, announcementId) {
+  const replyId = r._id;
+  const nestedChildren = allReplies.filter(nr => nr.parentReplyId === replyId);
+  let childHtml = '';
+
+  // Facebook-style: hide all nested replies behind "View all X replies"
+  if (nestedChildren.length > 0) {
+    const nestedToggleId = `student-thread-children-${replyId}`;
+    childHtml = `
+      <div id="${nestedToggleId}" style="display:none;margin-left:14px;border-left:2px solid #eee;padding-left:10px;">
+        ${nestedChildren.map(nr => renderStudentSingleReply(nr, allReplies, announcementId)).join('')}
+      </div>
+      <button onclick="toggleStudentThreadReplies('${nestedToggleId}', this, ${nestedChildren.length})" style="background:none;border:none;color:#b71c1c;font-size:0.85rem;font-weight:600;cursor:pointer;padding:0.4rem 0;margin-top:0.3rem;margin-left:14px;">
+        View all ${nestedChildren.length} repl${nestedChildren.length === 1 ? 'y' : 'ies'}
+      </button>
+    `;
+  }
+
+  return `
+    <div style="margin-bottom:0.6rem;">
+      <div style="padding:0.5rem 0.8rem;background:${r.role === 'admin' ? '#fff3e0' : '#e8f5e9'};border-radius:8px;">
+        <strong style="font-size:0.85rem;">${r.author}</strong> <span style="font-size:0.75rem;color:#888;">${r.role === 'admin' ? '(Admin)' : '(Student)'}</span>
+        <p style="margin:0.3rem 0 0;font-size:0.9rem;">${r.message}</p>
+        <div style="display:flex;align-items:center;gap:0.8rem;margin-top:0.3rem;">
+          <span style="font-size:0.7rem;color:#aaa;">${new Date(r.createdAt).toLocaleString()}</span>
+          <button onclick="showStudentThreadReply('${announcementId}','${replyId}')" style="background:none;border:none;color:#b71c1c;font-size:0.75rem;font-weight:600;cursor:pointer;padding:0.2rem 0.4rem;border-radius:4px;">↩ Reply</button>
+        </div>
+      </div>
+      <div id="student-thread-form-${replyId}" style="display:none;margin-top:0.4rem;margin-left:0.5rem;">
+        <div style="display:flex;gap:0.5rem;">
+          <input type="text" id="student-thread-input-${replyId}" placeholder="Reply to ${r.author}..." style="flex:1;padding:0.4rem 0.7rem;border:2px solid #eee;border-radius:8px;font-family:inherit;font-size:0.85rem;" onkeydown="handleStudentReplyKey(event,'${announcementId}','${replyId}')">
+          <button onclick="studentReply('${announcementId}','${replyId}')" style="background:#b71c1c;color:#fff;border:none;padding:0.4rem 0.8rem;border-radius:8px;font-weight:600;cursor:pointer;font-size:0.8rem;">Reply</button>
+        </div>
+      </div>
+      ${childHtml}
+    </div>
+  `;
 }
 
 function showStudentThreadReply(announcementId, replyId) {
