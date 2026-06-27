@@ -1992,62 +1992,88 @@ h4 {
 .rich-toolbar {
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 0.5rem 0.8rem;
-    background: #f5f5f5;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0.6rem 1rem;
+    background: #fafbff;
     border: 2px solid #e0e0e0;
     border-bottom: none;
-    border-radius: 8px 8px 0 0;
+    border-radius: 10px 10px 0 0;
+}
+
+.rich-toolbar select {
+    padding: 0.35rem 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-size: 0.82rem;
+    background: #fff;
+    cursor: pointer;
+    color: #333;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.rich-toolbar select:hover {
+    border-color: #3f51b5;
+}
+
+.rich-toolbar select:focus {
+    border-color: #3f51b5;
+    box-shadow: 0 0 0 2px rgba(63, 81, 181, 0.1);
 }
 
 .rich-toolbar button {
     background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 0.3rem 0.6rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 0.35rem 0.6rem;
     cursor: pointer;
     font-size: 0.85rem;
     font-family: inherit;
     transition: all 0.15s ease;
     min-width: 32px;
     text-align: center;
+    color: #444;
 }
 
 .rich-toolbar button:hover {
     background: #e8eaf6;
     border-color: #3f51b5;
+    color: #1a237e;
 }
 
 .rich-toolbar button:active {
     background: #c5cae9;
+    transform: scale(0.95);
 }
 
 .toolbar-divider {
     width: 1px;
-    height: 20px;
-    background: #ddd;
-    margin: 0 4px;
+    height: 22px;
+    background: #e0e0e0;
+    margin: 0 2px;
 }
 
 .rich-editor {
     width: 100%;
-    min-height: 150px;
+    min-height: 180px;
     max-height: 400px;
     overflow-y: auto;
-    padding: 1rem;
+    padding: 1.2rem 1.4rem;
     border: 2px solid #e0e0e0;
     border-top: 1px solid #eee;
-    border-radius: 0 0 8px 8px;
-    font-family: inherit;
-    font-size: 0.95rem;
-    line-height: 1.6;
+    border-radius: 0 0 10px 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    line-height: 1.7;
     outline: none;
     background: #fff;
-    transition: border-color 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .rich-editor:focus {
     border-color: #3f51b5;
+    box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.08);
 }
 
 .rich-editor:empty::before {
