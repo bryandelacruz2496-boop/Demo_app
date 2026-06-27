@@ -358,6 +358,24 @@
                                     <label style="font-weight:600;color:#333;margin-bottom:0.4rem;display:block;">Body
                                         *</label>
                                     <div class="rich-toolbar" id="annToolbar">
+                                        <select onchange="execFontSize(this.value)" title="Font Size" style="padding:0.3rem;border-radius:4px;border:1px solid #ddd;font-size:0.85rem;">
+                                            <option value="">Size</option>
+                                            <option value="1">Small</option>
+                                            <option value="3">Normal</option>
+                                            <option value="5">Large</option>
+                                            <option value="7">Huge</option>
+                                        </select>
+                                        <select onchange="execFontName(this.value)" title="Font" style="padding:0.3rem;border-radius:4px;border:1px solid #ddd;font-size:0.85rem;">
+                                            <option value="">Font</option>
+                                            <option value="Arial" style="font-family:Arial;">Arial</option>
+                                            <option value="Georgia" style="font-family:Georgia;">Georgia</option>
+                                            <option value="Times New Roman" style="font-family:'Times New Roman';">Times New Roman</option>
+                                            <option value="Courier New" style="font-family:'Courier New';">Courier New</option>
+                                            <option value="Verdana" style="font-family:Verdana;">Verdana</option>
+                                            <option value="Nunito" style="font-family:Nunito;">Nunito</option>
+                                            <option value="Fredoka" style="font-family:Fredoka;">Fredoka</option>
+                                        </select>
+                                        <span class="toolbar-divider"></span>
                                         <button type="button" onclick="execRichCmd('bold')"
                                             title="Bold"><b>B</b></button>
                                         <button type="button" onclick="execRichCmd('italic')"

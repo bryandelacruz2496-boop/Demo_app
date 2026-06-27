@@ -333,6 +333,18 @@ function execRichCmd(command) {
     document.getElementById('annBody').focus();
 }
 
+function execFontSize(size) {
+    if (!size) return;
+    document.execCommand('fontSize', false, size);
+    document.getElementById('annBody').focus();
+}
+
+function execFontName(font) {
+    if (!font) return;
+    document.execCommand('fontName', false, font);
+    document.getElementById('annBody').focus();
+}
+
 function insertRichLink() {
     const url = prompt('Enter URL:', 'https://');
     if (url) {
