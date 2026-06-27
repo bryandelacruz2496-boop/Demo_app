@@ -1852,6 +1852,8 @@ h4 {
     margin-bottom: 1.2rem;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     will-change: transform;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .announcement-card:hover {
