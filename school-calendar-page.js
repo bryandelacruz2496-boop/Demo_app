@@ -2,118 +2,92 @@
 // SCHOOL CALENDAR PAGE - Event Data & Rendering
 // ============================================
 
-// Month image mapping (aligned with BSIS SCHOOL CALENDAR 2026-2027 folder)
-const calendarImages = {
-    '2026-5': 'BSIS SCHOOL CALENDAR 2026-2027/June-2026.png',
-    '2026-6': 'BSIS SCHOOL CALENDAR 2026-2027/July-2026.png',
-    '2026-7': 'BSIS SCHOOL CALENDAR 2026-2027/August-2026.png',
-    '2026-8': 'BSIS SCHOOL CALENDAR 2026-2027/September-2026.png',
-    '2026-9': 'BSIS SCHOOL CALENDAR 2026-2027/October-2026.png',
-    '2026-10': 'BSIS SCHOOL CALENDAR 2026-2027/November-2026.png',
-    '2026-11': 'BSIS SCHOOL CALENDAR 2026-2027/December-2026.png',
-    '2027-0': 'BSIS SCHOOL CALENDAR 2026-2027/January-2027.png',
-    '2027-1': 'BSIS SCHOOL CALENDAR 2026-2027/February-2027.png',
-    '2027-2': 'BSIS SCHOOL CALENDAR 2026-2027/March-2027.png',
-    '2027-3': 'BSIS SCHOOL CALENDAR 2026-2027/April-2027.png',
-    '2027-4': 'BSIS SCHOOL CALENDAR 2026-2027/May-2027.png'
-};
-
 // School year events data (June 2026 - May 2027)
 // Aligned with BSIS School Calendar 2026-2027
 const schoolEvents = {
     '2026-6': [ // June 2026
-        { day: 4, text: 'Parents Orientation (Day 1)', type: 'school' },
-        { day: 5, text: 'Last day of Enrollment', type: 'school' },
-        { day: 5, text: 'Parents Orientation (Day 2)', type: 'school' },
-        { day: 12, text: 'Independence Day (No Classes)', type: 'holiday' },
         { day: 15, text: 'Start of Term 1', type: 'school' },
         { day: 15, text: 'Rose Ceremony', type: 'special' }
     ],
     '2026-7': [ // July 2026
-        { day: 1, text: 'Main Lesson Block 1 Begins', type: 'school' },
-        { day: 17, text: 'Nutrition Month Activity', type: 'special' },
-        { day: 24, text: 'Parent-Teacher Conference', type: 'school' },
-        { day: 31, text: 'End of Main Lesson Block 1', type: 'school' }
+        { day: 6, text: 'Pajama Day', type: 'special' }
     ],
     '2026-8': [ // August 2026
-        { day: 3, text: 'Main Lesson Block 2 Begins', type: 'school' },
-        { day: 14, text: 'Book Week Celebration', type: 'special' },
-        { day: 21, text: 'Ninoy Aquino Day (No Classes)', type: 'holiday' },
-        { day: 26, text: 'National Heroes Day (No Classes)', type: 'holiday' },
-        { day: 28, text: 'End of Main Lesson Block 2', type: 'school' }
+        { day: 3, text: 'Araw ng Filipiñana at Barong', type: 'special' },
+        { day: 10, text: 'Araw ng Filipiñana at Barong', type: 'special' },
+        { day: 17, text: 'Araw ng Filipiñana at Barong', type: 'special' },
+        { day: 24, text: 'Araw ng Filipiñana at Barong', type: 'special' },
+        { day: 24, text: 'Boodle Fight', type: 'special' },
+        { day: 28, text: 'Palarong Pinoy', type: 'special' }
     ],
     '2026-9': [ // September 2026
-        { day: 1, text: 'Main Lesson Block 3 Begins', type: 'school' },
-        { day: 11, text: 'Lantern Making Activity', type: 'special' },
-        { day: 18, text: 'Michaelmas Festival', type: 'special' },
-        { day: 25, text: 'End of Term 1', type: 'school' },
-        { day: 28, text: 'Term Break Begins', type: 'holiday' }
+        { day: 9, text: 'End of Term 1', type: 'school' },
+        { day: 10, text: 'End of Term 1', type: 'school' },
+        { day: 11, text: 'End of Term 1', type: 'school' },
+        { day: 12, text: 'Parent\'s Night', type: 'special' },
+        { day: 14, text: 'Term 1 End of Term', type: 'school' },
+        { day: 15, text: 'Bahaginan', type: 'special' },
+        { day: 16, text: 'PTA Meeting', type: 'school' },
+        { day: 16, text: 'Card Distribution', type: 'school' },
+        { day: 17, text: 'Health Break (Students)', type: 'holiday' },
+        { day: 18, text: 'Health Break (Students)', type: 'holiday' },
+        { day: 19, text: 'Health Break (Students & Faculty)', type: 'holiday' },
+        { day: 20, text: 'Health Break (Students & Faculty)', type: 'holiday' },
+        { day: 21, text: 'Health Break (Students & Faculty)', type: 'holiday' },
+        { day: 22, text: 'Health Break (Students & Faculty)', type: 'holiday' },
+        { day: 23, text: 'Start of Term 2', type: 'school' }
     ],
-    '2026-10': [ // October 2026
-        { day: 2, text: 'Term Break Ends', type: 'holiday' },
-        { day: 5, text: 'Start of Term 2', type: 'school' },
-        { day: 5, text: 'Main Lesson Block 4 Begins', type: 'school' },
-        { day: 16, text: 'World Food Day Activity', type: 'special' },
-        { day: 30, text: 'End of Main Lesson Block 4', type: 'school' },
-        { day: 31, text: 'Halloween / Harvest Festival', type: 'special' }
+    '2026-10': [ // October 2026 - No events
     ],
     '2026-11': [ // November 2026
-        { day: 1, text: 'All Saints Day (No Classes)', type: 'holiday' },
-        { day: 2, text: 'All Souls Day (No Classes)', type: 'holiday' },
-        { day: 3, text: 'Main Lesson Block 5 Begins', type: 'school' },
-        { day: 20, text: 'Parent-Teacher Conference', type: 'school' },
-        { day: 27, text: 'End of Main Lesson Block 5', type: 'school' },
-        { day: 30, text: 'Bonifacio Day (No Classes)', type: 'holiday' }
+        { day: 14, text: 'Halloween Fair', type: 'special' },
+        { day: 17, text: 'Stuffed Toy Day', type: 'special' }
     ],
     '2026-12': [ // December 2026
-        { day: 1, text: 'Advent Spiral', type: 'special' },
-        { day: 8, text: 'Immaculate Conception (No Classes)', type: 'holiday' },
-        { day: 11, text: 'Christmas Program', type: 'special' },
-        { day: 12, text: 'End of Term 2', type: 'school' },
-        { day: 15, text: 'Christmas Break Begins', type: 'holiday' },
-        { day: 25, text: 'Christmas Day', type: 'holiday' },
-        { day: 30, text: 'Rizal Day', type: 'holiday' }
+        { day: 15, text: 'End of Term 2', type: 'school' },
+        { day: 16, text: 'Bahaginan', type: 'special' },
+        { day: 17, text: 'PTA Meeting', type: 'school' },
+        { day: 17, text: 'Card Distribution', type: 'school' },
+        { day: 18, text: 'Year End Party', type: 'special' },
+        { day: 19, text: 'Faculty & Staff Christmas Party', type: 'special' }
     ],
     '2027-1': [ // January 2027
-        { day: 1, text: 'New Year\'s Day', type: 'holiday' },
-        { day: 4, text: 'Christmas Break Ends', type: 'holiday' },
-        { day: 5, text: 'Start of Term 3', type: 'school' },
-        { day: 5, text: 'Main Lesson Block 6 Begins', type: 'school' },
-        { day: 22, text: 'Three Kings Celebration', type: 'special' },
-        { day: 29, text: 'End of Main Lesson Block 6', type: 'school' }
+        { day: 4, text: 'Start of Term 3', type: 'school' },
+        { day: 13, text: 'Class Color Day', type: 'special' },
+        { day: 25, text: 'Graduation Shoot (Class 6)', type: 'special' },
+        { day: 26, text: 'Start of Early Registration', type: 'school' },
+        { day: 29, text: 'Grandparents Day', type: 'special' }
     ],
     '2027-2': [ // February 2027
-        { day: 1, text: 'Main Lesson Block 7 Begins', type: 'school' },
-        { day: 12, text: 'Valentine\'s Day Activity', type: 'special' },
-        { day: 14, text: 'Valentine\'s Day', type: 'special' },
-        { day: 25, text: 'EDSA Anniversary (No Classes)', type: 'holiday' },
-        { day: 26, text: 'End of Main Lesson Block 7', type: 'school' }
+        { day: 13, text: 'Family Day', type: 'special' },
+        { day: 18, text: 'Hidden Treasures Day', type: 'special' }
     ],
     '2027-3': [ // March 2027
-        { day: 1, text: 'Main Lesson Block 8 Begins', type: 'school' },
-        { day: 12, text: 'End of Term 3', type: 'school' },
-        { day: 15, text: 'Term Break Begins', type: 'holiday' },
-        { day: 19, text: 'Term Break Ends', type: 'holiday' },
-        { day: 22, text: 'Start of Term 4', type: 'school' },
-        { day: 26, text: 'End of Main Lesson Block 8', type: 'school' }
+        { day: 1, text: 'Special No Classes Day', type: 'holiday' },
+        { day: 19, text: 'Sunny Summer Day', type: 'special' },
+        { day: 29, text: 'End of Term 3', type: 'school' },
+        { day: 29, text: 'Fire Prevention Celebration', type: 'special' },
+        { day: 30, text: 'End of Term Class Meetings', type: 'school' },
+        { day: 31, text: 'End of Term Class Meetings', type: 'school' }
     ],
     '2027-4': [ // April 2027
-        { day: 1, text: 'Holy Week Break Begins', type: 'holiday' },
-        { day: 2, text: 'Good Friday', type: 'holiday' },
-        { day: 5, text: 'Holy Week Break Ends', type: 'holiday' },
-        { day: 6, text: 'Main Lesson Block 9 Begins', type: 'school' },
-        { day: 9, text: 'Araw ng Kagitingan (No Classes)', type: 'holiday' },
-        { day: 23, text: 'Earth Day Activity', type: 'special' },
-        { day: 30, text: 'End of Main Lesson Block 9', type: 'school' }
+        { day: 1, text: 'End of Term 3', type: 'school' },
+        { day: 2, text: 'End of Term 3', type: 'school' },
+        { day: 5, text: 'End of Term 3', type: 'school' },
+        { day: 6, text: 'End of Term 3', type: 'school' },
+        { day: 7, text: 'End of Term 3', type: 'school' },
+        { day: 8, text: 'End of Term 3', type: 'school' },
+        { day: 9, text: 'Bahaginan', type: 'special' },
+        { day: 9, text: 'Card Distribution', type: 'school' },
+        { day: 12, text: 'General Rehearsals', type: 'school' },
+        { day: 13, text: 'Recognition Day', type: 'special' },
+        { day: 14, text: 'Crossing Over', type: 'special' },
+        { day: 14, text: 'Rite of Passage', type: 'special' },
+        { day: 15, text: 'Start of Faculty Summer Break', type: 'holiday' }
     ],
     '2027-5': [ // May 2027
-        { day: 1, text: 'Labor Day (No Classes)', type: 'holiday' },
-        { day: 3, text: 'Main Lesson Block 10 Begins', type: 'school' },
-        { day: 14, text: 'Rite of Passage', type: 'special' },
-        { day: 21, text: 'End of Term 4', type: 'school' },
-        { day: 21, text: 'Last Day of Classes', type: 'school' },
-        { day: 26, text: 'Crossing Over Ceremony', type: 'special' },
-        { day: 28, text: 'Recognition Day', type: 'special' }
+        { day: 3, text: 'Opening of Office for SY:2027-2028', type: 'school' },
+        { day: 4, text: 'End of Early Registration', type: 'school' }
     ]
 };
 
@@ -129,12 +103,6 @@ const calMonthNames = [
 // School year range: June 2026 to May 2027
 const calStartMonth = 5, calStartYear = 2026;
 const calEndMonth = 4, calEndYear = 2027;
-
-function calGoToMonth(month, year) {
-    calCurrentMonth = month;
-    calCurrentYear = year;
-    renderCalendar();
-}
 
 function calPrevMonth() {
     calCurrentMonth--;
@@ -164,25 +132,7 @@ function calNextMonth() {
     renderCalendar();
 }
 
-function updateCalendarImage() {
-    const img = document.getElementById('calMonthImage');
-    if (!img) return;
-
-    const imageKey = calCurrentYear + '-' + calCurrentMonth;
-    const imageSrc = calendarImages[imageKey];
-
-    if (imageSrc) {
-        img.classList.add('loading');
-        img.src = imageSrc;
-        img.alt = calMonthNames[calCurrentMonth] + ' ' + calCurrentYear + ' School Calendar';
-        img.onload = () => img.classList.remove('loading');
-    }
-}
-
 function renderCalendar() {
-    // Update image
-    updateCalendarImage();
-
     const grid = document.getElementById('calDaysGrid');
     if (!grid) return;
 

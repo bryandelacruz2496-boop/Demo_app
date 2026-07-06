@@ -2,47 +2,6 @@
    SCHOOL CALENDAR PAGE STYLES
    ============================================ */
 
-/* Calendar Image Section */
-.cal-image-section {
-    margin-bottom: 3rem;
-}
-
-.cal-image-wrapper {
-    max-width: 900px;
-    margin: 0 auto 1.5rem;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    border: 3px solid #ffebee;
-    background: #fff;
-}
-
-.cal-month-image {
-    width: 100%;
-    height: auto;
-    display: block;
-    transition: opacity 0.3s ease;
-}
-
-.cal-month-image.loading {
-    opacity: 0.5;
-}
-
-
-
-/* Interactive Section */
-.cal-interactive-section {
-    margin-top: 2rem;
-}
-
-.cal-section-subtitle {
-    font-family: 'Fredoka', sans-serif;
-    font-size: 1.4rem;
-    color: #333;
-    text-align: center;
-    margin-bottom: 1.5rem;
-}
-
 .cal-month-nav {
     display: flex;
     align-items: center;
@@ -251,17 +210,6 @@
         height: 36px;
         font-size: 1.1rem;
     }
-
-    .cal-image-wrapper {
-        border-radius: 12px;
-        border-width: 2px;
-    }
-
-
-
-    .cal-section-subtitle {
-        font-size: 1.2rem;
-    }
 }
 
 @media (max-width: 480px) {
@@ -282,11 +230,4 @@
         font-size: 1.1rem;
         letter-spacing: 1px;
     }
-
-    .cal-image-wrapper {
-        border-radius: 8px;
-        margin: 0 -0.5rem 1rem;
-    }
-
-
 }
