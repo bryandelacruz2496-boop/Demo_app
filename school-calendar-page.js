@@ -18,9 +18,9 @@ const schoolEvents = {
         { day: 10, text: 'Araw ng Filipiñana at Barong', type: 'special' },
         { day: 17, text: 'Araw ng Filipiñana at Barong', type: 'special' },
         { day: 24, text: 'Araw ng Filipiñana at Barong', type: 'special' },
-        { day: 24, text: 'Boodle Fight', type: 'special' },
         { day: 26, text: 'Class 1 Field Learning: Animals', type: 'school' },
-        { day: 28, text: 'Palarong Pinoy', type: 'special' }
+        { day: 28, text: 'Palarong Pinoy', type: 'special' },
+        { day: 31, text: 'Boodle Fight', type: 'special' }
     ],
     '2026-9': [ // September 2026
         { day: 2, text: 'Class 2&3 Field Learning: Plants', type: 'school' },
