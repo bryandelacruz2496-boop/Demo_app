@@ -2,8 +2,24 @@
 // SCHOOL CALENDAR PAGE - Event Data & Rendering
 // ============================================
 
+// Month image mapping (aligned with BSIS SCHOOL CALENDAR 2026-2027 folder)
+const calendarImages = {
+    '2026-5': 'BSIS SCHOOL CALENDAR 2026-2027/June-2026.png',
+    '2026-6': 'BSIS SCHOOL CALENDAR 2026-2027/July-2026.png',
+    '2026-7': 'BSIS SCHOOL CALENDAR 2026-2027/August-2026.png',
+    '2026-8': 'BSIS SCHOOL CALENDAR 2026-2027/September-2026.png',
+    '2026-9': 'BSIS SCHOOL CALENDAR 2026-2027/October-2026.png',
+    '2026-10': 'BSIS SCHOOL CALENDAR 2026-2027/November-2026.png',
+    '2026-11': 'BSIS SCHOOL CALENDAR 2026-2027/December-2026.png',
+    '2027-0': 'BSIS SCHOOL CALENDAR 2026-2027/January-2027.png',
+    '2027-1': 'BSIS SCHOOL CALENDAR 2026-2027/February-2027.png',
+    '2027-2': 'BSIS SCHOOL CALENDAR 2026-2027/March-2027.png',
+    '2027-3': 'BSIS SCHOOL CALENDAR 2026-2027/April-2027.png',
+    '2027-4': 'BSIS SCHOOL CALENDAR 2026-2027/May-2027.png'
+};
+
 // School year events data (June 2026 - May 2027)
-// Extracted from calendar images where possible
+// Aligned with BSIS School Calendar 2026-2027
 const schoolEvents = {
     '2026-6': [ // June 2026
         { day: 4, text: 'Parents Orientation (Day 1)', type: 'school' },
@@ -114,6 +130,12 @@ const calMonthNames = [
 const calStartMonth = 5, calStartYear = 2026;
 const calEndMonth = 4, calEndYear = 2027;
 
+function calGoToMonth(month, year) {
+    calCurrentMonth = month;
+    calCurrentYear = year;
+    renderCalendar();
+}
+
 function calPrevMonth() {
     calCurrentMonth--;
     if (calCurrentMonth < 0) {
@@ -142,7 +164,41 @@ function calNextMonth() {
     renderCalendar();
 }
 
+function updateCalendarImage() {
+    const img = document.getElementById('calMonthImage');
+    if (!img) return;
+
+    const imageKey = calCurrentYear + '-' + calCurrentMonth;
+    const imageSrc = calendarImages[imageKey];
+
+    if (imageSrc) {
+        img.classList.add('loading');
+        img.src = imageSrc;
+        img.alt = calMonthNames[calCurrentMonth] + ' ' + calCurrentYear + ' School Calendar';
+        img.onload = () => img.classList.remove('loading');
+    }
+}
+
+function updateThumbnails() {
+    const thumbs = document.querySelectorAll('.cal-thumb');
+    thumbs.forEach(thumb => {
+        const month = parseInt(thumb.dataset.month);
+        const year = parseInt(thumb.dataset.year);
+        if (month === calCurrentMonth && year === calCurrentYear) {
+            thumb.classList.add('active');
+        } else {
+            thumb.classList.remove('active');
+        }
+    });
+}
+
 function renderCalendar() {
+    // Update image
+    updateCalendarImage();
+
+    // Update thumbnails
+    updateThumbnails();
+
     const grid = document.getElementById('calDaysGrid');
     if (!grid) return;
 

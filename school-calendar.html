@@ -50,38 +50,69 @@
                 <p class="subtitle">BSIS School Calendar 2026-2027</p>
             </div>
 
-            <!-- Month Navigation -->
-            <div class="cal-month-nav">
-                <button class="cal-nav-btn" id="calPrevBtn" onclick="calPrevMonth()">‹</button>
-                <h3 class="cal-month-title" id="calMonthTitle">JUNE, 2026</h3>
-                <button class="cal-nav-btn" id="calNextBtn" onclick="calNextMonth()">›</button>
+            <!-- Official Calendar Image Display -->
+            <div class="cal-image-section">
+                <div class="cal-month-nav">
+                    <button class="cal-nav-btn" id="calPrevBtn" onclick="calPrevMonth()">‹</button>
+                    <h3 class="cal-month-title" id="calMonthTitle">JUNE, 2026</h3>
+                    <button class="cal-nav-btn" id="calNextBtn" onclick="calNextMonth()">›</button>
+                </div>
+
+                <div class="cal-image-wrapper" id="calImageWrapper">
+                    <img id="calMonthImage" src="BSIS SCHOOL CALENDAR 2026-2027/June-2026.png" alt="June 2026 School Calendar" class="cal-month-image">
+                </div>
+
+                <!-- Month Thumbnails -->
+                <div class="cal-thumbnails" id="calThumbnails">
+                    <button class="cal-thumb active" data-month="5" data-year="2026" onclick="calGoToMonth(5, 2026)">Jun</button>
+                    <button class="cal-thumb" data-month="6" data-year="2026" onclick="calGoToMonth(6, 2026)">Jul</button>
+                    <button class="cal-thumb" data-month="7" data-year="2026" onclick="calGoToMonth(7, 2026)">Aug</button>
+                    <button class="cal-thumb" data-month="8" data-year="2026" onclick="calGoToMonth(8, 2026)">Sep</button>
+                    <button class="cal-thumb" data-month="9" data-year="2026" onclick="calGoToMonth(9, 2026)">Oct</button>
+                    <button class="cal-thumb" data-month="10" data-year="2026" onclick="calGoToMonth(10, 2026)">Nov</button>
+                    <button class="cal-thumb" data-month="11" data-year="2026" onclick="calGoToMonth(11, 2026)">Dec</button>
+                    <button class="cal-thumb" data-month="0" data-year="2027" onclick="calGoToMonth(0, 2027)">Jan</button>
+                    <button class="cal-thumb" data-month="1" data-year="2027" onclick="calGoToMonth(1, 2027)">Feb</button>
+                    <button class="cal-thumb" data-month="2" data-year="2027" onclick="calGoToMonth(2, 2027)">Mar</button>
+                    <button class="cal-thumb" data-month="3" data-year="2027" onclick="calGoToMonth(3, 2027)">Apr</button>
+                    <button class="cal-thumb" data-month="4" data-year="2027" onclick="calGoToMonth(4, 2027)">May</button>
+                </div>
             </div>
 
-            <!-- Calendar Grid -->
-            <div class="cal-grid-wrapper">
-                <div class="cal-grid">
-                    <div class="cal-header cal-sun">Sunday</div>
-                    <div class="cal-header">Monday</div>
-                    <div class="cal-header">Tuesday</div>
-                    <div class="cal-header">Wednesday</div>
-                    <div class="cal-header">Thursday</div>
-                    <div class="cal-header">Friday</div>
-                    <div class="cal-header cal-sat">Saturday</div>
-                </div>
-                <div class="cal-grid cal-days" id="calDaysGrid">
-                    <!-- Days will be rendered by JS -->
-                </div>
-            </div>
+            <!-- Interactive Calendar Grid -->
+            <div class="cal-interactive-section">
+                <h3 class="cal-section-subtitle">📅 Events & Activities</h3>
 
-            <!-- Legend -->
-            <div class="cal-legend">
-                <div class="cal-legend-item">
-                    <span class="cal-legend-dot cal-legend-event"></span>
-                    <span>School Event</span>
+                <!-- Calendar Grid -->
+                <div class="cal-grid-wrapper">
+                    <div class="cal-grid">
+                        <div class="cal-header cal-sun">Sunday</div>
+                        <div class="cal-header">Monday</div>
+                        <div class="cal-header">Tuesday</div>
+                        <div class="cal-header">Wednesday</div>
+                        <div class="cal-header">Thursday</div>
+                        <div class="cal-header">Friday</div>
+                        <div class="cal-header cal-sat">Saturday</div>
+                    </div>
+                    <div class="cal-grid cal-days" id="calDaysGrid">
+                        <!-- Days will be rendered by JS -->
+                    </div>
                 </div>
-                <div class="cal-legend-item">
-                    <span class="cal-legend-dot cal-legend-holiday"></span>
-                    <span>Holiday / No Classes</span>
+
+                <!-- Legend -->
+                <div class="cal-legend">
+                    <div class="cal-legend-item">
+                        <span class="cal-legend-dot cal-legend-event"></span>
+                        <span>School Event</span>
+                    </div>
+                    <div class="cal-legend-item">
+                        <span class="cal-legend-dot cal-legend-holiday"></span>
+                        <span>Holiday / No Classes</span>
+                    </div>
+                    <div class="cal-legend-item">
+                        <span class="cal-legend-dot cal-legend-special"></span>
+                        <span>Special Activity</span>
+                    </div>
                 </div>
             </div>
         </div>
