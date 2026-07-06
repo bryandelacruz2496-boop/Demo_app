@@ -28,42 +28,7 @@
     opacity: 0.5;
 }
 
-/* Month Thumbnails */
-.cal-thumbnails {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 1rem 0;
-}
 
-.cal-thumb {
-    padding: 0.5rem 1rem;
-    border: 2px solid #ffcdd2;
-    background: #fff;
-    border-radius: 20px;
-    font-family: 'Fredoka', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #b71c1c;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.cal-thumb:hover {
-    background: #ffebee;
-    transform: translateY(-2px);
-    box-shadow: 0 2px 8px rgba(183, 28, 28, 0.15);
-}
-
-.cal-thumb.active {
-    background: #b71c1c;
-    color: #fff;
-    border-color: #b71c1c;
-    box-shadow: 0 3px 12px rgba(183, 28, 28, 0.3);
-}
 
 /* Interactive Section */
 .cal-interactive-section {
@@ -292,14 +257,7 @@
         border-width: 2px;
     }
 
-    .cal-thumbnails {
-        gap: 0.4rem;
-    }
 
-    .cal-thumb {
-        padding: 0.4rem 0.7rem;
-        font-size: 0.75rem;
-    }
 
     .cal-section-subtitle {
         font-size: 1.2rem;
@@ -330,12 +288,5 @@
         margin: 0 -0.5rem 1rem;
     }
 
-    .cal-thumb {
-        padding: 0.35rem 0.6rem;
-        font-size: 0.7rem;
-    }
 
-    .cal-thumbnails {
-        gap: 0.3rem;
-    }
 }

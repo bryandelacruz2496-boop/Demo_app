@@ -179,25 +179,9 @@ function updateCalendarImage() {
     }
 }
 
-function updateThumbnails() {
-    const thumbs = document.querySelectorAll('.cal-thumb');
-    thumbs.forEach(thumb => {
-        const month = parseInt(thumb.dataset.month);
-        const year = parseInt(thumb.dataset.year);
-        if (month === calCurrentMonth && year === calCurrentYear) {
-            thumb.classList.add('active');
-        } else {
-            thumb.classList.remove('active');
-        }
-    });
-}
-
 function renderCalendar() {
     // Update image
     updateCalendarImage();
-
-    // Update thumbnails
-    updateThumbnails();
 
     const grid = document.getElementById('calDaysGrid');
     if (!grid) return;
