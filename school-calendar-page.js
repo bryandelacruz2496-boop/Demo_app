@@ -10,7 +10,8 @@ const schoolEvents = {
         { day: 15, text: 'Rose Ceremony', type: 'special' }
     ],
     '2026-7': [ // July 2026
-        { day: 6, text: 'Pajama Day', type: 'special' }
+        { day: 6, text: 'Pajama Day', type: 'special' },
+        { day: 10, text: 'Class 2&3 Field Learning: LGU', type: 'school' }
     ],
     '2026-8': [ // August 2026
         { day: 3, text: 'Araw ng Filipiñana at Barong', type: 'special' },
@@ -18,9 +19,11 @@ const schoolEvents = {
         { day: 17, text: 'Araw ng Filipiñana at Barong', type: 'special' },
         { day: 24, text: 'Araw ng Filipiñana at Barong', type: 'special' },
         { day: 24, text: 'Boodle Fight', type: 'special' },
+        { day: 26, text: 'Class 1 Field Learning: Animals', type: 'school' },
         { day: 28, text: 'Palarong Pinoy', type: 'special' }
     ],
     '2026-9': [ // September 2026
+        { day: 2, text: 'Class 2&3 Field Learning: Plants', type: 'school' },
         { day: 9, text: 'End of Term 1', type: 'school' },
         { day: 10, text: 'End of Term 1', type: 'school' },
         { day: 11, text: 'End of Term 1', type: 'school' },
@@ -35,7 +38,8 @@ const schoolEvents = {
         { day: 20, text: 'Health Break (Students & Faculty)', type: 'holiday' },
         { day: 21, text: 'Health Break (Students & Faculty)', type: 'holiday' },
         { day: 22, text: 'Health Break (Students & Faculty)', type: 'holiday' },
-        { day: 23, text: 'Start of Term 2', type: 'school' }
+        { day: 23, text: 'Start of Term 2', type: 'school' },
+        { day: 24, text: 'Class 1 Field Learning: Poblacion', type: 'school' }
     ],
     '2026-10': [ // October 2026 - No events
     ],
